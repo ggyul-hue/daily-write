@@ -13,6 +13,10 @@ let animalProfile = JSON.parse(localStorage.getItem(ANIMAL_KEY) || "null");
 if (!animalProfile) { animalProfile = createAnimalProfile("hamster"); localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile)); }
 let preferences = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{"disliked_species":[],"liked_species":[]}');
 let currentBehavior = "idle";
+let animalPosition = 50;
+let behaviorTimer;
+let walkFrameTimer;
+let walkRunId = 0;
 const $ = (selector) => document.querySelector(selector);
 const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), archive: $("#archive-view") };
 
@@ -22,8 +26,17 @@ function todayAnswer() { return state.answers.find((answer) => answer.date === t
 function showView(name) { Object.entries(views).forEach(([key, view]) => view.classList.toggle("is-hidden", key !== name)); document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === name)); window.scrollTo(0, 0); }
 const behaviorMessages = { idle: "모찌는 정원을 천천히 둘러보고 있어요.", "walk-a": "모찌는 정원을 산책하고 있어요.", "walk-b": "모찌는 정원을 산책하고 있어요.", sleep: "모찌는 햇볕 아래에서 잠들었어요.", sit: "모찌는 풀잎 옆에 앉아 쉬고 있어요.", read: "모찌는 치즈에 대해 공부하고 있어요.", carry: "모찌는 작은 돌멩이를 주머니에 모으고 있어요." };
 let animalRenderId = 0;
-async function renderAnimal() { const renderId = ++animalRenderId; const asset = $("#hamster-asset"); asset.className = `hamster-asset coat-${animalProfile.coat}`; $("#hamster").className = `hamster pose-${currentBehavior}`; const image = document.createElement("img"); image.src = `assets/animals/hamster/${currentBehavior}.png`; image.alt = ""; image.draggable = false; if (renderId !== animalRenderId) return; asset.replaceChildren(image); const answer = todayAnswer(); $("#animal-caption").textContent = answer ? "모찌가 이야기를 듣고 폴짝 뛰었어요." : (new Date().getHours() >= 20 ? missedEvent(today) : behaviorMessages[currentBehavior]); }
-function chooseAnimalBehavior() { currentBehavior = chooseBehavior(animalProfile.behaviorWeights || behaviorWeights); renderAnimal(); }
+const dwellTimes = { idle: [6000, 14000], sit: [8000, 16000], sleep: [15000, 35000], read: [10000, 20000], carry: [6000, 12000] };
+const randomBetween = (min, max) => min + Math.random() * (max - min);
+function imagePath(pose) { return `assets/animals/hamster/${pose}.png`; }
+function setCaption() { $("#animal-caption").textContent = new Date().getHours() >= 20 && !todayAnswer() ? missedEvent(today) : behaviorMessages[currentBehavior]; }
+function renderAnimal({ fade = false } = {}) { const renderId = ++animalRenderId; const asset = $("#hamster-asset"); const hamster = $("#hamster"); asset.className = `hamster-asset coat-${animalProfile.coat}${fade ? " is-fading" : ""}`; hamster.className = `hamster ${currentBehavior === "walk-a" || currentBehavior === "walk-b" ? "is-walking" : "is-stationary"}`; if (!hamster.classList.contains("is-walking")) hamster.style.left = `${animalPosition}%`; hamster.style.setProperty("--face-direction", hamster.dataset.direction || "1"); const image = document.createElement("img"); image.src = imagePath(currentBehavior); image.alt = ""; image.draggable = false; asset.replaceChildren(image); if (fade) window.setTimeout(() => { if (renderId === animalRenderId) asset.classList.remove("is-fading"); }, 120); setCaption(); }
+function clearBehaviorTimers() { window.clearTimeout(behaviorTimer); window.clearInterval(walkFrameTimer); walkRunId += 1; }
+function chooseStationaryBehavior() { const weights = { ...(animalProfile.behaviorWeights || behaviorWeights), "walk-a": 0, "walk-b": 0, read: 0.35, carry: 0.45 }; return chooseBehavior(weights); }
+function scheduleStationary() { const [min, max] = dwellTimes[currentBehavior] || dwellTimes.idle; behaviorTimer = window.setTimeout(startNextBehavior, randomBetween(min, max)); }
+function startWalk() { clearBehaviorTimers(); currentBehavior = "walk-a"; const start = animalPosition; const distance = randomBetween(10, 22) * (Math.random() < 0.5 ? -1 : 1); const target = Math.min(82, Math.max(18, start + distance)); const direction = target < start ? -1 : 1; const duration = randomBetween(2000, 4000); const runId = walkRunId; const hamster = $("#hamster"); hamster.dataset.direction = String(direction); hamster.className = "hamster is-walking"; hamster.style.setProperty("--face-direction", String(direction)); hamster.style.setProperty("--walk-duration", `${duration}ms`); hamster.style.left = `${start}%`; renderAnimal(); window.requestAnimationFrame(() => { if (runId === walkRunId) hamster.style.left = `${target}%`; }); let frame = 0; walkFrameTimer = window.setInterval(() => { if (runId !== walkRunId) return; currentBehavior = frame++ % 2 ? "walk-a" : "walk-b"; renderAnimal(); }, 300); behaviorTimer = window.setTimeout(() => { if (runId !== walkRunId) return; animalPosition = target; window.clearInterval(walkFrameTimer); currentBehavior = chooseStationaryBehavior(); hamster.style.setProperty("--walk-duration", "0ms"); renderAnimal({ fade: true }); scheduleStationary(); }, duration + 40); }
+function startNextBehavior() { clearBehaviorTimers(); if (Math.random() < 0.28) { startWalk(); return; } currentBehavior = chooseStationaryBehavior(); renderAnimal({ fade: true }); scheduleStationary(); }
+function chooseAnimalBehavior() { clearBehaviorTimers(); currentBehavior = chooseStationaryBehavior(); renderAnimal(); scheduleStationary(); }
 function renderGarden() { $("#page-date").textContent = formatDate(today); const answer = todayAnswer(); $("#garden-record").textContent = answer ? `오늘은 “${answer.value}”을 남겼어요.` : ""; chooseAnimalBehavior(); }
 function renderPreferences() { ["disliked", "liked"].forEach((kind) => { const container = $(`#${kind}-options`); container.replaceChildren(); species.forEach((name) => { const label = document.createElement("label"); label.innerHTML = `<input type="checkbox" value="${name}" ${preferences[`${kind}_species`].includes(name) ? "checked" : ""}/><span>${{ hamster: "햄스터", cat: "고양이", capybara: "카피바라", rabbit: "토끼" }[name]}</span>`; container.append(label); }); }); $("#no-dislike").checked = !preferences.disliked_species.length; }
 function closePreferences() { $("#preferences-sheet").classList.add("is-hidden"); }
@@ -49,11 +62,10 @@ function renderArchive(selectedDay = state.answers.at(-1)?.date) {
 }
 
 function closeSheet() { $("#answer-sheet").classList.add("is-hidden"); }
-$("#answer-form").addEventListener("submit", (event) => { event.preventDefault(); const value = new FormData(event.currentTarget).get("answer")?.trim(); if (!value) return; state.answers.push({ date: today, questionId: selectedQuestion.id, question: selectedQuestion.text, value }); save(); $("#hamster").classList.remove("is-idle"); $("#hamster").classList.add("is-happy"); closeSheet(); renderToday(); renderGarden(); showView("today"); });
+$("#answer-form").addEventListener("submit", (event) => { event.preventDefault(); const value = new FormData(event.currentTarget).get("answer")?.trim(); if (!value) return; state.answers.push({ date: today, questionId: selectedQuestion.id, question: selectedQuestion.text, value }); save(); closeSheet(); renderToday(); renderGarden(); showView("today"); });
 document.querySelectorAll(".nav-item").forEach((item) => item.addEventListener("click", () => { const view = item.dataset.view; if (view === "today") renderToday(); if (view === "archive") renderArchive(); showView(view); }));
 $("#archive-button").addEventListener("click", () => { renderArchive(); showView("archive"); });
 $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); renderGarden(); renderToday();
 $("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
 $("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });
-setInterval(chooseAnimalBehavior, 14000);
