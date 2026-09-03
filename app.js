@@ -7,7 +7,7 @@ const state = storedState?.answers ? storedState : { answers: [], animal: { name
 const today = dateKey();
 let selectedQuestion;
 const $ = (selector) => document.querySelector(selector);
-const views = { garden: $("#garden-view"), today: $("#today-view"), archive: $("#archive-view") };
+const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), archive: $("#archive-view") };
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
@@ -39,4 +39,5 @@ function renderArchive(selectedDay = state.answers.at(-1)?.date) {
 function closeSheet() { $("#answer-sheet").classList.add("is-hidden"); }
 $("#answer-form").addEventListener("submit", (event) => { event.preventDefault(); const value = new FormData(event.currentTarget).get("answer")?.trim(); if (!value) return; state.answers.push({ date: today, questionId: selectedQuestion.id, question: selectedQuestion.text, value }); save(); $("#hamster").classList.remove("is-idle"); $("#hamster").classList.add("is-happy"); closeSheet(); renderToday(); renderGarden(); showView("today"); });
 document.querySelectorAll(".nav-item").forEach((item) => item.addEventListener("click", () => { const view = item.dataset.view; if (view === "today") renderToday(); if (view === "archive") renderArchive(); showView(view); }));
+$("#archive-button").addEventListener("click", () => { renderArchive(); showView("archive"); });
 $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); renderGarden(); renderToday();

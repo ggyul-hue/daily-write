@@ -10,7 +10,7 @@
   <body>
     <main class="app-shell">
       <section id="garden-view" class="view garden-view" aria-labelledby="page-date">
-        <header class="topbar"><p id="page-date" class="date"></p></header>
+        <header class="topbar"><p id="page-date" class="date"></p><button id="archive-button" class="archive-link" type="button" aria-label="지난 조각 열기">◷</button></header>
         <section class="garden" aria-label="햄스터 정원">
           <div class="cloud cloud-one"></div><div class="cloud cloud-two"></div><div class="sun"></div>
           <div class="hill hill-back"></div><div class="hill hill-front"></div>
@@ -38,7 +38,11 @@
         <section class="archive-panel"><h1 id="archive-title">지난 조각</h1><div class="month-switcher"><button type="button" aria-label="이전 달">‹</button><span id="archive-month"></span><button type="button" aria-label="다음 달">›</button></div><p class="archive-weekdays">일&nbsp;&nbsp; 월&nbsp;&nbsp; 화&nbsp;&nbsp; 수&nbsp;&nbsp; 목&nbsp;&nbsp; 금&nbsp;&nbsp; 토</p><div id="archive-list" class="archive-list"></div><article id="archive-paper" class="archive-paper is-hidden" aria-live="polite"><p id="paper-date" class="paper-date"></p><h2 id="paper-question"></h2><p id="paper-answer"></p><span class="paper-mark" aria-hidden="true">✎</span></article></section>
       </section>
 
-      <nav class="bottom-nav" aria-label="주요 메뉴"><button class="nav-item is-active" data-view="garden" type="button"><span aria-hidden="true">🌿</span><small>정원</small></button><button class="nav-item" data-view="today" type="button"><span aria-hidden="true">✎</span><small>오늘</small></button><button class="nav-item" data-view="archive" type="button"><span aria-hidden="true">◷</span><small>지난 조각</small></button></nav>
+      <section id="room-view" class="view is-hidden" aria-labelledby="room-title">
+        <section class="room-panel"><p class="eyebrow">A SMALL PRIVATE ROOM</p><h1 id="room-title">우리</h1><p class="room-copy">친한 사람들과 하루 하나를 나누는 작은 방이에요.</p><div class="room-placeholder"><span aria-hidden="true">♡</span><h2>아직 함께할 방이 없어요.</h2><p>방 기능은 개인 기록이 안정된 뒤 연결됩니다.</p></div><div class="room-rule"><strong>우리의 약속</strong><p>내가 답하기 전에는 친구의 답을 볼 수 없어요. 답을 남기면 그날의 답변이 함께 열려요.</p></div></section>
+      </section>
+
+      <nav class="bottom-nav" aria-label="주요 메뉴"><button class="nav-item is-active" data-view="garden" type="button"><span aria-hidden="true">🌿</span><small>정원</small></button><button class="nav-item" data-view="today" type="button"><span aria-hidden="true">✎</span><small>오늘</small></button><button class="nav-item" data-view="room" type="button"><span aria-hidden="true">♡</span><small>우리</small></button></nav>
     </main>
     <script type="module" src="app.js"></script>
   </body>
