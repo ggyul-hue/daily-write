@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f0e5" />
+    <title>하루 한 조각</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section id="garden-view" class="view" aria-labelledby="page-date">
+        <header class="topbar">
+          <p id="page-date" class="date"></p>
+          <button id="archive-button" class="text-button" type="button">지난 조각</button>
+        </header>
+
+        <section class="garden" aria-label="햄스터 정원">
+          <div class="cloud cloud-one"></div>
+          <div class="cloud cloud-two"></div>
+          <div class="sun"></div>
+          <div class="hill hill-back"></div>
+          <div class="hill hill-front"></div>
+          <div class="flower flower-one">✦</div>
+          <div class="flower flower-two">✦</div>
+          <div id="hamster" class="hamster is-idle" role="img" aria-label="오늘의 햄스터">
+            <span class="ear left-ear"></span><span class="ear right-ear"></span>
+            <span class="face"><b class="eye left-eye"></b><b class="eye right-eye"></b><b class="nose"></b></span>
+            <span class="belly"></span>
+          </div>
+          <p id="animal-caption" class="animal-caption"></p>
+        </section>
+
+        <section class="daily" aria-live="polite">
+          <p class="eyebrow">TODAY'S SMALL PIECE</p>
+          <h1 id="daily-heading">오늘, 무엇 하나 남겨볼까요?</h1>
+          <p id="daily-status" class="daily-status"></p>
+          <div id="question-cards" class="question-cards"></div>
+        </section>
+      </section>
+
+      <section id="answer-view" class="view is-hidden" aria-labelledby="answer-question">
+        <header class="topbar"><button id="back-button" class="text-button" type="button">← 정원</button></header>
+        <section class="answer-panel">
+          <p class="eyebrow">ONE LITTLE ANSWER</p>
+          <h1 id="answer-question"></h1>
+          <form id="answer-form">
+            <div id="answer-field"></div>
+            <button class="submit-button" type="submit">햄스터에게 들려주기</button>
+          </form>
+        </section>
+      </section>
+
+      <section id="archive-view" class="view is-hidden" aria-labelledby="archive-title">
+        <header class="topbar"><button id="archive-back-button" class="text-button" type="button">← 정원</button></header>
+        <section class="archive-panel">
+          <p class="eyebrow">PAST LITTLE PIECES</p>
+          <h1 id="archive-title">지난 조각</h1>
+          <div id="archive-list" class="archive-list"></div>
+        </section>
+      </section>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
