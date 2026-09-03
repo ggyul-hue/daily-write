@@ -17,6 +17,7 @@ let animalPosition = 50;
 let behaviorTimer;
 let walkFrameTimer;
 let walkRunId = 0;
+let archiveMonth = new Date(`${today}T12:00:00`);
 const $ = (selector) => document.querySelector(selector);
 const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), archive: $("#archive-view") };
 
@@ -37,7 +38,7 @@ function scheduleStationary() { const [min, max] = dwellTimes[currentBehavior] |
 function startWalk() { clearBehaviorTimers(); currentBehavior = "walk-a"; const start = animalPosition; const distance = randomBetween(10, 22) * (Math.random() < 0.5 ? -1 : 1); const target = Math.min(82, Math.max(18, start + distance)); const direction = target < start ? -1 : 1; const duration = randomBetween(2000, 4000); const runId = walkRunId; const hamster = $("#hamster"); hamster.dataset.direction = String(direction); hamster.className = "hamster is-walking"; hamster.style.setProperty("--face-direction", String(direction)); hamster.style.setProperty("--walk-duration", `${duration}ms`); hamster.style.left = `${start}%`; renderAnimal(); window.requestAnimationFrame(() => { if (runId === walkRunId) hamster.style.left = `${target}%`; }); let frame = 0; walkFrameTimer = window.setInterval(() => { if (runId !== walkRunId) return; currentBehavior = frame++ % 2 ? "walk-a" : "walk-b"; renderAnimal(); }, 300); behaviorTimer = window.setTimeout(() => { if (runId !== walkRunId) return; animalPosition = target; window.clearInterval(walkFrameTimer); currentBehavior = chooseStationaryBehavior(); hamster.style.setProperty("--walk-duration", "0ms"); renderAnimal({ fade: true }); scheduleStationary(); }, duration + 40); }
 function startNextBehavior() { clearBehaviorTimers(); if (Math.random() < 0.28) { startWalk(); return; } currentBehavior = chooseStationaryBehavior(); renderAnimal({ fade: true }); scheduleStationary(); }
 function chooseAnimalBehavior() { clearBehaviorTimers(); currentBehavior = chooseStationaryBehavior(); renderAnimal(); scheduleStationary(); }
-function renderGarden() { $("#page-date").textContent = formatDate(today); const answer = todayAnswer(); $("#garden-record").textContent = answer ? `오늘은 “${answer.value}”을 남겼어요.` : ""; chooseAnimalBehavior(); }
+function renderGarden() { $("#page-date").textContent = formatDate(today); const answer = todayAnswer(); const record = $("#garden-record"); record.classList.toggle("is-hidden", !answer); if (answer) { record.querySelector(".garden-record-label").textContent = `오늘의 조각 · ${formatDate(answer.date)}`; record.querySelector(".garden-record-value").textContent = `“${answer.value}”을 남겼어요.`; } chooseAnimalBehavior(); }
 function renderPreferences() { ["disliked", "liked"].forEach((kind) => { const container = $(`#${kind}-options`); container.replaceChildren(); species.forEach((name) => { const label = document.createElement("label"); label.innerHTML = `<input type="checkbox" value="${name}" ${preferences[`${kind}_species`].includes(name) ? "checked" : ""}/><span>${{ hamster: "햄스터", cat: "고양이", capybara: "카피바라", rabbit: "토끼" }[name]}</span>`; container.append(label); }); }); $("#no-dislike").checked = !preferences.disliked_species.length; }
 function closePreferences() { $("#preferences-sheet").classList.add("is-hidden"); }
 
@@ -55,16 +56,27 @@ function openAnswer(question) {
   $("#answer-sheet").classList.remove("is-hidden");
 }
 
+function localDateKey(year, month, day) { return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`; }
+function showArchiveAnswer(answer) { const paper = $("#archive-paper"); document.querySelectorAll(".archive-item").forEach((entry) => entry.classList.toggle("is-selected", entry.dataset.date === answer?.date)); document.querySelectorAll(".calendar-day").forEach((entry) => entry.classList.toggle("is-selected", entry.dataset.date === answer?.date)); if (!answer) { paper.classList.add("is-hidden"); return; } $("#paper-date").textContent = formatDate(answer.date); $("#paper-question").textContent = answer.question; $("#paper-answer").textContent = answer.value; paper.classList.remove("is-hidden"); }
 function renderArchive(selectedDay = state.answers.at(-1)?.date) {
-  const list = $("#archive-list"); const paper = $("#archive-paper"); list.replaceChildren(); paper.classList.add("is-hidden"); $("#archive-month").textContent = selectedDay ? new Intl.DateTimeFormat("ko-KR", { month: "long" }).format(new Date(`${selectedDay}T12:00:00`)) : "기록 없음";
+  if (selectedDay) archiveMonth = new Date(`${selectedDay}T12:00:00`);
+  const list = $("#archive-list"); const calendar = $("#archive-calendar"); list.replaceChildren(); calendar.replaceChildren(); $("#archive-paper").classList.add("is-hidden");
+  const year = archiveMonth.getFullYear(); const month = archiveMonth.getMonth(); $("#archive-month").textContent = `${year}년 ${month + 1}월`;
+  const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const answerDates = new Set(state.answers.map((answer) => answer.date));
+  for (let index = 0; index < firstDay; index += 1) { const spacer = document.createElement("span"); spacer.className = "calendar-spacer"; calendar.append(spacer); }
+  for (let day = 1; day <= daysInMonth; day += 1) { const date = localDateKey(year, month, day); const button = document.createElement("button"); button.type = "button"; button.className = `calendar-day${answerDates.has(date) ? " has-record" : ""}`; button.dataset.date = date; button.textContent = day; button.addEventListener("click", () => showArchiveAnswer(state.answers.find((answer) => answer.date === date))); calendar.append(button); }
   if (!state.answers.length) { list.innerHTML = '<p class="empty-state">아직 남긴 조각이 없어요.<br>오늘의 작은 이야기를 모찌에게 들려주세요.</p>'; return; }
-  [...state.answers].reverse().forEach((answer) => { const item = document.createElement("button"); item.type = "button"; item.className = "archive-item"; const date = document.createElement("p"); date.textContent = formatDate(answer.date); item.append(date); item.addEventListener("click", () => { document.querySelectorAll(".archive-item").forEach((entry) => entry.classList.remove("is-selected")); item.classList.add("is-selected"); $("#paper-date").textContent = formatDate(answer.date); $("#paper-question").textContent = answer.question; $("#paper-answer").textContent = answer.value; paper.classList.remove("is-hidden"); }); list.append(item); if (answer.date === selectedDay) item.click(); });
+  [...state.answers].reverse().forEach((answer) => { const item = document.createElement("button"); item.type = "button"; item.className = "archive-item"; item.dataset.date = answer.date; const date = document.createElement("p"); date.textContent = formatDate(answer.date); item.append(date); item.addEventListener("click", () => showArchiveAnswer(answer)); list.append(item); });
+  showArchiveAnswer(state.answers.find((answer) => answer.date === selectedDay));
 }
 
 function closeSheet() { $("#answer-sheet").classList.add("is-hidden"); }
 $("#answer-form").addEventListener("submit", (event) => { event.preventDefault(); const value = new FormData(event.currentTarget).get("answer")?.trim(); if (!value) return; state.answers.push({ date: today, questionId: selectedQuestion.id, question: selectedQuestion.text, value }); save(); closeSheet(); renderToday(); renderGarden(); showView("today"); });
 document.querySelectorAll(".nav-item").forEach((item) => item.addEventListener("click", () => { const view = item.dataset.view; if (view === "today") renderToday(); if (view === "archive") renderArchive(); showView(view); }));
 $("#archive-button").addEventListener("click", () => { renderArchive(); showView("archive"); });
+$("#archive-back").addEventListener("click", () => showView("garden"));
+$("#archive-prev").addEventListener("click", () => { archiveMonth = new Date(archiveMonth.getFullYear(), archiveMonth.getMonth() - 1, 1); renderArchive(null); });
+$("#archive-next").addEventListener("click", () => { archiveMonth = new Date(archiveMonth.getFullYear(), archiveMonth.getMonth() + 1, 1); renderArchive(null); });
 $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); renderGarden(); renderToday();
 $("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);

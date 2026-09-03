@@ -12,14 +12,15 @@
       <section id="garden-view" class="view garden-view" aria-labelledby="page-date">
         <header class="topbar"><p id="page-date" class="date"></p><div class="top-actions"><button id="preferences-button" class="archive-link" type="button" aria-label="동물 취향 설정">⚙</button><button id="archive-button" class="archive-link" type="button" aria-label="지난 조각 열기">◷</button></div></header>
         <section class="garden" aria-label="햄스터 정원">
+          <img class="garden-backdrop" src="assets/garden/garden-doodle-v3.png" alt="" aria-hidden="true" />
           <div class="cloud cloud-one"></div><div class="cloud cloud-two"></div><div class="sun"></div>
           <div class="hill hill-back"></div><div class="hill hill-front"></div>
           <div class="flower flower-one">✦</div><div class="flower flower-two">✦</div>
-          <span class="prop pebble" aria-hidden="true"></span><span class="prop leaf-prop" aria-hidden="true">⌁</span>
+          <span class="garden-tree" aria-hidden="true"></span><span class="garden-fence" aria-hidden="true"></span><span class="garden-mailbox" aria-hidden="true"></span><span class="prop pebble" aria-hidden="true"></span><span class="prop leaf-prop" aria-hidden="true">⌁</span>
           <div id="hamster" class="hamster is-idle" role="img" aria-label="오늘의 햄스터"><div id="hamster-asset" class="hamster-asset" aria-hidden="true"></div></div>
           <p id="animal-caption" class="animal-caption"></p>
         </section>
-        <p id="garden-record" class="garden-record"></p>
+        <article id="garden-record" class="garden-record is-hidden" aria-label="오늘의 조각"><p class="garden-record-label"></p><strong class="garden-record-value"></strong><span class="garden-record-mark" aria-hidden="true">↗</span></article>
       </section>
 
       <section id="today-view" class="view today-view is-hidden" aria-labelledby="today-title">
@@ -33,7 +34,7 @@
       </section>
 
       <section id="archive-view" class="view is-hidden" aria-labelledby="archive-title">
-        <section class="archive-panel"><h1 id="archive-title">지난 조각</h1><div class="month-switcher"><button type="button" aria-label="이전 달">‹</button><span id="archive-month"></span><button type="button" aria-label="다음 달">›</button></div><p class="archive-weekdays">일&nbsp;&nbsp; 월&nbsp;&nbsp; 화&nbsp;&nbsp; 수&nbsp;&nbsp; 목&nbsp;&nbsp; 금&nbsp;&nbsp; 토</p><div id="archive-list" class="archive-list"></div><article id="archive-paper" class="archive-paper is-hidden" aria-live="polite"><p id="paper-date" class="paper-date"></p><h2 id="paper-question"></h2><p id="paper-answer"></p><span class="paper-mark" aria-hidden="true">✎</span></article></section>
+        <section class="archive-panel"><header class="archive-heading"><button id="archive-back" class="screen-back" type="button" aria-label="정원으로 돌아가기">←</button><h1 id="archive-title">지난 조각</h1></header><div class="month-switcher"><button id="archive-prev" type="button" aria-label="이전 달">‹</button><span id="archive-month"></span><button id="archive-next" type="button" aria-label="다음 달">›</button></div><p class="archive-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></p><div id="archive-calendar" class="archive-calendar" aria-label="기록 날짜"></div><div id="archive-list" class="archive-list"></div><article id="archive-paper" class="archive-paper is-hidden" aria-live="polite"><p id="paper-date" class="paper-date"></p><h2 id="paper-question"></h2><p id="paper-answer"></p><span class="paper-mark" aria-hidden="true">✎</span></article></section>
       </section>
 
       <section id="room-view" class="view is-hidden" aria-labelledby="room-title">
