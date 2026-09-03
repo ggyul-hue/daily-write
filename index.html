@@ -23,6 +23,8 @@
           <div class="hill hill-front"></div>
           <div class="flower flower-one">✦</div>
           <div class="flower flower-two">✦</div>
+          <span class="prop pebble" aria-hidden="true"></span>
+          <span class="prop leaf-prop" aria-hidden="true">⌁</span>
           <div id="hamster" class="hamster is-idle" role="img" aria-label="오늘의 햄스터">
             <span class="ear left-ear"></span><span class="ear right-ear"></span>
             <span class="face"><b class="eye left-eye"></b><b class="eye right-eye"></b><b class="nose"></b></span>
@@ -56,7 +58,14 @@
         <section class="archive-panel">
           <p class="eyebrow">PAST LITTLE PIECES</p>
           <h1 id="archive-title">지난 조각</h1>
+          <p class="archive-hint">날짜를 누르면 그날의 기록이 펼쳐져요.</p>
           <div id="archive-list" class="archive-list"></div>
+          <article id="archive-paper" class="archive-paper is-hidden" aria-live="polite">
+            <p id="paper-date" class="paper-date"></p>
+            <h2 id="paper-question"></h2>
+            <p id="paper-answer"></p>
+            <span class="paper-mark" aria-hidden="true">✎</span>
+          </article>
         </section>
       </section>
     </main>

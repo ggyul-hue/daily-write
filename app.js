@@ -80,21 +80,26 @@ function openAnswer(question) {
 
 function renderArchive() {
   const list = $("#archive-list");
+  const paper = $("#archive-paper");
   list.replaceChildren();
+  paper.classList.add("is-hidden");
   if (!state.answers.length) {
     list.innerHTML = '<p class="empty-state">아직 남긴 조각이 없어요.<br>오늘의 작은 이야기를 모찌에게 들려주세요.</p>';
     return;
   }
   [...state.answers].reverse().forEach((answer) => {
-    const item = document.createElement("article");
+    const item = document.createElement("button");
+    item.type = "button";
     item.className = "archive-item";
     const date = document.createElement("p");
-    const question = document.createElement("h2");
-    const value = document.createElement("div");
     date.textContent = formatDate(answer.date);
-    question.textContent = answer.question;
-    value.textContent = answer.value;
-    item.append(date, question, value);
+    item.append(date, "기록 펼쳐보기", "→");
+    item.addEventListener("click", () => {
+      $("#paper-date").textContent = formatDate(answer.date);
+      $("#paper-question").textContent = answer.question;
+      $("#paper-answer").textContent = answer.value;
+      paper.classList.remove("is-hidden");
+    });
     list.append(item);
   });
 }
