@@ -1,4 +1,5 @@
 import { dailyQuestions, dateKey, idleEvent, missedEvent } from "./data.js";
+import { behaviorWeights, chooseBehavior, createAnimalProfile, species } from "./animal-system.js";
 
 const STORAGE_KEY = "daily-write-solo-v1";
 let storedState;
@@ -6,6 +7,12 @@ try { storedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); } c
 const state = storedState?.answers ? storedState : { answers: [], animal: { name: "모찌" } };
 const today = dateKey();
 let selectedQuestion;
+const ANIMAL_KEY = "daily-write-animal-profile-v1";
+const PREFERENCES_KEY = "daily-write-preferences-v1";
+let animalProfile = JSON.parse(localStorage.getItem(ANIMAL_KEY) || "null");
+if (!animalProfile) { animalProfile = createAnimalProfile("hamster"); localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile)); }
+let preferences = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{"disliked_species":[],"liked_species":[]}');
+let currentBehavior = "idle";
 const $ = (selector) => document.querySelector(selector);
 const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), archive: $("#archive-view") };
 
@@ -13,8 +20,13 @@ function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
 function todayAnswer() { return state.answers.find((answer) => answer.date === today); }
 function showView(name) { Object.entries(views).forEach(([key, view]) => view.classList.toggle("is-hidden", key !== name)); document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === name)); window.scrollTo(0, 0); }
-function animalMessage() { const answer = todayAnswer(); if (answer) return "모찌가 이야기를 듣고 폴짝 뛰었어요."; if (new Date().getHours() >= 20) return missedEvent(today); return idleEvent(today); }
-function renderGarden() { $("#page-date").textContent = formatDate(today); $("#animal-caption").textContent = animalMessage(); const answer = todayAnswer(); $("#garden-record").textContent = answer ? `오늘은 “${answer.value}”을 남겼어요.` : ""; }
+const behaviorMessages = { idle: "모찌는 정원을 천천히 둘러보고 있어요.", "walk-a": "모찌는 정원을 산책하고 있어요.", "walk-b": "모찌는 정원을 산책하고 있어요.", sleep: "모찌는 햇볕 아래에서 잠들었어요.", sit: "모찌는 풀잎 옆에 앉아 쉬고 있어요.", read: "모찌는 치즈에 대해 공부하고 있어요.", carry: "모찌는 작은 돌멩이를 주머니에 모으고 있어요." };
+let animalRenderId = 0;
+async function renderAnimal() { const renderId = ++animalRenderId; const asset = $("#hamster-asset"); asset.className = `hamster-asset coat-${animalProfile.coat}`; $("#hamster").className = `hamster pose-${currentBehavior}`; const image = document.createElement("img"); image.src = `assets/animals/hamster/${currentBehavior}.png`; image.alt = ""; image.draggable = false; if (renderId !== animalRenderId) return; asset.replaceChildren(image); const answer = todayAnswer(); $("#animal-caption").textContent = answer ? "모찌가 이야기를 듣고 폴짝 뛰었어요." : (new Date().getHours() >= 20 ? missedEvent(today) : behaviorMessages[currentBehavior]); }
+function chooseAnimalBehavior() { currentBehavior = chooseBehavior(animalProfile.behaviorWeights || behaviorWeights); renderAnimal(); }
+function renderGarden() { $("#page-date").textContent = formatDate(today); const answer = todayAnswer(); $("#garden-record").textContent = answer ? `오늘은 “${answer.value}”을 남겼어요.` : ""; chooseAnimalBehavior(); }
+function renderPreferences() { ["disliked", "liked"].forEach((kind) => { const container = $(`#${kind}-options`); container.replaceChildren(); species.forEach((name) => { const label = document.createElement("label"); label.innerHTML = `<input type="checkbox" value="${name}" ${preferences[`${kind}_species`].includes(name) ? "checked" : ""}/><span>${{ hamster: "햄스터", cat: "고양이", capybara: "카피바라", rabbit: "토끼" }[name]}</span>`; container.append(label); }); }); $("#no-dislike").checked = !preferences.disliked_species.length; }
+function closePreferences() { $("#preferences-sheet").classList.add("is-hidden"); }
 
 function renderToday() {
   const answer = todayAnswer(); const container = $("#question-cards"); $("#daily-status").textContent = answer ? `오늘은 “${answer.value}”을 남겼어요.` : "아래 세 장 중 하나만 골라주세요."; $("#today-complete").classList.toggle("is-hidden", !answer); container.replaceChildren();
@@ -41,3 +53,7 @@ $("#answer-form").addEventListener("submit", (event) => { event.preventDefault()
 document.querySelectorAll(".nav-item").forEach((item) => item.addEventListener("click", () => { const view = item.dataset.view; if (view === "today") renderToday(); if (view === "archive") renderArchive(); showView(view); }));
 $("#archive-button").addEventListener("click", () => { renderArchive(); showView("archive"); });
 $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); renderGarden(); renderToday();
+$("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
+$("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
+$("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });
+setInterval(chooseAnimalBehavior, 14000);

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { dailyQuestions, dateKey, missedEvent } from "./data.js";
-import { chooseMonthlySpecies, createAnimalProfile } from "./animal-system.js";
+import { chooseBehavior, chooseMonthlySpecies, createAnimalProfile } from "./animal-system.js";
 
 const cards = dailyQuestions("2026-09-03", ["best-food", "comfortable", "animal-day"]);
 assert.equal(cards.length, 3);
@@ -12,4 +12,5 @@ assert.equal(dateKey(new Date("2026-09-03T01:00:00Z")), "2026-09-03");
 assert.equal(chooseMonthlySpecies({ disliked: ["hamster"], random: () => 0 }), "cat");
 assert.equal(chooseMonthlySpecies({ liked: ["rabbit"], random: () => 0.99 }), "rabbit");
 assert.equal(createAnimalProfile("hamster", () => 0).coat, "cream");
+assert.equal(chooseBehavior({ sleep: 1 }, () => 0), "sleep");
 console.log("data checks passed");
