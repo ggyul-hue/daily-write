@@ -1,7 +1,7 @@
 import { dailyQuestions, dateKey, questions } from "./data.js";
 import { behaviorWeights, chooseBehavior, createAnimalProfile, species } from "./animal-system.js";
 import { getAnimalDefinition } from "./animal-manifest.js";
-import { normalizeInviteCode, roomBackend } from "./room-backend.js";
+import { normalizeInviteCode, roomBackend } from "./room-backend.js?v=fragment-phase4b-v2";
 
 const query = new URLSearchParams(location.search);
 const requestedQaDate = query.get("qaDate");
