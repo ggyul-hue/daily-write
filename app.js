@@ -2,7 +2,13 @@ import { dailyQuestions, dateKey, questions } from "./data.js";
 import { behaviorWeights, chooseBehavior, createAnimalProfile, species } from "./animal-system.js";
 import { getAnimalDefinition } from "./animal-manifest.js";
 
-const STORAGE_KEY = "daily-write-solo-v1";
+const query = new URLSearchParams(location.search);
+const requestedQaDate = query.get("qaDate");
+const parsedQaDate = requestedQaDate && /^\d{4}-\d{2}-\d{2}$/.test(requestedQaDate) ? new Date(`${requestedQaDate}T12:00:00`) : null;
+const isQaMode = query.get("qa") === "1" && Boolean(parsedQaDate) && dateKey(parsedQaDate) === requestedQaDate;
+const qaDate = isQaMode ? requestedQaDate : null;
+const storagePrefix = isQaMode ? `dailyWrite.qa.${qaDate}` : "daily-write";
+const STORAGE_KEY = isQaMode ? `${storagePrefix}.solo-v1` : "daily-write-solo-v1";
 let storedState;
 try { storedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); } catch { storedState = null; }
 function answerText(answer) { return answer?.answer ?? answer?.value ?? ""; }
@@ -13,10 +19,10 @@ function normalizeAnswer(answer) {
 const state = Array.isArray(storedState?.answers)
   ? { ...storedState, answers: storedState.answers.map(normalizeAnswer), dailyQuestionSets: typeof storedState.dailyQuestionSets === "object" && storedState.dailyQuestionSets ? storedState.dailyQuestionSets : {} }
   : { answers: [], animal: { name: "모찌" }, dailyQuestionSets: {} };
-let today = dateKey();
+let today = qaDate || dateKey();
 let selectedQuestion;
-const ANIMAL_KEY = "daily-write-animal-profile-v1";
-const PREFERENCES_KEY = "daily-write-preferences-v1";
+const ANIMAL_KEY = isQaMode ? `${storagePrefix}.animal-profile-v1` : "daily-write-animal-profile-v1";
+const PREFERENCES_KEY = isQaMode ? `${storagePrefix}.preferences-v1` : "daily-write-preferences-v1";
 let animalProfile = JSON.parse(localStorage.getItem(ANIMAL_KEY) || "null");
 if (!animalProfile) { animalProfile = createAnimalProfile("hamster"); localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile)); }
 const previewId = location.hostname === "127.0.0.1" ? new URLSearchParams(location.search).get("animalPreview") : null;
@@ -42,6 +48,7 @@ const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#ro
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
 function syncToday() {
+  if (isQaMode) return qaDate;
   const currentDay = dateKey();
   if (today !== currentDay) { today = currentDay; selectedQuestion = undefined; }
   return today;
