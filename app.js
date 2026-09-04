@@ -4,6 +4,7 @@ import { getAnimalDefinition } from "./animal-manifest.js";
 import { normalizeInviteCode, roomBackend } from "./room-backend.js?v=fragment-phase4b-v2";
 
 const query = new URLSearchParams(location.search);
+const isFragmentDebug = query.get("debug") === "fragment4b";
 const requestedQaDate = query.get("qaDate");
 const parsedQaDate = requestedQaDate && /^\d{4}-\d{2}-\d{2}$/.test(requestedQaDate) ? new Date(`${requestedQaDate}T12:00:00`) : null;
 const isQaMode = query.get("qa") === "1" && Boolean(parsedQaDate) && dateKey(parsedQaDate) === requestedQaDate;
@@ -46,6 +47,28 @@ let activePet = null;
 let activePetPromise = null;
 let activePetPromiseIdentity = null;
 let fragmentCtaError = "";
+const fragmentDebug = {
+  backendConfigured: String(roomBackend.isConfigured),
+  supabaseSessionExists: "unknown",
+  backendInitialized: "false",
+  animalSpecies: "",
+  animalVariant: "",
+  animalDisplayName: "",
+  fragmentRestoreStarted: "false",
+  fragmentRestoreResult: "not-started",
+  fragmentId: "",
+  fragmentConsumedAt: "",
+  pendingFragmentQueueCount: "0",
+  ensurePetStarted: "false",
+  ensurePetResult: "not-started",
+  petId: "",
+  petGrowthPoints: "",
+  ctaRenderStarted: "false",
+  ctaState: "not-rendered",
+  ctaLabel: "",
+  lastErrorStage: "",
+  lastErrorMessage: "",
+};
 let currentBehavior = "idle";
 let currentCaptionBehavior = "idle";
 let animalState = { state: "REST", pose: "idle", message: "모찌는 잠깐 쉬어가기로 했어요." };
@@ -57,6 +80,28 @@ let walkRunId = 0;
 let viewedMonth = new Date(`${today}T12:00:00`);
 let selectedDate = null;
 const $ = (selector) => document.querySelector(selector);
+function safeDebugMessage(error) {
+  return String(error?.message || error || "unknown error")
+    .replace(/[\w-]{20,}\.[\w-]{10,}\.[\w-]{10,}/g, "[redacted-token]")
+    .replace(/[0-9a-f]{8}-[0-9a-f-]{27,}/gi, "[redacted-id]")
+    .slice(0, 180);
+}
+function renderFragmentDebug() {
+  if (!isFragmentDebug) return;
+  const panel = $("#fragment-debug");
+  const output = $("#fragment-debug-output");
+  if (!panel || !output) return;
+  panel.classList.remove("is-hidden");
+  output.textContent = Object.entries(fragmentDebug).map(([key, value]) => `${key}=${value || "-"}`).join("\n");
+}
+function updateFragmentDebug(values) {
+  if (!isFragmentDebug) return;
+  Object.assign(fragmentDebug, values);
+  renderFragmentDebug();
+}
+function recordFragmentDebugError(stage, error) {
+  updateFragmentDebug({ lastErrorStage: stage, lastErrorMessage: safeDebugMessage(error) });
+}
 const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), roomInterior: $("#room-interior-view"), archive: $("#archive-view") };
 let roomIdentity = null;
 let activeRooms = [];
@@ -85,6 +130,12 @@ function activePetIdentity() {
 async function ensureActivePet() {
   if (isQaMode || !roomBackend.isConfigured) return null;
   const identity = activePetIdentity();
+  updateFragmentDebug({
+    ensurePetStarted: "true",
+    animalSpecies: identity.species,
+    animalVariant: identity.variant,
+    animalDisplayName: animalName(),
+  });
   if (activePet?.species === identity.species && activePet?.variant === identity.variant) return activePet;
   if (activePetPromise) {
     if (activePetPromiseIdentity?.species === identity.species && activePetPromiseIdentity?.variant === identity.variant) return activePetPromise;
@@ -95,21 +146,40 @@ async function ensureActivePet() {
   activePetPromise = roomBackend.ensureActivePet(identity)
     .then((pet) => {
       activePet = pet;
+      updateFragmentDebug({
+        supabaseSessionExists: "true",
+        backendInitialized: "true",
+        ensurePetResult: pet?.id ? "success" : "empty-payload",
+        petId: pet?.id ? "present" : "missing",
+        petGrowthPoints: Number.isFinite(pet?.growth_points) ? String(pet.growth_points) : "missing",
+      });
       return pet;
+    })
+    .catch((error) => {
+      updateFragmentDebug({ ensurePetResult: "error", petId: "", petGrowthPoints: "" });
+      recordFragmentDebugError("ensure_active_pet", error);
+      throw error;
     })
     .finally(() => { activePetPromise = null; activePetPromiseIdentity = null; });
   return activePetPromise;
 }
 async function restoreFragmentEvents() {
   if (isQaMode || !roomBackend.isConfigured) return;
+  updateFragmentDebug({ fragmentRestoreStarted: "true", fragmentRestoreResult: "loading" });
   try {
     const events = await roomBackend.listFragmentEventsFromExistingSession();
-    if (events === null) return;
+    if (events === null) {
+      updateFragmentDebug({ supabaseSessionExists: "false", fragmentRestoreResult: "no-session" });
+      return;
+    }
+    updateFragmentDebug({ supabaseSessionExists: "true", backendInitialized: "true", fragmentRestoreResult: `loaded:${events.length}` });
     fragmentState.claimed = events;
     fragmentState.pending = fragmentState.pending.filter((pending) => !events.some((event) => event.date === pending.date));
     saveFragmentState();
     renderGarden({ resetAnimal: false });
-  } catch {
+  } catch (error) {
+    updateFragmentDebug({ fragmentRestoreResult: "error" });
+    recordFragmentDebugError("fragment_restore", error);
     // The local cache remains usable if the existing session cannot be read.
   }
 }
@@ -117,14 +187,30 @@ function renderFragmentCta() {
   const fragment = fragmentForDate(syncToday());
   const cta = $("#fragment-cta");
   const button = $("#feed-fragment");
+  updateFragmentDebug({
+    ctaRenderStarted: "true",
+    animalSpecies: activePetIdentity().species,
+    animalVariant: activePetIdentity().variant,
+    animalDisplayName: animalName(),
+    pendingFragmentQueueCount: String(fragmentState.pending.length),
+    fragmentId: fragment?.id ? "present" : "missing",
+    fragmentConsumedAt: fragment?.consumed_at ? "present" : "null",
+  });
   cta.classList.toggle("is-hidden", !fragment);
-  if (!fragment) return;
+  if (!fragment) {
+    updateFragmentDebug({ ctaState: "hidden:no-fragment", ctaLabel: "" });
+    return;
+  }
   const isPending = fragmentState.pending.includes(fragment);
   const identity = activePetIdentity();
   const hasActivePet = activePet?.species === identity.species && activePet?.variant === identity.variant;
   $("#fragment-message").textContent = fragmentCtaError || (isPending ? "오늘의 조각을 준비하고 있어요." : "오늘의 조각이 생겼어요.");
   button.textContent = `${animalName()}에게 주기`;
   button.disabled = isQaMode || isPending || !fragment.id || !hasActivePet || Boolean(activePetPromise);
+  updateFragmentDebug({
+    ctaState: button.disabled ? (isPending ? "disabled:pending" : !fragment.id ? "disabled:no-fragment-id" : !hasActivePet ? "disabled:no-active-pet" : "disabled:qa") : "enabled",
+    ctaLabel: button.textContent,
+  });
   if (!isQaMode && !isPending && !hasActivePet && !activePetPromise) {
     void ensureActivePet().then(() => renderFragmentCta()).catch(() => {
       fragmentCtaError = "조각을 준비하지 못했어요. 잠시 후 다시 시도해주세요.";
@@ -144,14 +230,17 @@ async function syncPendingFragments() {
   if (isQaMode || !fragmentState.pending.length || fragmentSyncPromise) return fragmentSyncPromise;
   fragmentSyncPromise = (async () => {
     try {
+      updateFragmentDebug({ backendInitialized: "starting" });
       await roomBackend.initialize();
+      updateFragmentDebug({ backendInitialized: "true", supabaseSessionExists: "true" });
       const pending = [...fragmentState.pending];
       for (const fragment of pending) {
         const claimed = await roomBackend.claimDailyFragment(fragment);
         fragmentState.claimed = [...fragmentState.claimed.filter((entry) => entry.date !== claimed.date), claimed];
         fragmentState.pending = fragmentState.pending.filter((entry) => entry !== fragment);
       }
-    } catch {
+    } catch (error) {
+      recordFragmentDebugError("pending_fragment_sync", error);
       // Keep the local queue: a later Garden visit retries without blocking the saved answer.
     } finally {
       saveFragmentState();
@@ -511,6 +600,7 @@ function renderGarden({ resetAnimal = true } = {}) {
     record.querySelector(".garden-record-value").textContent = `“${answerText(answer)}”을 남겼어요.`;
   }
   renderFragmentCta();
+  renderFragmentDebug();
   if (resetAnimal) chooseAnimalBehavior();
 }
 function renderPreferences() { ["disliked", "liked"].forEach((kind) => { const container = $(`#${kind}-options`); container.replaceChildren(); species.forEach((name) => { const label = document.createElement("label"); label.innerHTML = `<input type="checkbox" value="${name}" ${preferences[`${kind}_species`].includes(name) ? "checked" : ""}/><span>${{ hamster: "햄스터", cat: "고양이", capybara: "카피바라", rabbit: "토끼" }[name]}</span>`; container.append(label); }); }); $("#no-dislike").checked = !preferences.disliked_species.length; }
