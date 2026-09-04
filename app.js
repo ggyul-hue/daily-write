@@ -42,6 +42,10 @@ let fragmentState = {
   claimed: Array.isArray(storedFragmentState?.claimed) ? storedFragmentState.claimed.filter((fragment) => fragment?.date) : [],
 };
 let fragmentSyncPromise = null;
+let activePet = null;
+let activePetPromise = null;
+let activePetPromiseIdentity = null;
+let fragmentCtaError = "";
 let currentBehavior = "idle";
 let currentCaptionBehavior = "idle";
 let animalState = { state: "REST", pose: "idle", message: "모찌는 잠깐 쉬어가기로 했어요." };
@@ -74,16 +78,63 @@ function fragmentForDate(day) {
   return fragmentState.claimed.find((fragment) => fragment.date === day && !fragment.consumed_at)
     || fragmentState.pending.find((fragment) => fragment.date === day);
 }
+function activePetIdentity() {
+  const animal = animalDefinition();
+  return { species: animal.species, variant: animal.variant };
+}
+async function ensureActivePet() {
+  if (isQaMode || !roomBackend.isConfigured) return null;
+  const identity = activePetIdentity();
+  if (activePet?.species === identity.species && activePet?.variant === identity.variant) return activePet;
+  if (activePetPromise) {
+    if (activePetPromiseIdentity?.species === identity.species && activePetPromiseIdentity?.variant === identity.variant) return activePetPromise;
+    await activePetPromise;
+    return ensureActivePet();
+  }
+  activePetPromiseIdentity = identity;
+  activePetPromise = roomBackend.ensureActivePet(identity)
+    .then((pet) => {
+      activePet = pet;
+      return pet;
+    })
+    .finally(() => { activePetPromise = null; activePetPromiseIdentity = null; });
+  return activePetPromise;
+}
+async function restoreFragmentEvents() {
+  if (isQaMode || !roomBackend.isConfigured) return;
+  try {
+    const events = await roomBackend.listFragmentEventsFromExistingSession();
+    if (events === null) return;
+    fragmentState.claimed = events;
+    fragmentState.pending = fragmentState.pending.filter((pending) => !events.some((event) => event.date === pending.date));
+    saveFragmentState();
+    renderGarden({ resetAnimal: false });
+  } catch {
+    // The local cache remains usable if the existing session cannot be read.
+  }
+}
 function renderFragmentCta() {
   const fragment = fragmentForDate(syncToday());
   const cta = $("#fragment-cta");
+  const button = $("#feed-fragment");
   cta.classList.toggle("is-hidden", !fragment);
   if (!fragment) return;
-  $("#fragment-message").textContent = fragmentState.pending.includes(fragment) ? "오늘의 조각을 준비하고 있어요." : "오늘의 조각이 생겼어요.";
-  $("#feed-fragment").textContent = `${animalName()}에게 주기`;
+  const isPending = fragmentState.pending.includes(fragment);
+  const identity = activePetIdentity();
+  const hasActivePet = activePet?.species === identity.species && activePet?.variant === identity.variant;
+  $("#fragment-message").textContent = fragmentCtaError || (isPending ? "오늘의 조각을 준비하고 있어요." : "오늘의 조각이 생겼어요.");
+  button.textContent = `${animalName()}에게 주기`;
+  button.disabled = isQaMode || isPending || !fragment.id || !hasActivePet || Boolean(activePetPromise);
+  if (!isQaMode && !isPending && !hasActivePet && !activePetPromise) {
+    void ensureActivePet().then(() => renderFragmentCta()).catch(() => {
+      fragmentCtaError = "조각을 준비하지 못했어요. 잠시 후 다시 시도해주세요.";
+      renderFragmentCta();
+    });
+  }
 }
 function queueDailyFragment(source, day = syncToday()) {
   if (fragmentForDate(day)) return;
+  fragmentCtaError = "";
   fragmentState.pending.push({ date: day, source });
   saveFragmentState();
   renderGarden({ resetAnimal: false });
@@ -109,6 +160,31 @@ async function syncPendingFragments() {
     }
   })();
   return fragmentSyncPromise;
+}
+async function consumeTodayFragment() {
+  const fragment = fragmentForDate(syncToday());
+  const button = $("#feed-fragment");
+  if (!fragment?.id || button.disabled || isQaMode) return;
+  button.disabled = true;
+  fragmentCtaError = "";
+  button.textContent = "먹이고 있어요...";
+  try {
+    const pet = await ensureActivePet();
+    if (!pet) throw new Error("pet unavailable");
+    const result = await roomBackend.consumeDailyFragment({ fragmentId: fragment.id, petId: pet.id });
+    if (!result || !["consumed", "already_consumed"].includes(result.status)) throw new Error("consume failed");
+    if (result.status === "consumed") activePet = { ...pet, id: result.pet_id || pet.id, growth_points: result.growth_points };
+    fragmentState.pending = fragmentState.pending.filter((entry) => entry.date !== fragment.date);
+    fragmentState.claimed = fragmentState.claimed.map((entry) => entry.id === fragment.id
+      ? { ...entry, pet_id: result.pet_id, consumed_at: result.consumed_at }
+      : entry);
+    saveFragmentState();
+    renderGarden({ resetAnimal: false });
+    if (result.status === "consumed") startFragmentReaction();
+  } catch {
+    fragmentCtaError = "조각을 먹이지 못했어요. 다시 시도해주세요.";
+    renderFragmentCta();
+  }
 }
 function dailyQuestionSet(day = syncToday()) {
   const questionById = new Map(questions.map((question) => [question.id, question]));
@@ -403,6 +479,19 @@ function startAnswerReaction() {
   currentLandmark = "open-lawn";
   currentBehavior = reaction.pose;
   renderAnimal({ pose: reaction.pose, captionBehavior: reaction.pose, stateName: reaction.stateName, message: reaction.message });
+  behaviorTimer = window.setTimeout(() => {
+    if (runId !== walkRunId) return;
+    currentBehavior = "idle";
+    renderAnimal({ pose: "idle", captionBehavior: "idle" });
+    scheduleStationary();
+  }, 2600);
+}
+function startFragmentReaction() {
+  clearBehaviorTimers();
+  const runId = walkRunId;
+  currentLandmark = "open-lawn";
+  currentBehavior = "carry";
+  renderAnimal({ pose: "carry", captionBehavior: "carry", stateName: "FRAGMENT_REACTION", message: `${animalName()}가 오늘의 조각을 맛있게 먹었어요.` });
   behaviorTimer = window.setTimeout(() => {
     if (runId !== walkRunId) return;
     currentBehavior = "idle";
@@ -740,7 +829,7 @@ $("#archive-button").addEventListener("click", () => {
 $("#archive-back").addEventListener("click", () => showView("garden"));
 $("#archive-prev").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() - 1, 1); selectedDate = null; renderArchive(); });
 $("#archive-next").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() + 1, 1); selectedDate = null; renderArchive(); });
-$("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday(); if (fragmentState.pending.length) void syncPendingFragments();
+$("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday(); void restoreFragmentEvents(); if (fragmentState.pending.length) void syncPendingFragments();
 $("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
 $("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });
@@ -795,4 +884,5 @@ $("#room-answer-form").addEventListener("submit", async (event) => {
     $("#room-answer-hint").textContent = roomErrorMessage(error);
   } finally { submit.disabled = false; }
 });
+$("#feed-fragment").addEventListener("click", () => { void consumeTodayFragment(); });
 $("#invite-code-input").addEventListener("input", (event) => { event.currentTarget.value = normalizeInviteCode(event.currentTarget.value); });

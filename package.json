@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node test-data.mjs && node test-room-backend.mjs && node test-phase4a.mjs"
+    "test": "node test-data.mjs && node test-room-backend.mjs && node test-phase4a.mjs && node test-phase4b.mjs"
   }
 }

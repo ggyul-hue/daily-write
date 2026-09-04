@@ -51,7 +51,8 @@ create table if not exists public.pets (
   growth_seed text not null default encode(gen_random_bytes(16), 'hex'),
   growth_scale numeric not null default 1 check (growth_scale > 0),
   traits jsonb not null default '[]'::jsonb,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  unique (user_id, species, variant)
 );
 
 create table if not exists public.fragment_events (
@@ -179,6 +180,56 @@ begin
 end;
 $$;
 
+create or replace function public.ensure_active_pet(p_species text, p_variant text)
+returns public.pets language plpgsql security definer set search_path = public as $$
+declare pet_row public.pets;
+begin
+  if auth.uid() is null then raise exception 'authentication required'; end if;
+  if (p_species, p_variant) not in (
+    ('hamster', 'mochi'), ('hamster', 'cream'), ('hamster', 'almond'), ('hamster', 'sugar'),
+    ('capybara', 'clover'), ('capybara', 'bookie'), ('capybara', 'tangerine'), ('capybara', 'towel'),
+    ('cat', 'orange'), ('cat', 'gray'), ('cat', 'calico'), ('cat', 'cream'),
+    ('dog', 'shiba'), ('dog', 'cream'), ('dog', 'brown'), ('dog', 'gray')
+  ) then raise exception 'invalid pet identity'; end if;
+
+  insert into public.users (id, nickname) values (auth.uid(), null) on conflict (id) do nothing;
+  insert into public.pets (user_id, species, variant, growth_stage, growth_points, growth_scale)
+    values (auth.uid(), p_species, p_variant, 'BABY', 0, 1)
+    on conflict (user_id, species, variant) do nothing;
+  select * into pet_row from public.pets where user_id = auth.uid() and species = p_species and variant = p_variant;
+  return pet_row;
+end;
+$$;
+
+create or replace function public.consume_daily_fragment(p_fragment_id uuid, p_pet_id uuid)
+returns table (status text, fragment_id uuid, pet_id uuid, growth_points integer, consumed_at timestamptz)
+language plpgsql security definer set search_path = public as $$
+declare fragment_row public.fragment_events;
+declare pet_row public.pets;
+begin
+  if auth.uid() is null then raise exception 'authentication required'; end if;
+  select * into fragment_row from public.fragment_events
+    where id = p_fragment_id and user_id = auth.uid()
+    for update;
+  if fragment_row.id is null then raise exception 'fragment not found'; end if;
+
+  select * into pet_row from public.pets
+    where id = p_pet_id and user_id = auth.uid()
+    for update;
+  if pet_row.id is null then raise exception 'pet not found'; end if;
+
+  if fragment_row.consumed_at is not null then
+    select * into pet_row from public.pets where id = fragment_row.pet_id and user_id = auth.uid() for update;
+    return query select 'already_consumed', fragment_row.id, fragment_row.pet_id, pet_row.growth_points, fragment_row.consumed_at;
+    return;
+  end if;
+
+  update public.pets set growth_points = growth_points + 1 where id = pet_row.id returning * into pet_row;
+  update public.fragment_events set pet_id = pet_row.id, consumed_at = now() where id = fragment_row.id returning * into fragment_row;
+  return query select 'consumed', fragment_row.id, pet_row.id, pet_row.growth_points, fragment_row.consumed_at;
+end;
+$$;
+
 alter table public.users enable row level security;
 alter table public.rooms enable row level security;
 alter table public.room_members enable row level security;
@@ -197,7 +248,7 @@ create policy "members read answers after own answer" on public.room_answers for
   user_id = auth.uid() or public.has_answered_room_day(room_id, date)
 );
 create policy "members insert own answer" on public.room_answers for insert to authenticated with check (user_id = auth.uid() and public.is_room_member(room_id));
-create policy "users manage pets" on public.pets for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "users read pets" on public.pets for select to authenticated using (user_id = auth.uid());
 create policy "users read fragments" on public.fragment_events for select to authenticated using (user_id = auth.uid());
 
 -- Data API access is explicit: anonymous JWT users run as `authenticated`,
@@ -206,7 +257,7 @@ revoke all on table public.users, public.rooms, public.room_members, public.room
 grant select, insert, update on table public.users to authenticated;
 grant select on table public.rooms, public.room_members, public.room_daily_questions to authenticated;
 grant select, insert on table public.room_answers to authenticated;
-grant select, insert, update on table public.pets to authenticated;
+grant select on table public.pets to authenticated;
 grant select on table public.fragment_events to authenticated;
 
 revoke all on function public.is_room_member(uuid) from public, anon;
@@ -217,6 +268,8 @@ revoke all on function public.join_room_by_code(varchar) from public, anon;
 revoke all on function public.ensure_room_daily_question(uuid, date, text) from public, anon;
 revoke all on function public.room_member_daily_status(uuid, date) from public, anon;
 revoke all on function public.claim_daily_fragment(date, text) from public, anon;
+revoke all on function public.ensure_active_pet(text, text) from public, anon;
+revoke all on function public.consume_daily_fragment(uuid, uuid) from public, anon;
 grant execute on function public.is_room_member(uuid) to authenticated;
 grant execute on function public.has_answered_room_day(uuid, date) to authenticated;
 grant execute on function public.create_room() to authenticated;
@@ -224,3 +277,5 @@ grant execute on function public.join_room_by_code(varchar) to authenticated;
 grant execute on function public.ensure_room_daily_question(uuid, date, text) to authenticated;
 grant execute on function public.room_member_daily_status(uuid, date) to authenticated;
 grant execute on function public.claim_daily_fragment(date, text) to authenticated;
+grant execute on function public.ensure_active_pet(text, text) to authenticated;
+grant execute on function public.consume_daily_fragment(uuid, uuid) to authenticated;

@@ -123,6 +123,38 @@ export class RoomBackend {
     if (error) throw error;
     return data;
   }
+
+  async listFragmentEventsFromExistingSession() {
+    if (!this.isConfigured) return null;
+    if (!this.#client) {
+      const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      this.#client = createClient(BACKEND_CONFIG.supabaseUrl, BACKEND_CONFIG.supabasePublishableKey);
+    }
+    const { data: sessionData, error: sessionError } = await this.#client.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!sessionData.session) return null;
+    this.#user = sessionData.session.user;
+    const { data, error } = await this.#client
+      .from("fragment_events")
+      .select("id,date,source,fragment_index,pet_id,consumed_at,growth_result,created_at")
+      .order("date", { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  async ensureActivePet({ species, variant }) {
+    if (!this.#user) await this.initialize();
+    const { data, error } = await this.#client.rpc("ensure_active_pet", { p_species: species, p_variant: variant });
+    if (error) throw error;
+    return Array.isArray(data) ? data[0] : data;
+  }
+
+  async consumeDailyFragment({ fragmentId, petId }) {
+    if (!this.#user) await this.initialize();
+    const { data, error } = await this.#client.rpc("consume_daily_fragment", { p_fragment_id: fragmentId, p_pet_id: petId });
+    if (error) throw error;
+    return Array.isArray(data) ? data[0] : data;
+  }
 }
 
 export const roomBackend = new RoomBackend();

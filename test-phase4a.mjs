@@ -10,5 +10,5 @@ assert.match(schema, /claim_daily_fragment\(p_date date, p_source text\)/);
 assert.match(schema, /grant execute on function public\.claim_daily_fragment\(date, text\) to authenticated/);
 assert.match(migration, /fragment_events_user_date_key unique \(user_id, date\)/);
 assert.match(migration, /revoke insert, update, delete on table public\.fragment_events from authenticated/);
-assert.match(app, /feed-fragment.*animalName\(\).*에게 주기/);
+assert.match(app, /button\.textContent = `\$\{animalName\(\)\}에게 주기`/);
 console.log("phase 4A schema checks passed");

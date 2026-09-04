@@ -5,4 +5,6 @@ assert.equal(normalizeInviteCode("m7-k4pq"), "M7K4PQ");
 assert.equal(normalizeInviteCode("O0I1"), "");
 assert.equal(normalizeInviteCode(" ab 29 "), "AB29");
 assert.equal(typeof RoomBackend.prototype.claimDailyFragment, "function");
+assert.equal(typeof RoomBackend.prototype.ensureActivePet, "function");
+assert.equal(typeof RoomBackend.prototype.consumeDailyFragment, "function");
 console.log("room backend checks passed");
