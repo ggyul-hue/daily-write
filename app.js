@@ -1,6 +1,7 @@
 import { dailyQuestions, dateKey, questions } from "./data.js";
 import { behaviorWeights, chooseBehavior, createAnimalProfile, species } from "./animal-system.js";
 import { getAnimalDefinition } from "./animal-manifest.js";
+import { normalizeInviteCode, roomBackend } from "./room-backend.js";
 
 const query = new URLSearchParams(location.search);
 const requestedQaDate = query.get("qaDate");
@@ -45,6 +46,9 @@ let viewedMonth = new Date(`${today}T12:00:00`);
 let selectedDate = null;
 const $ = (selector) => document.querySelector(selector);
 const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), archive: $("#archive-view") };
+let roomIdentity = null;
+let activeRooms = [];
+let afterNickname = null;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
@@ -68,6 +72,7 @@ function dailyQuestionSet(day = syncToday()) {
 function showView(name) {
   Object.entries(views).forEach(([key, view]) => view.classList.toggle("is-hidden", key !== name));
   document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === name));
+  if (name === "room") void refreshRooms();
   window.scrollTo(0, 0);
 }
 const behaviorMessages = {
@@ -442,6 +447,94 @@ function renderArchive() {
   showArchiveAnswer(selectedDate ? answerForDate(selectedDate) : null);
 }
 
+function roomErrorMessage(error) {
+  if (/room not found/i.test(error?.message || "")) return "코드를 다시 확인해주세요.";
+  if (/nickname required/i.test(error?.message || "")) return "먼저 닉네임을 정해주세요.";
+  return "방을 연결하지 못했어요. 잠시 후 다시 시도해주세요.";
+}
+function setRoomStatus(message = "") { $("#room-status").textContent = message; }
+function closeNicknameSheet() { $("#nickname-sheet").classList.add("is-hidden"); }
+function closeJoinRoomSheet() { $("#join-room-sheet").classList.add("is-hidden"); }
+function openNicknameSheet() {
+  $("#nickname-sheet").classList.remove("is-hidden");
+  window.setTimeout(() => $("#nickname-input").focus(), 0);
+}
+function openJoinRoomSheet() {
+  $("#join-room-sheet").classList.remove("is-hidden");
+  window.setTimeout(() => $("#invite-code-input").focus(), 0);
+}
+function renderRoom() {
+  const empty = $("#room-empty");
+  const active = $("#active-room");
+  const create = $("#create-room");
+  const join = $("#open-join-room");
+  if (!roomBackend.isConfigured) {
+    setRoomStatus("공유 방은 backend 연결 후 사용할 수 있어요.");
+    empty.classList.remove("is-hidden");
+    active.classList.add("is-hidden");
+    create.disabled = true;
+    join.disabled = true;
+    return;
+  }
+  create.disabled = false;
+  join.disabled = false;
+  if (!roomIdentity) { setRoomStatus("내 작은 방을 준비하고 있어요."); return; }
+  const room = activeRooms[0];
+  if (!room) {
+    setRoomStatus(roomIdentity.profile?.nickname ? `${roomIdentity.profile.nickname}님의 작은 방을 만들 수 있어요.` : "닉네임을 정하고 작은 방을 시작해보세요.");
+    empty.classList.remove("is-hidden");
+    active.classList.add("is-hidden");
+    return;
+  }
+  setRoomStatus("");
+  empty.classList.add("is-hidden");
+  active.classList.remove("is-hidden");
+  $("#active-room-code").textContent = room.invite_code;
+}
+async function refreshRooms() {
+  renderRoom();
+  if (!roomBackend.isConfigured) return;
+  try {
+    roomIdentity = await roomBackend.initialize();
+    activeRooms = roomIdentity.profile ? await roomBackend.listRooms() : [];
+    renderRoom();
+    if (!roomIdentity.profile?.nickname) openNicknameSheet();
+  } catch (error) {
+    setRoomStatus("공유 방을 준비하지 못했어요. backend 설정을 확인해주세요.");
+  }
+}
+async function runWithNickname(action) {
+  if (!roomBackend.isConfigured) { renderRoom(); return; }
+  try {
+    roomIdentity = await roomBackend.initialize();
+    if (!roomIdentity.profile?.nickname) {
+      afterNickname = action;
+      openNicknameSheet();
+      return;
+    }
+    await action();
+  } catch (error) {
+    setRoomStatus(roomErrorMessage(error));
+  }
+}
+async function createRoom() {
+  await runWithNickname(async () => {
+    setRoomStatus("작은 방을 만들고 있어요.");
+    await roomBackend.createRoom();
+    await refreshRooms();
+  });
+}
+async function joinRoom(inviteCode) {
+  let joined = false;
+  await runWithNickname(async () => {
+    setRoomStatus("방에 참여하고 있어요.");
+    await roomBackend.joinRoom(inviteCode);
+    joined = true;
+    await refreshRooms();
+  });
+  return joined;
+}
+
 function closeSheet() { $("#answer-sheet").classList.add("is-hidden"); }
 $("#answer-form").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -471,3 +564,26 @@ $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").ad
 $("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
 $("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });
+$("#create-room").addEventListener("click", () => { void createRoom(); });
+$("#open-join-room").addEventListener("click", () => { void runWithNickname(async () => openJoinRoomSheet()); });
+$("#nickname-backdrop").addEventListener("click", closeNicknameSheet); $("#close-nickname").addEventListener("click", closeNicknameSheet);
+$("#join-room-backdrop").addEventListener("click", closeJoinRoomSheet); $("#close-join-room").addEventListener("click", closeJoinRoomSheet);
+$("#nickname-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try {
+    const nickname = await roomBackend.saveNickname(new FormData(event.currentTarget).get("nickname"));
+    roomIdentity = { ...roomIdentity, profile: { ...(roomIdentity?.profile || {}), nickname } };
+    closeNicknameSheet();
+    const next = afterNickname;
+    afterNickname = null;
+    if (next) await next();
+    else await refreshRooms();
+  } catch (error) { setRoomStatus(roomErrorMessage(error)); }
+});
+$("#join-room-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const input = $("#invite-code-input");
+  input.value = normalizeInviteCode(input.value);
+  if (await joinRoom(input.value)) closeJoinRoomSheet();
+});
+$("#invite-code-input").addEventListener("input", (event) => { event.currentTarget.value = normalizeInviteCode(event.currentTarget.value); });
