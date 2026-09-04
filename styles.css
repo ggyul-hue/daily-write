@@ -94,5 +94,5 @@ html,body { overflow-x:hidden; }
 .hamster.is-walking { transition:transform var(--walk-duration, 2400ms) linear; }
 .hamster.is-stationary { transition:none; }
 .hamster-motion { position:absolute; inset:0; transform:scale(var(--animal-scale,1)); transform-origin:center bottom; transition:none; }
-.hamster-asset { transform:scaleX(var(--face-direction,1)); transform-origin:center bottom; transition:none; }
+.hamster-asset { transform:scale(var(--pose-scale,1)) scaleX(var(--face-direction,1)); transform-origin:center bottom; transition:none; }
 .hamster-asset,.hamster-asset img,.hamster-asset.is-fading,.hamster-asset.is-fading img { opacity:1; transition:none; }

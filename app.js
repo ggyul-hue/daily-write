@@ -1,12 +1,19 @@
-import { dailyQuestions, dateKey, idleEvent, missedEvent } from "./data.js";
+import { dailyQuestions, dateKey, questions } from "./data.js";
 import { behaviorWeights, chooseBehavior, createAnimalProfile, species } from "./animal-system.js";
 import { getAnimalDefinition } from "./animal-manifest.js";
 
 const STORAGE_KEY = "daily-write-solo-v1";
 let storedState;
 try { storedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); } catch { storedState = null; }
-const state = storedState?.answers ? storedState : { answers: [], animal: { name: "모찌" } };
-const today = dateKey();
+function answerText(answer) { return answer?.answer ?? answer?.value ?? ""; }
+function normalizeAnswer(answer) {
+  const value = answerText(answer);
+  return { ...answer, answer: value, value: answer.value ?? value, createdAt: answer.createdAt || null };
+}
+const state = Array.isArray(storedState?.answers)
+  ? { ...storedState, answers: storedState.answers.map(normalizeAnswer), dailyQuestionSets: typeof storedState.dailyQuestionSets === "object" && storedState.dailyQuestionSets ? storedState.dailyQuestionSets : {} }
+  : { answers: [], animal: { name: "모찌" }, dailyQuestionSets: {} };
+let today = dateKey();
 let selectedQuestion;
 const ANIMAL_KEY = "daily-write-animal-profile-v1";
 const PREFERENCES_KEY = "daily-write-preferences-v1";
@@ -22,6 +29,7 @@ if (previewId) {
 let preferences = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{"disliked_species":[],"liked_species":[]}');
 let currentBehavior = "idle";
 let currentCaptionBehavior = "idle";
+let animalState = { state: "REST", pose: "idle", message: "모찌는 잠깐 쉬어가기로 했어요." };
 let animalPosition = { x: 50, y: 76 };
 let currentLandmark = "open-lawn";
 let behaviorTimer;
@@ -33,7 +41,22 @@ const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#ro
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
-function todayAnswer() { return state.answers.find((answer) => answer.date === today); }
+function syncToday() {
+  const currentDay = dateKey();
+  if (today !== currentDay) { today = currentDay; selectedQuestion = undefined; }
+  return today;
+}
+function answerForDate(day) { return [...state.answers].reverse().find((answer) => answer.date === day); }
+function todayAnswer() { return answerForDate(syncToday()); }
+function dailyQuestionSet(day = syncToday()) {
+  const questionById = new Map(questions.map((question) => [question.id, question]));
+  const savedIds = state.dailyQuestionSets[day];
+  if (Array.isArray(savedIds) && savedIds.length === 3 && savedIds.every((id) => questionById.has(id))) return savedIds.map((id) => questionById.get(id));
+  const generated = dailyQuestions(day).map((question) => question.id);
+  state.dailyQuestionSets[day] = generated;
+  save();
+  return generated.map((id) => questionById.get(id));
+}
 function showView(name) { Object.entries(views).forEach(([key, view]) => view.classList.toggle("is-hidden", key !== name)); document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === name)); window.scrollTo(0, 0); }
 const behaviorMessages = {
   idle: "모찌는 잠깐 쉬어가기로 했어요.",
@@ -62,6 +85,7 @@ function animalDefinition() { return getAnimalDefinition(animalProfile); }
 function animalName() { return animalProfile.name || animalDefinition().displayName || "모찌"; }
 const mochiPhaseAPoses = ["idle", "sit", "read", "carry", "sleep", "stand-front", "stand-back", "walk-side-01", "walk-side-02", "walk-side-03", "walk-side-04"];
 const mochiWalkFrames = ["walk-side-01", "walk-side-02", "walk-side-03", "walk-side-04"];
+const mochiPoseVisualScale = { "stand-front": .92, "stand-back": .92 };
 const isMochi = () => animalDefinition().id === "hamster-mochi";
 const isWalkPose = (pose) => pose.startsWith("walk-");
 const isMochiSidePose = (pose) => pose.startsWith("walk-side-");
@@ -88,7 +112,7 @@ function messageFor(behavior, landmark) {
   if (behavior === "sleep" && landmark === "tree-right") return `${name}는 나무 그늘 아래에서 잠들었어요.`;
   if ((behavior === "sit" || behavior === "carry") && landmark === "stone-right") return `${name}는 작은 돌멩이를 살펴보고 있어요.`;
   if (behavior === "sit" && landmark === "bush-left") return `${name}는 풀숲 옆에서 쉬고 있어요.`;
-  return behaviorMessages[behavior].replace("모찌", name);
+  return (behaviorMessages[behavior] || behaviorMessages.idle).replace("모찌", name);
 }
 function setAnimalPosition(position) {
   const hamster = $("#hamster");
@@ -98,11 +122,9 @@ function setAnimalPosition(position) {
   hamster.style.setProperty("--animal-y", `${-scene.clientHeight * (1 - position.y / 100)}px`);
   hamster.style.setProperty("--animal-scale", scale.toFixed(3));
 }
-function setCaption(behavior = currentCaptionBehavior) {
-  const showMissedEvent = behavior === "idle" && new Date().getHours() >= 20 && !todayAnswer();
-  $("#animal-caption").textContent = showMissedEvent ? missedEvent(today) : messageFor(behavior, currentLandmark);
-}
-function renderAnimal({ pose = currentBehavior, captionBehavior = pose } = {}) {
+function stateNameFor(behavior) { return { idle: "REST", sit: "REST", sleep: "SLEEP", read: "READ", carry: "CARRY", walk: "WALK", "walk-a": "WALK", "walk-b": "WALK", "look-around": "LOOK_AROUND", observe: "OBSERVE" }[behavior] || behavior.toUpperCase(); }
+function setCaption(message) { $("#animal-caption").textContent = message; }
+function renderAnimal({ pose = currentBehavior, captionBehavior = pose, stateName = stateNameFor(captionBehavior), message } = {}) {
   const renderId = ++animalRenderId;
   const src = imagePath(pose);
   return preloadAsset(src).then((ready) => {
@@ -116,8 +138,11 @@ function renderAnimal({ pose = currentBehavior, captionBehavior = pose } = {}) {
       hamster.className = `hamster ${isWalking ? "is-walking" : "is-stationary"}`;
       if (!isWalking) setAnimalPosition(animalPosition);
       hamster.style.setProperty("--face-direction", isMochi() && !isMochiSidePose(pose) ? "1" : (hamster.dataset.direction || "1"));
+      asset.style.setProperty("--pose-scale", String(isMochi() ? (mochiPoseVisualScale[pose] || 1) : 1));
+      const resolvedMessage = message || messageFor(captionBehavior, currentLandmark);
       currentCaptionBehavior = captionBehavior;
-      setCaption(captionBehavior);
+      animalState = { state: stateName, pose, message: resolvedMessage };
+      setCaption(resolvedMessage);
       return true;
     };
     const existing = asset.querySelector("img");
@@ -300,19 +325,47 @@ function startNextBehavior() {
   renderAnimal({ pose: nextBehavior, captionBehavior: nextBehavior });
   scheduleStationary();
 }
+function startAnswerReaction() {
+  clearBehaviorTimers();
+  const runId = walkRunId;
+  const reaction = Math.random() < .5
+    ? { pose: "carry", stateName: "ANSWER_REACTION", message: `${animalName()}가 오늘의 이야기를 꼭 품었어요.` }
+    : { pose: "read", stateName: "ANSWER_REACTION", message: `${animalName()}가 오늘의 이야기를 천천히 읽고 있어요.` };
+  currentLandmark = "open-lawn";
+  currentBehavior = reaction.pose;
+  renderAnimal({ pose: reaction.pose, captionBehavior: reaction.pose, stateName: reaction.stateName, message: reaction.message });
+  behaviorTimer = window.setTimeout(() => {
+    if (runId !== walkRunId) return;
+    currentBehavior = "idle";
+    renderAnimal({ pose: "idle", captionBehavior: "idle" });
+    scheduleStationary();
+  }, 2600);
+}
 function chooseAnimalBehavior() { clearBehaviorTimers(); currentBehavior = previewPose && ["idle", "walk-a", "walk-b", "sit", "sleep", "read", "carry"].includes(previewPose) ? previewPose : chooseStationaryBehavior(); renderAnimal(); scheduleStationary(); }
-function renderGarden() { $("#page-date").textContent = formatDate(today); const answer = todayAnswer(); const record = $("#garden-record"); record.classList.toggle("is-hidden", !answer); if (answer) { record.querySelector(".garden-record-label").textContent = `오늘의 조각 · ${formatDate(answer.date)}`; record.querySelector(".garden-record-value").textContent = `“${answer.value}”을 남겼어요.`; } chooseAnimalBehavior(); }
+function renderGarden({ resetAnimal = true } = {}) {
+  syncToday();
+  $("#page-date").textContent = formatDate(today);
+  const answer = todayAnswer();
+  const record = $("#garden-record");
+  record.classList.toggle("is-hidden", !answer);
+  if (answer) {
+    record.querySelector(".garden-record-label").textContent = `오늘의 조각 · ${formatDate(answer.date)}`;
+    record.querySelector(".garden-record-value").textContent = `“${answerText(answer)}”을 남겼어요.`;
+  }
+  if (resetAnimal) chooseAnimalBehavior();
+}
 function renderPreferences() { ["disliked", "liked"].forEach((kind) => { const container = $(`#${kind}-options`); container.replaceChildren(); species.forEach((name) => { const label = document.createElement("label"); label.innerHTML = `<input type="checkbox" value="${name}" ${preferences[`${kind}_species`].includes(name) ? "checked" : ""}/><span>${{ hamster: "햄스터", cat: "고양이", capybara: "카피바라", rabbit: "토끼" }[name]}</span>`; container.append(label); }); }); $("#no-dislike").checked = !preferences.disliked_species.length; }
 function closePreferences() { $("#preferences-sheet").classList.add("is-hidden"); }
 
 function renderToday() {
-  const answer = todayAnswer(); const container = $("#question-cards"); $("#daily-status").textContent = answer ? `오늘은 “${answer.value}”을 남겼어요.` : "아래 세 장 중 하나만 골라주세요."; $("#today-complete").classList.toggle("is-hidden", !answer); container.replaceChildren();
+  syncToday();
+  const answer = todayAnswer(); const container = $("#question-cards"); $("#daily-status").textContent = answer ? `오늘은 “${answerText(answer)}”을 남겼어요.` : "아래 세 장 중 하나만 골라주세요."; $("#today-complete").classList.toggle("is-hidden", !answer); container.replaceChildren();
   if (answer) { $("#today-complete").textContent = "모찌가 오늘의 이야기를 품고 있어요."; return; }
-  const recentIds = state.answers.slice(-7).map((item) => item.questionId);
-  dailyQuestions(today, recentIds).forEach((question, index) => { const button = document.createElement("button"); button.type = "button"; button.className = "question-card"; button.innerHTML = `<span>0${index + 1}</span><strong>${question.text}</strong><i>→</i>`; button.addEventListener("click", () => openAnswer(question)); container.append(button); });
+  dailyQuestionSet(today).forEach((question, index) => { const button = document.createElement("button"); button.type = "button"; button.className = "question-card"; button.innerHTML = `<span>0${index + 1}</span><strong>${question.text}</strong><i>→</i>`; button.addEventListener("click", () => openAnswer(question)); container.append(button); });
 }
 
 function openAnswer(question) {
+  if (todayAnswer()) { renderToday(); return; }
   selectedQuestion = question; $("#answer-question").textContent = question.text; const field = $("#answer-field"); field.replaceChildren();
   if (question.type === "choice") { const choices = document.createElement("div"); choices.className = "choice-list"; choices.innerHTML = question.options.map((option, index) => `<label><input required type="radio" name="answer" value="${option}" ${index === 0 ? "checked" : ""}/><span>${option}</span></label>`).join(""); field.append(choices); }
   else { const input = document.createElement("textarea"); input.name = "answer"; input.required = true; input.maxLength = 140; input.rows = 4; input.placeholder = "짧게 적어도 괜찮아요"; field.append(input); input.focus(); }
@@ -320,21 +373,39 @@ function openAnswer(question) {
 }
 
 function localDateKey(year, month, day) { return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`; }
-function showArchiveAnswer(answer) { const paper = $("#archive-paper"); document.querySelectorAll(".archive-item").forEach((entry) => entry.classList.toggle("is-selected", entry.dataset.date === answer?.date)); document.querySelectorAll(".calendar-day").forEach((entry) => entry.classList.toggle("is-selected", entry.dataset.date === answer?.date)); if (!answer) { paper.classList.add("is-hidden"); return; } $("#paper-date").textContent = formatDate(answer.date); $("#paper-question").textContent = answer.question; $("#paper-answer").textContent = answer.value; paper.classList.remove("is-hidden"); }
+function createdLabel(answer) {
+  if (!answer?.createdAt) return `작성 · ${formatDate(answer.date)}`;
+  const createdAt = new Date(answer.createdAt);
+  if (Number.isNaN(createdAt.getTime())) return `작성 · ${formatDate(answer.date)}`;
+  return `작성 · ${new Intl.DateTimeFormat("ko-KR", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(createdAt)}`;
+}
+function showArchiveAnswer(answer) { const paper = $("#archive-paper"); document.querySelectorAll(".archive-item").forEach((entry) => entry.classList.toggle("is-selected", entry.dataset.date === answer?.date)); document.querySelectorAll(".calendar-day").forEach((entry) => entry.classList.toggle("is-selected", entry.dataset.date === answer?.date)); if (!answer) { paper.classList.add("is-hidden"); return; } $("#paper-date").textContent = createdLabel(answer); $("#paper-question").textContent = answer.question; $("#paper-answer").textContent = answerText(answer); paper.classList.remove("is-hidden"); }
 function renderArchive(selectedDay = state.answers.at(-1)?.date) {
   if (selectedDay) archiveMonth = new Date(`${selectedDay}T12:00:00`);
   const list = $("#archive-list"); const calendar = $("#archive-calendar"); list.replaceChildren(); calendar.replaceChildren(); $("#archive-paper").classList.add("is-hidden");
   const year = archiveMonth.getFullYear(); const month = archiveMonth.getMonth(); $("#archive-month").textContent = `${year}년 ${month + 1}월`;
   const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const answerDates = new Set(state.answers.map((answer) => answer.date));
   for (let index = 0; index < firstDay; index += 1) { const spacer = document.createElement("span"); spacer.className = "calendar-spacer"; calendar.append(spacer); }
-  for (let day = 1; day <= daysInMonth; day += 1) { const date = localDateKey(year, month, day); const button = document.createElement("button"); button.type = "button"; button.className = `calendar-day${answerDates.has(date) ? " has-record" : ""}`; button.dataset.date = date; button.textContent = day; button.addEventListener("click", () => showArchiveAnswer(state.answers.find((answer) => answer.date === date))); calendar.append(button); }
+  for (let day = 1; day <= daysInMonth; day += 1) { const date = localDateKey(year, month, day); const button = document.createElement("button"); button.type = "button"; button.className = `calendar-day${answerDates.has(date) ? " has-record" : ""}`; button.dataset.date = date; button.textContent = day; button.addEventListener("click", () => showArchiveAnswer(answerForDate(date))); calendar.append(button); }
   if (!state.answers.length) { list.innerHTML = '<p class="empty-state">아직 남긴 조각이 없어요.<br>오늘의 작은 이야기를 모찌에게 들려주세요.</p>'; return; }
   [...state.answers].reverse().forEach((answer) => { const item = document.createElement("button"); item.type = "button"; item.className = "archive-item"; item.dataset.date = answer.date; const date = document.createElement("p"); date.textContent = formatDate(answer.date); item.append(date); item.addEventListener("click", () => showArchiveAnswer(answer)); list.append(item); });
-  showArchiveAnswer(state.answers.find((answer) => answer.date === selectedDay));
+  showArchiveAnswer(answerForDate(selectedDay));
 }
 
 function closeSheet() { $("#answer-sheet").classList.add("is-hidden"); }
-$("#answer-form").addEventListener("submit", (event) => { event.preventDefault(); const value = new FormData(event.currentTarget).get("answer")?.trim(); if (!value) return; state.answers.push({ date: today, questionId: selectedQuestion.id, question: selectedQuestion.text, value }); save(); closeSheet(); renderToday(); renderGarden(); showView("today"); });
+$("#answer-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  syncToday();
+  const value = new FormData(event.currentTarget).get("answer")?.trim();
+  if (!value || !selectedQuestion || todayAnswer()) { closeSheet(); renderToday(); return; }
+  state.answers.push({ date: today, questionId: selectedQuestion.id, question: selectedQuestion.text, answer: value, value, createdAt: new Date().toISOString() });
+  save();
+  closeSheet();
+  renderToday();
+  renderGarden({ resetAnimal: false });
+  showView("garden");
+  startAnswerReaction();
+});
 document.querySelectorAll(".nav-item").forEach((item) => item.addEventListener("click", () => { const view = item.dataset.view; if (view === "today") renderToday(); if (view === "archive") renderArchive(); showView(view); }));
 $("#archive-button").addEventListener("click", () => { renderArchive(); showView("archive"); });
 $("#archive-back").addEventListener("click", () => showView("garden"));
