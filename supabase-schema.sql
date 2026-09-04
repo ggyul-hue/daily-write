@@ -4,7 +4,7 @@ create extension if not exists pgcrypto;
 
 create table if not exists public.users (
   id uuid primary key references auth.users(id) on delete cascade,
-  nickname text not null check (char_length(nickname) between 1 and 20),
+  nickname text check (char_length(nickname) between 1 and 20),
   created_at timestamptz not null default now()
 );
 
@@ -57,14 +57,14 @@ create table if not exists public.pets (
 create table if not exists public.fragment_events (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  pet_id uuid not null references public.pets(id) on delete cascade,
+  pet_id uuid references public.pets(id) on delete cascade,
   date date not null,
-  source text not null,
+  source text not null check (source in ('solo', 'room')),
   fragment_index integer not null check (fragment_index > 0),
   consumed_at timestamptz,
   growth_result jsonb,
   created_at timestamptz not null default now(),
-  unique (user_id, pet_id, date, source)
+  unique (user_id, date)
 );
 
 create or replace function public.is_room_member(p_room_id uuid)
@@ -99,7 +99,7 @@ returns public.rooms language plpgsql security definer set search_path = public 
 declare room_row public.rooms;
 begin
   if auth.uid() is null then raise exception 'authentication required'; end if;
-  if not exists (select 1 from public.users where id = auth.uid()) then raise exception 'nickname required'; end if;
+  if not exists (select 1 from public.users where id = auth.uid() and nickname is not null) then raise exception 'nickname required'; end if;
   insert into public.rooms (invite_code, owner_user_id) values (public.new_invite_code(), auth.uid()) returning * into room_row;
   insert into public.room_members (room_id, user_id) values (room_row.id, auth.uid());
   return room_row;
@@ -111,7 +111,7 @@ returns public.rooms language plpgsql security definer set search_path = public 
 declare room_row public.rooms;
 begin
   if auth.uid() is null then raise exception 'authentication required'; end if;
-  if not exists (select 1 from public.users where id = auth.uid()) then raise exception 'nickname required'; end if;
+  if not exists (select 1 from public.users where id = auth.uid() and nickname is not null) then raise exception 'nickname required'; end if;
   select * into room_row from public.rooms where invite_code = upper(p_invite_code);
   if room_row.id is null then raise exception 'room not found'; end if;
   insert into public.room_members (room_id, user_id) values (room_row.id, auth.uid()) on conflict do nothing;
@@ -148,6 +148,37 @@ begin
 end;
 $$;
 
+create or replace function public.claim_daily_fragment(p_date date, p_source text)
+returns public.fragment_events language plpgsql security definer set search_path = public as $$
+declare fragment_row public.fragment_events;
+begin
+  if auth.uid() is null then raise exception 'authentication required'; end if;
+  insert into public.users (id, nickname) values (auth.uid(), null) on conflict (id) do nothing;
+  if p_date <> (timezone('Asia/Seoul', now()))::date then raise exception 'fragment date must be today'; end if;
+  if p_source not in ('solo', 'room') then raise exception 'invalid fragment source'; end if;
+  if p_source = 'room' and not exists (select 1 from public.room_answers where user_id = auth.uid() and date = p_date) then
+    raise exception 'room answer required';
+  end if;
+
+  perform pg_advisory_xact_lock(hashtext(auth.uid()::text));
+  insert into public.fragment_events (user_id, pet_id, date, source, fragment_index)
+    values (
+      auth.uid(),
+      null,
+      p_date,
+      p_source,
+      coalesce((select max(fragment_index) + 1 from public.fragment_events where user_id = auth.uid()), 1)
+    )
+    on conflict (user_id, date) do nothing
+    returning * into fragment_row;
+
+  if fragment_row.id is null then
+    select * into fragment_row from public.fragment_events where user_id = auth.uid() and date = p_date;
+  end if;
+  return fragment_row;
+end;
+$$;
+
 alter table public.users enable row level security;
 alter table public.rooms enable row level security;
 alter table public.room_members enable row level security;
@@ -167,7 +198,7 @@ create policy "members read answers after own answer" on public.room_answers for
 );
 create policy "members insert own answer" on public.room_answers for insert to authenticated with check (user_id = auth.uid() and public.is_room_member(room_id));
 create policy "users manage pets" on public.pets for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
-create policy "users manage fragments" on public.fragment_events for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy "users read fragments" on public.fragment_events for select to authenticated using (user_id = auth.uid());
 
 -- Data API access is explicit: anonymous JWT users run as `authenticated`,
 -- while unauthenticated callers receive no table or function privileges.
@@ -175,7 +206,8 @@ revoke all on table public.users, public.rooms, public.room_members, public.room
 grant select, insert, update on table public.users to authenticated;
 grant select on table public.rooms, public.room_members, public.room_daily_questions to authenticated;
 grant select, insert on table public.room_answers to authenticated;
-grant select, insert, update on table public.pets, public.fragment_events to authenticated;
+grant select, insert, update on table public.pets to authenticated;
+grant select on table public.fragment_events to authenticated;
 
 revoke all on function public.is_room_member(uuid) from public, anon;
 revoke all on function public.has_answered_room_day(uuid, date) from public, anon;
@@ -184,9 +216,11 @@ revoke all on function public.create_room() from public, anon;
 revoke all on function public.join_room_by_code(varchar) from public, anon;
 revoke all on function public.ensure_room_daily_question(uuid, date, text) from public, anon;
 revoke all on function public.room_member_daily_status(uuid, date) from public, anon;
+revoke all on function public.claim_daily_fragment(date, text) from public, anon;
 grant execute on function public.is_room_member(uuid) to authenticated;
 grant execute on function public.has_answered_room_day(uuid, date) to authenticated;
 grant execute on function public.create_room() to authenticated;
 grant execute on function public.join_room_by_code(varchar) to authenticated;
 grant execute on function public.ensure_room_daily_question(uuid, date, text) to authenticated;
 grant execute on function public.room_member_daily_status(uuid, date) to authenticated;
+grant execute on function public.claim_daily_fragment(date, text) to authenticated;

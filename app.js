@@ -24,6 +24,7 @@ let today = qaDate || dateKey();
 let selectedQuestion;
 const ANIMAL_KEY = isQaMode ? `${storagePrefix}.animal-profile-v1` : "daily-write-animal-profile-v1";
 const PREFERENCES_KEY = isQaMode ? `${storagePrefix}.preferences-v1` : "daily-write-preferences-v1";
+const FRAGMENT_STATE_KEY = isQaMode ? `${storagePrefix}.fragment-state-v1` : "daily-write-fragment-state-v1";
 let animalProfile = JSON.parse(localStorage.getItem(ANIMAL_KEY) || "null");
 if (!animalProfile) { animalProfile = createAnimalProfile("hamster"); localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile)); }
 const previewId = location.hostname === "127.0.0.1" ? new URLSearchParams(location.search).get("animalPreview") : null;
@@ -34,6 +35,13 @@ if (previewId) {
   animalProfile = { species: previewAnimal.species, variant: previewAnimal.variant, name: previewAnimal.displayName, behaviorWeights: { ...previewAnimal.behaviorWeights } };
 }
 let preferences = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{"disliked_species":[],"liked_species":[]}');
+let storedFragmentState;
+try { storedFragmentState = JSON.parse(localStorage.getItem(FRAGMENT_STATE_KEY) || "null"); } catch { storedFragmentState = null; }
+let fragmentState = {
+  pending: Array.isArray(storedFragmentState?.pending) ? storedFragmentState.pending.filter((fragment) => fragment?.date && fragment?.source) : [],
+  claimed: Array.isArray(storedFragmentState?.claimed) ? storedFragmentState.claimed.filter((fragment) => fragment?.date) : [],
+};
+let fragmentSyncPromise = null;
 let currentBehavior = "idle";
 let currentCaptionBehavior = "idle";
 let animalState = { state: "REST", pose: "idle", message: "모찌는 잠깐 쉬어가기로 했어요." };
@@ -52,6 +60,7 @@ let afterNickname = null;
 let roomDailyRenderId = 0;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function saveFragmentState() { localStorage.setItem(FRAGMENT_STATE_KEY, JSON.stringify(fragmentState)); }
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
 function syncToday() {
   if (isQaMode) return qaDate;
@@ -61,6 +70,45 @@ function syncToday() {
 }
 function answerForDate(day) { return [...state.answers].reverse().find((answer) => answer.date === day); }
 function todayAnswer() { return answerForDate(syncToday()); }
+function fragmentForDate(day) {
+  return fragmentState.claimed.find((fragment) => fragment.date === day && !fragment.consumed_at)
+    || fragmentState.pending.find((fragment) => fragment.date === day);
+}
+function renderFragmentCta() {
+  const fragment = fragmentForDate(syncToday());
+  const cta = $("#fragment-cta");
+  cta.classList.toggle("is-hidden", !fragment);
+  if (!fragment) return;
+  $("#fragment-message").textContent = fragmentState.pending.includes(fragment) ? "오늘의 조각을 준비하고 있어요." : "오늘의 조각이 생겼어요.";
+}
+function queueDailyFragment(source, day = syncToday()) {
+  if (fragmentForDate(day)) return;
+  fragmentState.pending.push({ date: day, source });
+  saveFragmentState();
+  renderGarden({ resetAnimal: false });
+  void syncPendingFragments();
+}
+async function syncPendingFragments() {
+  if (isQaMode || !fragmentState.pending.length || fragmentSyncPromise) return fragmentSyncPromise;
+  fragmentSyncPromise = (async () => {
+    try {
+      await roomBackend.initialize();
+      const pending = [...fragmentState.pending];
+      for (const fragment of pending) {
+        const claimed = await roomBackend.claimDailyFragment(fragment);
+        fragmentState.claimed = [...fragmentState.claimed.filter((entry) => entry.date !== claimed.date), claimed];
+        fragmentState.pending = fragmentState.pending.filter((entry) => entry !== fragment);
+      }
+    } catch {
+      // Keep the local queue: a later Garden visit retries without blocking the saved answer.
+    } finally {
+      saveFragmentState();
+      fragmentSyncPromise = null;
+      renderGarden({ resetAnimal: false });
+    }
+  })();
+  return fragmentSyncPromise;
+}
 function dailyQuestionSet(day = syncToday()) {
   const questionById = new Map(questions.map((question) => [question.id, question]));
   const savedIds = state.dailyQuestionSets[day];
@@ -75,6 +123,7 @@ function showView(name) {
   const navView = name === "roomInterior" ? "room" : name;
   document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === navView));
   if (name === "room") void refreshRooms();
+  if (name === "garden") void syncPendingFragments();
   window.scrollTo(0, 0);
 }
 const behaviorMessages = {
@@ -371,6 +420,7 @@ function renderGarden({ resetAnimal = true } = {}) {
     record.querySelector(".garden-record-label").textContent = `오늘의 조각 · ${formatDate(answer.date)}`;
     record.querySelector(".garden-record-value").textContent = `“${answerText(answer)}”을 남겼어요.`;
   }
+  renderFragmentCta();
   if (resetAnimal) chooseAnimalBehavior();
 }
 function renderPreferences() { ["disliked", "liked"].forEach((kind) => { const container = $(`#${kind}-options`); container.replaceChildren(); species.forEach((name) => { const label = document.createElement("label"); label.innerHTML = `<input type="checkbox" value="${name}" ${preferences[`${kind}_species`].includes(name) ? "checked" : ""}/><span>${{ hamster: "햄스터", cat: "고양이", capybara: "카피바라", rabbit: "토끼" }[name]}</span>`; container.append(label); }); }); $("#no-dislike").checked = !preferences.disliked_species.length; }
@@ -671,6 +721,7 @@ $("#answer-form").addEventListener("submit", (event) => {
   if (!value || !selectedQuestion || todayAnswer()) { closeSheet(); renderToday(); return; }
   state.answers.push({ date: today, questionId: selectedQuestion.id, question: selectedQuestion.text, answer: value, value, createdAt: new Date().toISOString() });
   save();
+  queueDailyFragment("solo", today);
   closeSheet();
   renderToday();
   renderGarden({ resetAnimal: false });
@@ -688,7 +739,7 @@ $("#archive-button").addEventListener("click", () => {
 $("#archive-back").addEventListener("click", () => showView("garden"));
 $("#archive-prev").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() - 1, 1); selectedDate = null; renderArchive(); });
 $("#archive-next").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() + 1, 1); selectedDate = null; renderArchive(); });
-$("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday();
+$("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday(); if (fragmentState.pending.length) void syncPendingFragments();
 $("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
 $("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });
@@ -737,6 +788,7 @@ $("#room-answer-form").addEventListener("submit", async (event) => {
   submit.disabled = true;
   try {
     await roomBackend.submitRoomAnswer({ roomId: daily.dataset.roomId, date: daily.dataset.date, questionId: daily.dataset.questionId, answer: value });
+    queueDailyFragment("room", daily.dataset.date);
     await refreshRooms();
   } catch (error) {
     $("#room-answer-hint").textContent = roomErrorMessage(error);

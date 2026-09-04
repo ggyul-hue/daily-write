@@ -116,6 +116,13 @@ export class RoomBackend {
     }
     return data;
   }
+
+  async claimDailyFragment({ date, source }) {
+    if (!this.#user) await this.initialize();
+    const { data, error } = await this.#client.rpc("claim_daily_fragment", { p_date: date, p_source: source });
+    if (error) throw error;
+    return data;
+  }
 }
 
 export const roomBackend = new RoomBackend();

@@ -123,3 +123,7 @@ html,body { overflow-x:hidden; }
 .room-seat-list .room-seat-muted { color:var(--muted); font-size:.82rem; }
 .room-seat-list .room-seat-locked { color:#6b8061; font-size:.82rem; }
 .room-invite-code { display:block; margin:-6px 0 20px; padding:18px; border:1px solid #e6dacb; border-radius:17px; background:#fffdf7; color:var(--ink); letter-spacing:.2em; text-align:center; font-size:1.55rem; }
+.fragment-cta { display:grid; grid-template-columns:1fr auto; align-items:center; gap:2px 14px; margin:12px 0 0; padding:14px 16px; border:1px solid #e6dacb; border-radius:20px; background:#fffdf7; box-shadow:0 2px 0 #e8dccb; }
+.fragment-cta p { margin:0; color:var(--ink); font-size:.88rem; font-weight:700; }
+.fragment-cta small { color:var(--muted); font-size:.72rem; }
+.fragment-cta button { grid-row:span 2; min-height:40px; padding:0 13px; border:0; border-radius:20px; background:#e9d9c1; color:#887562; font-size:.8rem; font-weight:700; }
