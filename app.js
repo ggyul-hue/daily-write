@@ -67,6 +67,17 @@ const fragmentDebug = {
   ctaRenderStarted: "false",
   ctaState: "not-rendered",
   ctaLabel: "",
+  consumeStarted: "false",
+  consumeFragmentIdPresent: "",
+  consumePetIdPresent: "",
+  consumeRpcResult: "not-started",
+  consumeRpcStatus: "not-started",
+  consumeErrorCode: "",
+  consumeErrorMessage: "",
+  consumeErrorDetails: "",
+  consumeErrorHint: "",
+  consumeReturnedStatus: "",
+  consumeReturnedGrowthPoints: "",
   lastErrorStage: "",
   lastErrorMessage: "",
 };
@@ -82,6 +93,7 @@ let viewedMonth = new Date(`${today}T12:00:00`);
 let selectedDate = null;
 const $ = (selector) => document.querySelector(selector);
 function safeDebugMessage(error) {
+  if (!error) return "";
   return String(error?.message || error || "unknown error")
     .replace(/[\w-]{20,}\.[\w-]{10,}\.[\w-]{10,}/g, "[redacted-token]")
     .replace(/[0-9a-f]{8}-[0-9a-f-]{27,}/gi, "[redacted-id]")
@@ -286,10 +298,30 @@ async function consumeTodayFragment() {
   button.disabled = true;
   fragmentCtaError = "";
   button.textContent = "먹이고 있어요...";
+  updateFragmentDebug({
+    consumeStarted: "true",
+    consumeFragmentIdPresent: fragment.id ? "true" : "false",
+    consumePetIdPresent: "unknown",
+    consumeRpcResult: "starting",
+    consumeRpcStatus: "not-called",
+    consumeErrorCode: "",
+    consumeErrorMessage: "",
+    consumeErrorDetails: "",
+    consumeErrorHint: "",
+    consumeReturnedStatus: "",
+    consumeReturnedGrowthPoints: "",
+  });
   try {
     const pet = await ensureActivePet();
     if (!pet) throw new Error("pet unavailable");
+    updateFragmentDebug({ consumePetIdPresent: pet.id ? "true" : "false", consumeRpcStatus: "calling" });
     const result = await roomBackend.consumeDailyFragment({ fragmentId: fragment.id, petId: pet.id });
+    updateFragmentDebug({
+      consumeRpcResult: "success",
+      consumeRpcStatus: "returned",
+      consumeReturnedStatus: result?.status || "missing",
+      consumeReturnedGrowthPoints: Number.isFinite(result?.growth_points) ? String(result.growth_points) : "missing",
+    });
     if (!result || !["consumed", "already_consumed"].includes(result.status)) throw new Error("consume failed");
     if (result.status === "consumed") activePet = { ...pet, id: result.pet_id || pet.id, growth_points: result.growth_points };
     fragmentState.pending = fragmentState.pending.filter((entry) => entry.date !== fragment.date);
@@ -299,7 +331,16 @@ async function consumeTodayFragment() {
     saveFragmentState();
     renderGarden({ resetAnimal: false });
     if (result.status === "consumed") startFragmentReaction();
-  } catch {
+  } catch (error) {
+    updateFragmentDebug({
+      consumeRpcResult: "error",
+      consumeRpcStatus: "error",
+      consumeErrorCode: error?.code || "none",
+      consumeErrorMessage: safeDebugMessage(error?.message),
+      consumeErrorDetails: safeDebugMessage(error?.details),
+      consumeErrorHint: safeDebugMessage(error?.hint),
+    });
+    recordFragmentDebugError("consume_daily_fragment", error);
     fragmentCtaError = "조각을 먹이지 못했어요. 다시 시도해주세요.";
     renderFragmentCta();
   }
