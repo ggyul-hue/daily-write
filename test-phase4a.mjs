@@ -14,4 +14,6 @@ assert.match(app, /button\.textContent = `\$\{animalName\(\)\}에게 주기`/);
 assert.match(app, /async function recoverTodaySoloFragment/);
 assert.match(app, /claimDailyFragment\(\{ date: day, source: "solo" \}\)/);
 assert.match(app, /recovery-pending/);
+assert.match(app, /fragment\.consumed_at\)\) return null/);
+assert.match(app, /animalSubjectName\(\)\} 오늘의 이야기를 품고 있어요/);
 console.log("phase 4A schema checks passed");

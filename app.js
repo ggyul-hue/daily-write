@@ -133,6 +133,7 @@ function syncToday() {
 function answerForDate(day) { return [...state.answers].reverse().find((answer) => answer.date === day); }
 function todayAnswer() { return answerForDate(syncToday()); }
 function fragmentForDate(day) {
+  if (fragmentState.claimed.some((fragment) => fragment.date === day && fragment.consumed_at)) return null;
   return fragmentState.claimed.find((fragment) => fragment.date === day && !fragment.consumed_at)
     || fragmentState.pending.find((fragment) => fragment.date === day);
 }
@@ -387,6 +388,12 @@ const dwellTimes = { idle: [6000, 14000], sit: [8000, 16000], sleep: [15000, 350
 const randomBetween = (min, max) => min + Math.random() * (max - min);
 function animalDefinition() { return getAnimalDefinition(animalProfile); }
 function animalName() { return animalProfile.name || animalDefinition().displayName || "모찌"; }
+function animalSubjectName() {
+  const name = animalName();
+  const code = name.codePointAt(name.length - 1);
+  const hasFinalConsonant = code >= 0xac00 && code <= 0xd7a3 && (code - 0xac00) % 28 !== 0;
+  return `${name}${hasFinalConsonant ? "이" : "가"}`;
+}
 const mochiPhaseAPoses = ["idle", "sit", "read", "carry", "sleep", "stand-front", "stand-back", "walk-side-01", "walk-side-02", "walk-side-03", "walk-side-04"];
 const mochiWalkFrames = ["walk-side-01", "walk-side-02", "walk-side-03", "walk-side-04"];
 const mochiPoseVisualScale = { "stand-front": .92, "stand-back": .92 };
@@ -679,7 +686,7 @@ function closePreferences() { $("#preferences-sheet").classList.add("is-hidden")
 function renderToday() {
   syncToday();
   const answer = todayAnswer(); const container = $("#question-cards"); $("#daily-status").textContent = answer ? `오늘은 “${answerText(answer)}”을 남겼어요.` : "아래 세 장 중 하나만 골라주세요."; $("#today-complete").classList.toggle("is-hidden", !answer); container.replaceChildren();
-  if (answer) { $("#today-complete").textContent = "모찌가 오늘의 이야기를 품고 있어요."; return; }
+  if (answer) { $("#today-complete").textContent = `${animalSubjectName()} 오늘의 이야기를 품고 있어요.`; return; }
   dailyQuestionSet(today).forEach((question, index) => { const button = document.createElement("button"); button.type = "button"; button.className = "question-card"; button.innerHTML = `<span>0${index + 1}</span><strong>${question.text}</strong><i>→</i>`; button.addEventListener("click", () => openAnswer(question)); container.append(button); });
 }
 
