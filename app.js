@@ -80,6 +80,7 @@ function renderFragmentCta() {
   cta.classList.toggle("is-hidden", !fragment);
   if (!fragment) return;
   $("#fragment-message").textContent = fragmentState.pending.includes(fragment) ? "오늘의 조각을 준비하고 있어요." : "오늘의 조각이 생겼어요.";
+  $("#feed-fragment").textContent = `${animalName()}에게 주기`;
 }
 function queueDailyFragment(source, day = syncToday()) {
   if (fragmentForDate(day)) return;
