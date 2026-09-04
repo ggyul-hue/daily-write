@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f6f0e5" />
     <title>하루 한 조각</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=motion-v2-1" />
   </head>
   <body>
     <main class="app-shell">
       <section id="garden-view" class="view garden-view" aria-labelledby="page-date">
-        <header class="topbar"><p id="page-date" class="date"></p><div class="top-actions"><button id="preferences-button" class="archive-link" type="button" aria-label="동물 취향 설정">⚙</button><button id="archive-button" class="archive-link" type="button" aria-label="지난 조각 열기">◷</button></div></header>
+        <header class="topbar"><p id="page-date" class="date"></p><div class="top-actions"><button id="preferences-button" class="preferences-button" type="button" aria-label="동물 취향 설정">⚙</button><button id="archive-button" class="archive-button" type="button" aria-label="지난 조각 열기"><span aria-hidden="true">◷</span>지난 조각</button></div></header>
         <section class="garden" aria-label="햄스터 정원">
           <img class="garden-backdrop" src="assets/garden/garden-doodle-v3.png" alt="" aria-hidden="true" />
           <div class="cloud cloud-one"></div><div class="cloud cloud-two"></div><div class="sun"></div>
           <div class="hill hill-back"></div><div class="hill hill-front"></div>
           <div class="flower flower-one">✦</div><div class="flower flower-two">✦</div>
           <span class="garden-tree" aria-hidden="true"></span><span class="garden-fence" aria-hidden="true"></span><span class="garden-mailbox" aria-hidden="true"></span><span class="prop pebble" aria-hidden="true"></span><span class="prop leaf-prop" aria-hidden="true">⌁</span>
-          <div id="hamster" class="hamster is-idle" role="img" aria-label="오늘의 햄스터"><div id="hamster-asset" class="hamster-asset" aria-hidden="true"></div></div>
+          <div id="hamster" class="hamster is-idle" role="img" aria-label="오늘의 햄스터"><div class="hamster-motion"><div id="hamster-asset" class="hamster-asset" aria-hidden="true"></div></div></div>
           <p id="animal-caption" class="animal-caption"></p>
         </section>
         <article id="garden-record" class="garden-record is-hidden" aria-label="오늘의 조각"><p class="garden-record-label"></p><strong class="garden-record-value"></strong><span class="garden-record-mark" aria-hidden="true">↗</span></article>
@@ -45,6 +45,6 @@
 
       <nav class="bottom-nav" aria-label="주요 메뉴"><button class="nav-item is-active" data-view="garden" type="button"><span aria-hidden="true">🌿</span><small>정원</small></button><button class="nav-item" data-view="today" type="button"><span aria-hidden="true">✎</span><small>오늘</small></button><button class="nav-item" data-view="room" type="button"><span aria-hidden="true">♡</span><small>우리</small></button></nav>
     </main>
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js?v=motion-v2-2"></script>
   </body>
 </html>
