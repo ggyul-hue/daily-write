@@ -41,7 +41,8 @@ let currentLandmark = "open-lawn";
 let behaviorTimer;
 let walkFrameTimer;
 let walkRunId = 0;
-let archiveMonth = new Date(`${today}T12:00:00`);
+let viewedMonth = new Date(`${today}T12:00:00`);
+let selectedDate = null;
 const $ = (selector) => document.querySelector(selector);
 const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), archive: $("#archive-view") };
 
@@ -64,7 +65,11 @@ function dailyQuestionSet(day = syncToday()) {
   save();
   return generated.map((id) => questionById.get(id));
 }
-function showView(name) { Object.entries(views).forEach(([key, view]) => view.classList.toggle("is-hidden", key !== name)); document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === name)); window.scrollTo(0, 0); }
+function showView(name) {
+  Object.entries(views).forEach(([key, view]) => view.classList.toggle("is-hidden", key !== name));
+  document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === name));
+  window.scrollTo(0, 0);
+}
 const behaviorMessages = {
   idle: "모찌는 잠깐 쉬어가기로 했어요.",
   walk: "모찌는 정원을 산책하고 있어요.",
@@ -141,7 +146,7 @@ function renderAnimal({ pose = currentBehavior, captionBehavior = pose, stateNam
     const applyFrame = () => {
       if (renderId !== animalRenderId) return false;
       const isWalking = isWalkPose(pose);
-      asset.className = `hamster-asset coat-${animalProfile.coat || "golden"}`;
+      asset.className = `hamster-asset species-${animalDefinition().species} coat-${animalProfile.coat || "golden"}`;
       hamster.className = `hamster ${isWalking ? "is-walking" : "is-stationary"}`;
       if (!isWalking) setAnimalPosition(animalPosition);
       hamster.style.setProperty("--face-direction", isMochi() && !isMochiSidePose(pose) ? "1" : (hamster.dataset.direction || "1"));
@@ -386,17 +391,55 @@ function createdLabel(answer) {
   if (Number.isNaN(createdAt.getTime())) return `작성 · ${formatDate(answer.date)}`;
   return `작성 · ${new Intl.DateTimeFormat("ko-KR", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(createdAt)}`;
 }
-function showArchiveAnswer(answer) { const paper = $("#archive-paper"); document.querySelectorAll(".archive-item").forEach((entry) => entry.classList.toggle("is-selected", entry.dataset.date === answer?.date)); document.querySelectorAll(".calendar-day").forEach((entry) => entry.classList.toggle("is-selected", entry.dataset.date === answer?.date)); if (!answer) { paper.classList.add("is-hidden"); return; } $("#paper-date").textContent = createdLabel(answer); $("#paper-question").textContent = answer.question; $("#paper-answer").textContent = answerText(answer); paper.classList.remove("is-hidden"); }
-function renderArchive(selectedDay = state.answers.at(-1)?.date) {
-  if (selectedDay) archiveMonth = new Date(`${selectedDay}T12:00:00`);
+function isInViewedMonth(day) {
+  const date = new Date(`${day}T12:00:00`);
+  return date.getFullYear() === viewedMonth.getFullYear() && date.getMonth() === viewedMonth.getMonth();
+}
+function answersInViewedMonth() { return state.answers.filter((answer) => isInViewedMonth(answer.date)); }
+function showArchiveAnswer(answer) {
+  const paper = $("#archive-paper");
+  document.querySelectorAll(".archive-item").forEach((entry) => entry.classList.toggle("is-selected", entry.dataset.date === answer?.date));
+  document.querySelectorAll(".calendar-day").forEach((entry) => entry.classList.toggle("is-selected", entry.dataset.date === answer?.date));
+  if (!answer) { paper.classList.add("is-hidden"); return; }
+  $("#paper-date").textContent = createdLabel(answer);
+  $("#paper-question").textContent = answer.question;
+  $("#paper-answer").textContent = answerText(answer);
+  paper.classList.remove("is-hidden");
+}
+function renderArchive() {
+  if (selectedDate && !isInViewedMonth(selectedDate)) selectedDate = null;
   const list = $("#archive-list"); const calendar = $("#archive-calendar"); list.replaceChildren(); calendar.replaceChildren(); $("#archive-paper").classList.add("is-hidden");
-  const year = archiveMonth.getFullYear(); const month = archiveMonth.getMonth(); $("#archive-month").textContent = `${year}년 ${month + 1}월`;
-  const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const answerDates = new Set(state.answers.map((answer) => answer.date));
+  const year = viewedMonth.getFullYear(); const month = viewedMonth.getMonth(); $("#archive-month").textContent = `${year}년 ${month + 1}월`;
+  const monthAnswers = answersInViewedMonth();
+  const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const answerDates = new Set(monthAnswers.map((answer) => answer.date));
   for (let index = 0; index < firstDay; index += 1) { const spacer = document.createElement("span"); spacer.className = "calendar-spacer"; calendar.append(spacer); }
-  for (let day = 1; day <= daysInMonth; day += 1) { const date = localDateKey(year, month, day); const button = document.createElement("button"); button.type = "button"; button.className = `calendar-day${answerDates.has(date) ? " has-record" : ""}`; button.dataset.date = date; button.textContent = day; button.addEventListener("click", () => showArchiveAnswer(answerForDate(date))); calendar.append(button); }
-  if (!state.answers.length) { list.innerHTML = '<p class="empty-state">아직 남긴 조각이 없어요.<br>오늘의 작은 이야기를 모찌에게 들려주세요.</p>'; return; }
-  [...state.answers].reverse().forEach((answer) => { const item = document.createElement("button"); item.type = "button"; item.className = "archive-item"; item.dataset.date = answer.date; const date = document.createElement("p"); date.textContent = formatDate(answer.date); item.append(date); item.addEventListener("click", () => showArchiveAnswer(answer)); list.append(item); });
-  showArchiveAnswer(answerForDate(selectedDay));
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = localDateKey(year, month, day);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `calendar-day${answerDates.has(date) ? " has-record" : ""}`;
+    button.dataset.date = date;
+    button.textContent = day;
+    button.addEventListener("click", () => { selectedDate = answerDates.has(date) ? date : null; renderArchive(); });
+    calendar.append(button);
+  }
+  if (!monthAnswers.length) {
+    list.innerHTML = `<p class="empty-state">${month + 1}월에는 아직 남긴 조각이 없어요.</p>`;
+    showArchiveAnswer(null);
+    return;
+  }
+  [...monthAnswers].reverse().forEach((answer) => {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "archive-item";
+    item.dataset.date = answer.date;
+    const date = document.createElement("p");
+    date.textContent = formatDate(answer.date);
+    item.append(date);
+    item.addEventListener("click", () => { selectedDate = answer.date; renderArchive(); });
+    list.append(item);
+  });
+  showArchiveAnswer(selectedDate ? answerForDate(selectedDate) : null);
 }
 
 function closeSheet() { $("#answer-sheet").classList.add("is-hidden"); }
@@ -413,11 +456,17 @@ $("#answer-form").addEventListener("submit", (event) => {
   showView("garden");
   startAnswerReaction();
 });
-document.querySelectorAll(".nav-item").forEach((item) => item.addEventListener("click", () => { const view = item.dataset.view; if (view === "today") renderToday(); if (view === "archive") renderArchive(); showView(view); }));
-$("#archive-button").addEventListener("click", () => { renderArchive(); showView("archive"); });
+document.querySelectorAll(".nav-item").forEach((item) => item.addEventListener("click", () => { const view = item.dataset.view; if (view === "today") renderToday(); showView(view); }));
+$("#archive-button").addEventListener("click", () => {
+  syncToday();
+  viewedMonth = new Date(`${today}T12:00:00`);
+  selectedDate = todayAnswer()?.date || null;
+  renderArchive();
+  showView("archive");
+});
 $("#archive-back").addEventListener("click", () => showView("garden"));
-$("#archive-prev").addEventListener("click", () => { archiveMonth = new Date(archiveMonth.getFullYear(), archiveMonth.getMonth() - 1, 1); renderArchive(null); });
-$("#archive-next").addEventListener("click", () => { archiveMonth = new Date(archiveMonth.getFullYear(), archiveMonth.getMonth() + 1, 1); renderArchive(null); });
+$("#archive-prev").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() - 1, 1); selectedDate = null; renderArchive(); });
+$("#archive-next").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() + 1, 1); selectedDate = null; renderArchive(); });
 $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday();
 $("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
