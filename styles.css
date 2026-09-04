@@ -99,3 +99,27 @@ html,body { overflow-x:hidden; }
 .hamster-asset { transform:scale(var(--pose-scale,1)) scaleX(var(--face-direction,1)); transform-origin:center bottom; transition:none; }
 .hamster-asset,.hamster-asset img,.hamster-asset.is-fading,.hamster-asset.is-fading img { opacity:1; transition:none; }
 .species-capybara,.species-capybara img { overflow:visible; clip-path:none; }
+.room-lobby-panel { margin-top:10vh; }
+.active-room { width:100%; box-sizing:border-box; border:1px solid #e6dacb; color:var(--ink); cursor:pointer; }
+.active-room h2 { margin:7px 0 5px; }
+.active-room-members,.active-room-summary { margin:0; line-height:1.5; }
+.active-room-members { color:var(--muted); font-size:.85rem; }
+.active-room-summary { color:#6b8061; font-size:.84rem; font-weight:700; }
+.room-enter { display:flex; align-items:center; justify-content:space-between; margin-top:17px; padding-top:13px; border-top:1px solid #efe4d5; color:var(--orange); font-size:.9rem; font-weight:700; }
+.room-enter b { font-size:1.1rem; }
+.room-interior-panel { margin-top:6vh; }
+.room-interior-header { display:grid; grid-template-columns:44px minmax(0,1fr) 42px; align-items:center; gap:10px; margin-bottom:20px; }
+.room-interior-header h1 { margin:0; font-size:clamp(22px,6.4vw,30px); line-height:1.25; }
+.room-interior-header .room-copy { margin:3px 0 0; font-size:.8rem; }
+.room-daily { margin-top:0; }
+.room-seats-section { margin-top:14px; padding:20px; border:1px solid #e6dacb; border-radius:21px; background:#fffdf7; box-shadow:0 3px 0 #e8dccb; }
+.room-seats-section h2 { margin:0; font-size:1rem; }
+.room-seats-section h2 span { color:var(--muted); font-size:.8rem; font-weight:400; }
+.room-seat-hint { min-height:18px; margin:7px 0 9px; color:var(--muted); font-size:.8rem; }
+.room-seat-list { display:grid; gap:0; margin:0; padding:0; list-style:none; }
+.room-seat-list li { display:grid; gap:4px; padding:13px 0; border-top:1px solid #efe4d5; }
+.room-seat-list strong { font-size:.92rem; }
+.room-seat-list p { margin:0; color:var(--ink); font-size:.9rem; line-height:1.55; white-space:pre-wrap; overflow-wrap:break-word; }
+.room-seat-list .room-seat-muted { color:var(--muted); font-size:.82rem; }
+.room-seat-list .room-seat-locked { color:#6b8061; font-size:.82rem; }
+.room-invite-code { display:block; margin:-6px 0 20px; padding:18px; border:1px solid #e6dacb; border-radius:17px; background:#fffdf7; color:var(--ink); letter-spacing:.2em; text-align:center; font-size:1.55rem; }

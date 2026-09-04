@@ -45,7 +45,7 @@ let walkRunId = 0;
 let viewedMonth = new Date(`${today}T12:00:00`);
 let selectedDate = null;
 const $ = (selector) => document.querySelector(selector);
-const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), archive: $("#archive-view") };
+const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), roomInterior: $("#room-interior-view"), archive: $("#archive-view") };
 let roomIdentity = null;
 let activeRooms = [];
 let afterNickname = null;
@@ -72,7 +72,8 @@ function dailyQuestionSet(day = syncToday()) {
 }
 function showView(name) {
   Object.entries(views).forEach(([key, view]) => view.classList.toggle("is-hidden", key !== name));
-  document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === name));
+  const navView = name === "roomInterior" ? "room" : name;
+  document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === navView));
   if (name === "room") void refreshRooms();
   window.scrollTo(0, 0);
 }
@@ -457,6 +458,7 @@ function roomErrorMessage(error) {
 function setRoomStatus(message = "") { $("#room-status").textContent = message; }
 function closeNicknameSheet() { $("#nickname-sheet").classList.add("is-hidden"); }
 function closeJoinRoomSheet() { $("#join-room-sheet").classList.add("is-hidden"); }
+function closeRoomInviteSheet() { $("#room-invite-sheet").classList.add("is-hidden"); }
 function openNicknameSheet() {
   $("#nickname-sheet").classList.remove("is-hidden");
   window.setTimeout(() => $("#nickname-input").focus(), 0);
@@ -464,6 +466,13 @@ function openNicknameSheet() {
 function openJoinRoomSheet() {
   $("#join-room-sheet").classList.remove("is-hidden");
   window.setTimeout(() => $("#invite-code-input").focus(), 0);
+}
+function openRoomInviteSheet() {
+  const room = activeRooms[0];
+  if (!room) return;
+  $("#room-invite-code").textContent = room.invite_code;
+  $("#copy-room-invite").textContent = "코드 복사";
+  $("#room-invite-sheet").classList.remove("is-hidden");
 }
 function roomQuestionCandidate(roomId, day) {
   let seed = 0;
@@ -490,35 +499,37 @@ function setRoomAnswerField(question) {
   input.placeholder = "짧게 적어도 괜찮아요";
   field.append(input);
 }
-function renderRoomMemberList(statuses) {
-  const list = $("#room-member-list");
+function renderRoomSeats(statuses, answers, unlocked) {
+  const list = $("#room-seat-list");
+  const answersByUser = new Map(answers.map((answer) => [answer.user_id, answer]));
   list.replaceChildren();
   statuses.forEach((member) => {
     const item = document.createElement("li");
     const name = document.createElement("strong");
-    const state = document.createElement("span");
+    const state = document.createElement("p");
     name.textContent = member.nickname;
-    state.textContent = member.answered ? "답변 완료" : "아직 답하지 않았어요.";
-    state.classList.toggle("is-complete", member.answered);
+    const answer = answersByUser.get(member.user_id);
+    if (unlocked && answer) {
+      state.textContent = answer.answer;
+    } else if (member.answered) {
+      state.textContent = "● 답을 남겼어요. 내가 답하면 열려요.";
+      state.className = "room-seat-locked";
+    } else {
+      state.textContent = "아직 오지 않았어요.";
+      state.className = "room-seat-muted";
+    }
     item.append(name, state);
     list.append(item);
   });
 }
-function renderRevealedRoomAnswers(answers, statuses) {
-  const section = $("#room-revealed-answers");
-  const list = $("#room-answer-list");
-  const names = new Map(statuses.map((member) => [member.user_id, member.nickname]));
-  list.replaceChildren();
-  answers.forEach((answer) => {
-    const entry = document.createElement("article");
-    const name = document.createElement("strong");
-    const value = document.createElement("p");
-    name.textContent = names.get(answer.user_id) || "친구";
-    value.textContent = answer.answer;
-    entry.append(name, value);
-    list.append(entry);
-  });
-  section.classList.toggle("is-hidden", !answers.length);
+function roomName(room, statuses = []) {
+  const owner = statuses.find((member) => member.user_id === room.owner_user_id);
+  return owner ? `${owner.nickname}의 작은 방` : "우리의 작은 방";
+}
+function updateRoomInteriorHeader(room, statuses) {
+  const answered = statuses.filter((member) => member.answered).length;
+  $("#room-interior-title").textContent = roomName(room, statuses);
+  $("#room-interior-presence").textContent = `${statuses.map((member) => member.nickname).join(" · ")} · 오늘 ${answered}/${statuses.length}명이 답했어요.`;
 }
 async function renderRoomDaily(room) {
   const renderId = ++roomDailyRenderId;
@@ -534,28 +545,28 @@ async function renderRoomDaily(room) {
     const mine = statuses.find((member) => member.user_id === roomBackend.user.id);
     const answers = await roomBackend.listRoomAnswers(room.id, day);
     if (renderId !== roomDailyRenderId) return;
-    const owner = statuses.find((member) => member.user_id === room.owner_user_id);
-    $("#active-room-name").textContent = owner ? `${owner.nickname}의 작은 방` : "우리의 작은 방";
+    updateRoomInteriorHeader(room, statuses);
     $("#room-daily-date").textContent = `TODAY · ${formatDate(day)}`;
     $("#room-question-text").textContent = question.text;
     $("#room-member-count").textContent = `${statuses.length}명`;
     $("#room-daily").dataset.roomId = room.id;
     $("#room-daily").dataset.date = day;
     $("#room-daily").dataset.questionId = daily.question_id;
-    renderRoomMemberList(statuses);
     const form = $("#room-answer-form");
     const hint = $("#room-answer-hint");
     if (mine?.answered) {
       form.classList.add("is-hidden");
       hint.textContent = "내 답변을 남겼어요. 오늘의 답이 열렸어요.";
-      renderRevealedRoomAnswers(answers, statuses);
+      $("#room-seat-hint").textContent = "오늘 함께 남긴 답이에요.";
+      renderRoomSeats(statuses, answers, true);
     } else {
       form.classList.remove("is-hidden");
       setRoomAnswerField(question);
       hint.textContent = statuses.some((member) => member.user_id !== roomBackend.user.id && member.answered)
         ? "친구가 먼저 답했어요. 나도 답하면 열려요."
         : "내 답을 남기면 친구들의 답도 함께 열려요.";
-      renderRevealedRoomAnswers([], statuses);
+      $("#room-seat-hint").textContent = "내가 답하면 오늘의 답이 열려요.";
+      renderRoomSeats(statuses, [], false);
     }
     $("#room-daily").classList.remove("is-hidden");
   } catch (error) {
@@ -563,6 +574,19 @@ async function renderRoomDaily(room) {
     hideRoomDaily();
     setRoomStatus("오늘의 방을 불러오지 못했어요. Phase 3 schema migration을 확인해주세요.");
   }
+}
+async function renderRoomLobby(room) {
+  const statuses = await roomBackend.memberDailyStatus(room.id, syncToday());
+  $("#active-room-name").textContent = roomName(room, statuses);
+  $("#active-room-members").textContent = statuses.map((member) => member.nickname).join(" · ");
+  const answered = statuses.filter((member) => member.answered).length;
+  $("#active-room-summary").textContent = `오늘 ${answered}/${statuses.length}명이 답했어요.`;
+}
+async function openRoomInterior() {
+  const room = activeRooms[0];
+  if (!room) return;
+  showView("roomInterior");
+  await renderRoomDaily(room);
 }
 function renderRoom() {
   const empty = $("#room-empty");
@@ -573,26 +597,23 @@ function renderRoom() {
     setRoomStatus("공유 방은 backend 연결 후 사용할 수 있어요.");
     empty.classList.remove("is-hidden");
     active.classList.add("is-hidden");
-    hideRoomDaily();
     create.disabled = true;
     join.disabled = true;
     return;
   }
   create.disabled = false;
   join.disabled = false;
-  if (!roomIdentity) { setRoomStatus("내 작은 방을 준비하고 있어요."); hideRoomDaily(); return; }
+  if (!roomIdentity) { setRoomStatus("내 작은 방을 준비하고 있어요."); return; }
   const room = activeRooms[0];
   if (!room) {
     setRoomStatus(roomIdentity.profile?.nickname ? `${roomIdentity.profile.nickname}님의 작은 방을 만들 수 있어요.` : "닉네임을 정하고 작은 방을 시작해보세요.");
     empty.classList.remove("is-hidden");
     active.classList.add("is-hidden");
-    hideRoomDaily();
     return;
   }
   setRoomStatus("");
   empty.classList.add("is-hidden");
   active.classList.remove("is-hidden");
-  $("#active-room-code").textContent = room.invite_code;
 }
 async function refreshRooms() {
   renderRoom();
@@ -601,7 +622,10 @@ async function refreshRooms() {
     roomIdentity = await roomBackend.initialize();
     activeRooms = roomIdentity.profile ? await roomBackend.listRooms() : [];
     renderRoom();
-    if (activeRooms[0]) await renderRoomDaily(activeRooms[0]);
+    if (activeRooms[0]) {
+      await renderRoomLobby(activeRooms[0]);
+      if (!views.roomInterior.classList.contains("is-hidden")) await renderRoomDaily(activeRooms[0]);
+    }
     if (!roomIdentity.profile?.nickname) openNicknameSheet();
   } catch (error) {
     setRoomStatus("공유 방을 준비하지 못했어요. backend 설정을 확인해주세요.");
@@ -670,8 +694,22 @@ $("#preferences-backdrop").addEventListener("click", closePreferences); $("#clos
 $("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });
 $("#create-room").addEventListener("click", () => { void createRoom(); });
 $("#open-join-room").addEventListener("click", () => { void runWithNickname(async () => openJoinRoomSheet()); });
+$("#active-room").addEventListener("click", () => { void openRoomInterior(); });
+$("#room-interior-back").addEventListener("click", () => showView("room"));
+$("#open-room-invite").addEventListener("click", openRoomInviteSheet);
 $("#nickname-backdrop").addEventListener("click", closeNicknameSheet); $("#close-nickname").addEventListener("click", closeNicknameSheet);
 $("#join-room-backdrop").addEventListener("click", closeJoinRoomSheet); $("#close-join-room").addEventListener("click", closeJoinRoomSheet);
+$("#room-invite-backdrop").addEventListener("click", closeRoomInviteSheet); $("#close-room-invite").addEventListener("click", closeRoomInviteSheet);
+$("#copy-room-invite").addEventListener("click", async (event) => {
+  const code = $("#room-invite-code").textContent;
+  if (!code) return;
+  try {
+    await navigator.clipboard.writeText(code);
+    event.currentTarget.textContent = "복사했어요";
+  } catch {
+    event.currentTarget.textContent = code;
+  }
+});
 $("#nickname-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   try {
