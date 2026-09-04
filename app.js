@@ -43,6 +43,7 @@ let fragmentState = {
   claimed: Array.isArray(storedFragmentState?.claimed) ? storedFragmentState.claimed.filter((fragment) => fragment?.date) : [],
 };
 let fragmentSyncPromise = null;
+let fragmentRecoveryPromise = null;
 let activePet = null;
 let activePetPromise = null;
 let activePetPromiseIdentity = null;
@@ -177,11 +178,39 @@ async function restoreFragmentEvents() {
     fragmentState.pending = fragmentState.pending.filter((pending) => !events.some((event) => event.date === pending.date));
     saveFragmentState();
     renderGarden({ resetAnimal: false });
+    await recoverTodaySoloFragment(events);
   } catch (error) {
     updateFragmentDebug({ fragmentRestoreResult: "error" });
     recordFragmentDebugError("fragment_restore", error);
     // The local cache remains usable if the existing session cannot be read.
   }
+}
+async function recoverTodaySoloFragment(events) {
+  const day = syncToday();
+  const hasTodayFragment = events.some((event) => event.date === day);
+  const hasPendingClaim = fragmentState.pending.some((fragment) => fragment.date === day);
+  if (isQaMode || !todayAnswer() || hasTodayFragment || hasPendingClaim || fragmentRecoveryPromise) return fragmentRecoveryPromise;
+
+  updateFragmentDebug({ fragmentRestoreResult: "recovering:solo" });
+  fragmentRecoveryPromise = (async () => {
+    try {
+      const claimed = await roomBackend.claimDailyFragment({ date: day, source: "solo" });
+      const refreshed = await roomBackend.listFragmentEventsFromExistingSession();
+      const recoveredEvents = refreshed || [...events.filter((event) => event.date !== day), claimed];
+      fragmentState.claimed = recoveredEvents;
+      fragmentState.pending = fragmentState.pending.filter((fragment) => fragment.date !== day);
+      updateFragmentDebug({ fragmentRestoreResult: "recovered:solo", fragmentId: claimed?.id ? "present" : "missing" });
+    } catch (error) {
+      if (!fragmentState.pending.some((fragment) => fragment.date === day)) fragmentState.pending.push({ date: day, source: "solo" });
+      updateFragmentDebug({ fragmentRestoreResult: "recovery-pending" });
+      recordFragmentDebugError("solo_fragment_recovery", error);
+    } finally {
+      saveFragmentState();
+      fragmentRecoveryPromise = null;
+      renderGarden({ resetAnimal: false });
+    }
+  })();
+  return fragmentRecoveryPromise;
 }
 function renderFragmentCta() {
   const fragment = fragmentForDate(syncToday());
