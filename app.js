@@ -60,9 +60,10 @@ function messageFor(behavior, landmark) {
 }
 function setAnimalPosition(position) {
   const hamster = $("#hamster");
+  const scene = hamster.parentElement;
   const scale = Math.max(.88, Math.min(1, .88 + ((position.y - 62) / 20) * .12));
-  hamster.style.left = `${position.x}%`;
-  hamster.style.setProperty("--animal-ground-y", `${position.y}%`);
+  hamster.style.setProperty("--animal-x", `${(scene.clientWidth * position.x) / 100}px`);
+  hamster.style.setProperty("--animal-y", `${-scene.clientHeight * (1 - position.y / 100)}px`);
   hamster.style.setProperty("--animal-scale", scale.toFixed(3));
 }
 function setCaption() { $("#animal-caption").textContent = new Date().getHours() >= 20 && !todayAnswer() ? missedEvent(today) : messageFor(isWalkPose(currentBehavior) ? "walk-a" : currentBehavior, currentLandmark); }

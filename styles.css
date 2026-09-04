@@ -89,14 +89,9 @@ html,body { overflow-x:hidden; }
 .preferences-button { display:grid; place-items:center; width:42px; height:42px; padding:0; border:1px solid #eadbc5; border-radius:50%; background:#fffaf0; color:var(--ink); font-size:1.05rem; }
 .archive-button { display:inline-flex; align-items:center; justify-content:center; gap:5px; min-width:98px; height:42px; padding:0 13px; border:1px solid #e5d3b8; border-radius:21px; background:#fff7e7; color:#594735; font-size:.78rem; font-weight:700; letter-spacing:-.02em; box-shadow:0 2px 0 #806a4a12; }
 .archive-button span { font-size:1rem; line-height:1; }
-.hamster { width:125px; height:120px; bottom:calc(100% - var(--animal-ground-y, 76%)); transform:translateX(-50%) scaleX(var(--face-direction, 1)) scale(var(--animal-scale, 1)); transform-origin:center bottom; transition:left 0ms, bottom 0ms, transform 120ms ease; }
+.hamster { width:125px; height:120px; left:0; bottom:0; margin-left:-62.5px; transform:translate3d(var(--animal-x, 50%), var(--animal-y, -24%), 0); transform-origin:center bottom; will-change:transform; transition:none; }
 .hamster-asset { width:125px; height:120px; }
-.hamster.is-walking { transition-property:left, bottom, transform; transition-duration:var(--walk-duration, 3000ms), var(--walk-duration, 3000ms), var(--walk-duration, 3000ms); transition-timing-function:ease-in-out; }
+.hamster.is-walking { transition:transform var(--walk-duration, 2400ms) linear; }
 .hamster.is-stationary { transition:none; }
-.hamster { margin-left:-62.5px; transform:none; transition:left 0ms,bottom 0ms; }
-.hamster.is-walking { transition-property:left,bottom; transition-duration:var(--walk-duration,3000ms),var(--walk-duration,3000ms); transition-timing-function:ease-in-out; }
 .hamster-motion { position:absolute; inset:0; transform:scale(var(--animal-scale,1)); transform-origin:center bottom; transition:none; }
-.hamster.is-walking .hamster-motion { animation:mochi-scurry 110ms ease-in-out infinite alternate; }
 .hamster-asset { transform:scaleX(var(--face-direction,1)); transform-origin:center bottom; transition:none; }
-.hamster.is-walking { transition-timing-function:linear; }
-@keyframes mochi-scurry { from { transform:scale(var(--animal-scale,1)) translateY(0) rotate(-.35deg); } to { transform:scale(var(--animal-scale,1)) translateY(-1px) rotate(.35deg); } }
