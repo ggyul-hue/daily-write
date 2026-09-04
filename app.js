@@ -21,6 +21,7 @@ if (previewId) {
 }
 let preferences = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{"disliked_species":[],"liked_species":[]}');
 let currentBehavior = "idle";
+let currentCaptionBehavior = "idle";
 let animalPosition = { x: 50, y: 76 };
 let currentLandmark = "open-lawn";
 let behaviorTimer;
@@ -34,7 +35,18 @@ function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
 function todayAnswer() { return state.answers.find((answer) => answer.date === today); }
 function showView(name) { Object.entries(views).forEach(([key, view]) => view.classList.toggle("is-hidden", key !== name)); document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === name)); window.scrollTo(0, 0); }
-const behaviorMessages = { idle: "모찌는 정원을 천천히 둘러보고 있어요.", "walk-a": "모찌는 정원을 산책하고 있어요.", "walk-b": "모찌는 정원을 산책하고 있어요.", sleep: "모찌는 잠깐 낮잠을 자고 있어요.", sit: "모찌는 잠깐 쉬어가기로 했어요.", read: "모찌는 치즈에 대해 공부하고 있어요.", carry: "모찌는 작은 것을 품에 안고 있어요." };
+const behaviorMessages = {
+  idle: "모찌는 잠깐 쉬어가기로 했어요.",
+  walk: "모찌는 정원을 산책하고 있어요.",
+  "walk-a": "모찌는 정원을 산책하고 있어요.",
+  "walk-b": "모찌는 정원을 산책하고 있어요.",
+  "look-around": "모찌는 정원을 천천히 둘러보고 있어요.",
+  observe: "모찌는 정원 안쪽을 가만히 바라보고 있어요.",
+  sleep: "모찌는 잠깐 낮잠을 자고 있어요.",
+  sit: "모찌는 잠깐 쉬어가기로 했어요.",
+  read: "모찌는 치즈에 대해 공부하고 있어요.",
+  carry: "모찌는 작은 것을 품에 안고 있어요.",
+};
 const gardenLandmarks = {
   "mailbox-left": { x: 19, y: 75 },
   "bush-left": { x: 29, y: 70 },
@@ -43,14 +55,34 @@ const gardenLandmarks = {
   "open-lawn": { x: 50, y: 76 },
 };
 let animalRenderId = 0;
+const assetReady = new Map();
 const dwellTimes = { idle: [6000, 14000], sit: [8000, 16000], sleep: [15000, 35000], read: [10000, 20000], carry: [6000, 12000] };
 const randomBetween = (min, max) => min + Math.random() * (max - min);
 function animalDefinition() { return getAnimalDefinition(animalProfile); }
 function animalName() { return animalProfile.name || animalDefinition().displayName || "모찌"; }
-const mochiWalkPose = "walk-01";
+const mochiPhaseAPoses = ["idle", "sit", "read", "carry", "sleep", "stand-front", "stand-back", "walk-side-01", "walk-side-02", "walk-side-03", "walk-side-04"];
+const mochiWalkFrames = ["walk-side-01", "walk-side-02", "walk-side-03", "walk-side-04"];
 const isMochi = () => animalDefinition().id === "hamster-mochi";
 const isWalkPose = (pose) => pose.startsWith("walk-");
-function imagePath(pose) { return isMochi() && pose === mochiWalkPose ? `assets/animals/hamster/mochi/${pose}.png` : animalDefinition().poseAssets[pose]; }
+const isMochiSidePose = (pose) => pose.startsWith("walk-side-");
+function imagePath(pose) { return isMochi() && mochiPhaseAPoses.includes(pose) ? `assets/animals/hamster/mochi/${pose}.png` : animalDefinition().poseAssets[pose]; }
+function preloadAsset(src) {
+  if (assetReady.has(src)) return assetReady.get(src);
+  const ready = new Promise((resolve) => {
+    const image = new Image();
+    const finish = () => {
+      if (!image.decode) { resolve(true); return; }
+      image.decode().then(() => resolve(true)).catch(() => resolve(image.naturalWidth > 0));
+    };
+    image.addEventListener("load", finish, { once: true });
+    image.addEventListener("error", () => resolve(false), { once: true });
+    image.src = src;
+    if (image.complete && image.naturalWidth > 0) finish();
+  });
+  assetReady.set(src, ready);
+  return ready;
+}
+function preloadMochiPhaseAAssets() { return Promise.all(mochiPhaseAPoses.map((pose) => preloadAsset(imagePath(pose)))).then((results) => results.every(Boolean)); }
 function messageFor(behavior, landmark) {
   const name = animalName();
   if (behavior === "sleep" && landmark === "tree-right") return `${name}는 나무 그늘 아래에서 잠들었어요.`;
@@ -66,8 +98,57 @@ function setAnimalPosition(position) {
   hamster.style.setProperty("--animal-y", `${-scene.clientHeight * (1 - position.y / 100)}px`);
   hamster.style.setProperty("--animal-scale", scale.toFixed(3));
 }
-function setCaption() { $("#animal-caption").textContent = new Date().getHours() >= 20 && !todayAnswer() ? missedEvent(today) : messageFor(isWalkPose(currentBehavior) ? "walk-a" : currentBehavior, currentLandmark); }
-function renderAnimal({ fade = false } = {}) { const renderId = ++animalRenderId; const asset = $("#hamster-asset"); const hamster = $("#hamster"); asset.className = `hamster-asset coat-${animalProfile.coat}${fade ? " is-fading" : ""}`; hamster.className = `hamster ${isWalkPose(currentBehavior) ? "is-walking" : "is-stationary"}`; if (!hamster.classList.contains("is-walking")) setAnimalPosition(animalPosition); hamster.style.setProperty("--face-direction", hamster.dataset.direction || "1"); const image = document.createElement("img"); image.src = imagePath(currentBehavior); image.alt = ""; image.draggable = false; asset.replaceChildren(image); if (fade) window.setTimeout(() => { if (renderId === animalRenderId) asset.classList.remove("is-fading"); }, 120); setCaption(); }
+function setCaption(behavior = currentCaptionBehavior) {
+  const showMissedEvent = behavior === "idle" && new Date().getHours() >= 20 && !todayAnswer();
+  $("#animal-caption").textContent = showMissedEvent ? missedEvent(today) : messageFor(behavior, currentLandmark);
+}
+function renderAnimal({ pose = currentBehavior, captionBehavior = pose } = {}) {
+  const renderId = ++animalRenderId;
+  const src = imagePath(pose);
+  return preloadAsset(src).then((ready) => {
+    if (!ready || renderId !== animalRenderId) return false;
+    const asset = $("#hamster-asset");
+    const hamster = $("#hamster");
+    const applyFrame = () => {
+      if (renderId !== animalRenderId) return false;
+      const isWalking = isWalkPose(pose);
+      asset.className = `hamster-asset coat-${animalProfile.coat || "golden"}`;
+      hamster.className = `hamster ${isWalking ? "is-walking" : "is-stationary"}`;
+      if (!isWalking) setAnimalPosition(animalPosition);
+      hamster.style.setProperty("--face-direction", isMochi() && !isMochiSidePose(pose) ? "1" : (hamster.dataset.direction || "1"));
+      currentCaptionBehavior = captionBehavior;
+      setCaption(captionBehavior);
+      return true;
+    };
+    const existing = asset.querySelector("img");
+    if (existing?.dataset.assetSrc === src) return applyFrame();
+    return new Promise((resolve) => {
+      const image = document.createElement("img");
+      let installed = false;
+      const install = () => {
+        if (installed) return;
+        installed = true;
+        if (renderId !== animalRenderId) { resolve(false); return; }
+        image.dataset.assetSrc = src;
+        image.alt = "";
+        image.draggable = false;
+        // Keep the current sprite on screen until this exact DOM image is decoded.
+        asset.replaceChildren(image);
+        resolve(applyFrame());
+      };
+      image.addEventListener("load", () => {
+        if (image.decode) image.decode().then(install).catch(install);
+        else install();
+      }, { once: true });
+      image.addEventListener("error", () => resolve(false), { once: true });
+      image.src = src;
+      if (image.complete && image.naturalWidth > 0) {
+        if (image.decode) image.decode().then(install).catch(install);
+        else install();
+      }
+    });
+  });
+}
 function clearBehaviorTimers() { window.clearTimeout(behaviorTimer); window.clearInterval(walkFrameTimer); walkRunId += 1; }
 function chooseStationaryBehavior() { const weights = { ...(animalProfile.behaviorWeights || animalDefinition().behaviorWeights || behaviorWeights), "walk-a": 0, "walk-b": 0, read: Math.min((animalProfile.behaviorWeights || animalDefinition().behaviorWeights || behaviorWeights).read || 0, 3), carry: Math.min((animalProfile.behaviorWeights || animalDefinition().behaviorWeights || behaviorWeights).carry || 0, 3) }; return chooseBehavior(weights); }
 function scheduleStationary() { const [min, max] = dwellTimes[currentBehavior] || dwellTimes.idle; behaviorTimer = window.setTimeout(startNextBehavior, randomBetween(min, max)); }
@@ -86,50 +167,139 @@ function nearbyDestination(landmark) {
     y: Math.max(62, Math.min(82, anchor.y + randomBetween(-2, 2))),
   };
 }
+function mochiSideDestination(start) {
+  const direction = Math.random() < .5 ? -1 : 1;
+  const distance = randomBetween(16, 32) * direction;
+  let x = Math.max(12, Math.min(88, start.x + distance));
+  if (Math.abs(x - start.x) < 12) x = Math.max(12, Math.min(88, start.x - distance));
+  return { x, y: Math.max(70, Math.min(80, start.y + randomBetween(-1.5, 1.5))) };
+}
 function startLegacyWalk(nextBehavior, landmark) { clearBehaviorTimers(); currentBehavior = "walk-a"; const start = { ...animalPosition }; const target = nearbyDestination(landmark); const direction = target.x < start.x ? -1 : 1; const duration = randomBetween(2000, 4000); const runId = walkRunId; const hamster = $("#hamster"); hamster.dataset.direction = String(direction); hamster.className = "hamster is-walking"; hamster.style.setProperty("--face-direction", String(direction)); hamster.style.setProperty("--walk-duration", `${duration}ms`); setAnimalPosition(start); renderAnimal(); window.requestAnimationFrame(() => { if (runId === walkRunId) setAnimalPosition(target); }); let frame = 0; walkFrameTimer = window.setInterval(() => { if (runId !== walkRunId) return; currentBehavior = frame++ % 2 ? "walk-a" : "walk-b"; renderAnimal(); }, 300); behaviorTimer = window.setTimeout(() => { if (runId !== walkRunId) return; animalPosition = target; currentLandmark = landmark; window.clearInterval(walkFrameTimer); currentBehavior = nextBehavior; hamster.style.setProperty("--walk-duration", "0ms"); renderAnimal({ fade: true }); scheduleStationary(); }, duration + 40); }
-function startMochiWalk(nextBehavior, landmark, targetOverride, afterArrival) {
+async function startMochiWalk(nextBehavior) {
   clearBehaviorTimers();
+  const runId = walkRunId;
+  if (!(await preloadMochiPhaseAAssets()) || runId !== walkRunId) return;
   const start = { ...animalPosition };
-  const target = targetOverride || nearbyDestination(landmark);
+  const target = mochiSideDestination(start);
   const direction = target.x < start.x ? -1 : 1;
   const hamster = $("#hamster");
-  const turning = hamster.dataset.direction && Number(hamster.dataset.direction) !== direction;
-  const distance = Math.hypot((target.x - start.x) * 3, (target.y - start.y) * 6);
-  const duration = Math.max(1500, Math.min(3000, 1400 + distance * 18));
-  const runId = walkRunId;
+  const mustTurn = hamster.dataset.direction && Number(hamster.dataset.direction) !== direction;
+  const duration = Math.max(1800, Math.min(3200, 1400 + Math.abs(target.x - start.x) * 55));
+
+  // A side pose is shown before travel; no sprite is ever hidden while it changes.
   currentBehavior = "idle";
-  renderAnimal({ fade: true });
-  behaviorTimer = window.setTimeout(() => {
+  hamster.style.setProperty("--walk-duration", "0ms");
+  await renderAnimal({ pose: "idle", captionBehavior: "idle" });
+  if (runId !== walkRunId) return;
+  behaviorTimer = window.setTimeout(async () => {
     if (runId !== walkRunId) return;
     hamster.dataset.direction = String(direction);
-    renderAnimal();
+    currentBehavior = "walk-side-01";
+    await renderAnimal({ pose: "walk-side-01", captionBehavior: "idle" });
+    if (runId !== walkRunId) return;
     behaviorTimer = window.setTimeout(() => {
       if (runId !== walkRunId) return;
-      currentBehavior = mochiWalkPose;
+      let frameIndex = 0;
+      currentBehavior = mochiWalkFrames[frameIndex];
       hamster.style.setProperty("--walk-duration", `${duration}ms`);
-      setAnimalPosition(start);
-      renderAnimal();
+      renderAnimal({ pose: currentBehavior, captionBehavior: "walk" });
+      walkFrameTimer = window.setInterval(() => {
+        if (runId !== walkRunId) return;
+        frameIndex = (frameIndex + 1) % mochiWalkFrames.length;
+        currentBehavior = mochiWalkFrames[frameIndex];
+        renderAnimal({ pose: currentBehavior, captionBehavior: "walk" });
+      }, 150);
       window.requestAnimationFrame(() => { if (runId === walkRunId) setAnimalPosition(target); });
       behaviorTimer = window.setTimeout(() => {
         if (runId !== walkRunId) return;
+        window.clearInterval(walkFrameTimer);
         animalPosition = target;
-        currentLandmark = landmark;
-        currentBehavior = "idle";
+        currentLandmark = "open-lawn";
         hamster.style.setProperty("--walk-duration", "0ms");
-        renderAnimal({ fade: true });
+        currentBehavior = "walk-side-01";
+        renderAnimal({ pose: "walk-side-01", captionBehavior: "walk" });
         behaviorTimer = window.setTimeout(() => {
           if (runId !== walkRunId) return;
-          if (afterArrival) { afterArrival(); return; }
           currentBehavior = nextBehavior;
-          renderAnimal({ fade: true });
+          renderAnimal({ pose: nextBehavior, captionBehavior: nextBehavior });
           scheduleStationary();
-        }, randomBetween(300, 700));
+        }, 280);
       }, duration);
-    }, turning ? randomBetween(200, 400) : 0);
-  }, randomBetween(200, 400));
+    }, mustTurn ? randomBetween(250, 400) : 250);
+  }, 250);
+}
+async function startMochiLookAround() {
+  clearBehaviorTimers();
+  const runId = walkRunId;
+  if (!(await preloadMochiPhaseAAssets()) || runId !== walkRunId) return;
+  const hamster = $("#hamster");
+  const steps = [
+    { pose: "stand-front", direction: 1, delay: 500 },
+    { pose: "walk-side-01", direction: 1, delay: 600 },
+    { pose: "stand-front", direction: 1, delay: 300 },
+    { pose: "walk-side-01", direction: -1, delay: 600 },
+    { pose: "stand-front", direction: 1, delay: 350 },
+  ];
+  let stepIndex = 0;
+  const showStep = () => {
+    if (runId !== walkRunId) return;
+    const step = steps[stepIndex++];
+    if (!step) {
+      currentBehavior = "idle";
+      renderAnimal({ pose: "idle", captionBehavior: "idle" });
+      scheduleStationary();
+      return;
+    }
+    hamster.dataset.direction = String(step.direction);
+    currentBehavior = step.pose;
+    renderAnimal({ pose: step.pose, captionBehavior: "look-around" });
+    behaviorTimer = window.setTimeout(showStep, step.delay);
+  };
+  showStep();
+}
+async function startMochiObserve() {
+  clearBehaviorTimers();
+  const runId = walkRunId;
+  if (!(await preloadMochiPhaseAAssets()) || runId !== walkRunId) return;
+  const steps = [
+    { pose: "stand-front", caption: "idle", delay: 300 },
+    { pose: "stand-back", caption: "observe", delay: randomBetween(1000, 2000) },
+    { pose: "stand-front", caption: "idle", delay: 350 },
+  ];
+  let stepIndex = 0;
+  const showStep = () => {
+    if (runId !== walkRunId) return;
+    const step = steps[stepIndex++];
+    if (!step) {
+      currentBehavior = "idle";
+      renderAnimal({ pose: "idle", captionBehavior: "idle" });
+      scheduleStationary();
+      return;
+    }
+    currentBehavior = step.pose;
+    renderAnimal({ pose: step.pose, captionBehavior: step.caption });
+    behaviorTimer = window.setTimeout(showStep, step.delay);
+  };
+  showStep();
 }
 function startWalk(nextBehavior = chooseStationaryBehavior(), landmark = "open-lawn") { if (isMochi()) { startMochiWalk(nextBehavior, landmark); return; } startLegacyWalk(nextBehavior, landmark); }
-function startNextBehavior() { clearBehaviorTimers(); const nextBehavior = chooseStationaryBehavior(); const landmark = landmarkFor(nextBehavior); const weights = animalProfile.behaviorWeights || animalDefinition().behaviorWeights || behaviorWeights; const walkChance = Math.max(.16, Math.min(.5, .12 + ((weights["walk-a"] || 0) + (weights["walk-b"] || 0)) * .05)); if (landmark !== "open-lawn" || Math.random() < walkChance) { startWalk(nextBehavior, landmark); return; } currentLandmark = "open-lawn"; currentBehavior = nextBehavior; renderAnimal({ fade: true }); scheduleStationary(); }
+function startNextBehavior() {
+  clearBehaviorTimers();
+  if (isMochi()) {
+    const moment = Math.random();
+    if (moment < .16) { startMochiLookAround(); return; }
+    if (moment < .25) { startMochiObserve(); return; }
+  }
+  const nextBehavior = chooseStationaryBehavior();
+  const landmark = landmarkFor(nextBehavior);
+  const weights = animalProfile.behaviorWeights || animalDefinition().behaviorWeights || behaviorWeights;
+  const walkChance = Math.max(.16, Math.min(.5, .12 + ((weights["walk-a"] || 0) + (weights["walk-b"] || 0)) * .05));
+  if (landmark !== "open-lawn" || Math.random() < walkChance) { startWalk(nextBehavior, landmark); return; }
+  currentLandmark = "open-lawn";
+  currentBehavior = nextBehavior;
+  renderAnimal({ pose: nextBehavior, captionBehavior: nextBehavior });
+  scheduleStationary();
+}
 function chooseAnimalBehavior() { clearBehaviorTimers(); currentBehavior = previewPose && ["idle", "walk-a", "walk-b", "sit", "sleep", "read", "carry"].includes(previewPose) ? previewPose : chooseStationaryBehavior(); renderAnimal(); scheduleStationary(); }
 function renderGarden() { $("#page-date").textContent = formatDate(today); const answer = todayAnswer(); const record = $("#garden-record"); record.classList.toggle("is-hidden", !answer); if (answer) { record.querySelector(".garden-record-label").textContent = `오늘의 조각 · ${formatDate(answer.date)}`; record.querySelector(".garden-record-value").textContent = `“${answer.value}”을 남겼어요.`; } chooseAnimalBehavior(); }
 function renderPreferences() { ["disliked", "liked"].forEach((kind) => { const container = $(`#${kind}-options`); container.replaceChildren(); species.forEach((name) => { const label = document.createElement("label"); label.innerHTML = `<input type="checkbox" value="${name}" ${preferences[`${kind}_species`].includes(name) ? "checked" : ""}/><span>${{ hamster: "햄스터", cat: "고양이", capybara: "카피바라", rabbit: "토끼" }[name]}</span>`; container.append(label); }); }); $("#no-dislike").checked = !preferences.disliked_species.length; }
@@ -170,7 +340,7 @@ $("#archive-button").addEventListener("click", () => { renderArchive(); showView
 $("#archive-back").addEventListener("click", () => showView("garden"));
 $("#archive-prev").addEventListener("click", () => { archiveMonth = new Date(archiveMonth.getFullYear(), archiveMonth.getMonth() - 1, 1); renderArchive(null); });
 $("#archive-next").addEventListener("click", () => { archiveMonth = new Date(archiveMonth.getFullYear(), archiveMonth.getMonth() + 1, 1); renderArchive(null); });
-$("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); renderGarden(); renderToday();
+$("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday();
 $("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
 $("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });
