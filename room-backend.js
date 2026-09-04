@@ -70,6 +70,52 @@ export class RoomBackend {
     if (error) throw error;
     return data;
   }
+
+  async ensureDailyQuestion(roomId, date, questionId) {
+    if (!this.#user) await this.initialize();
+    const { data, error } = await this.#client.rpc("ensure_room_daily_question", {
+      p_room_id: roomId,
+      p_date: date,
+      p_question_id: questionId,
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  async memberDailyStatus(roomId, date) {
+    if (!this.#user) await this.initialize();
+    const { data, error } = await this.#client.rpc("room_member_daily_status", { p_room_id: roomId, p_date: date });
+    if (error) throw error;
+    return data;
+  }
+
+  async listRoomAnswers(roomId, date) {
+    if (!this.#user) await this.initialize();
+    const { data, error } = await this.#client
+      .from("room_answers")
+      .select("user_id,question_id,answer,created_at")
+      .eq("room_id", roomId)
+      .eq("date", date)
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+
+  async submitRoomAnswer({ roomId, date, questionId, answer }) {
+    if (!this.#user) await this.initialize();
+    const value = String(answer || "").trim();
+    if (!value || value.length > 140) throw new Error("답변은 1~140자로 입력해주세요.");
+    const { data, error } = await this.#client
+      .from("room_answers")
+      .insert({ room_id: roomId, date, user_id: this.#user.id, question_id: questionId, answer: value })
+      .select("user_id,question_id,answer,created_at")
+      .single();
+    if (error) {
+      if (error.code === "23505") throw new Error("오늘은 이미 답변을 남겼어요.");
+      throw error;
+    }
+    return data;
+  }
 }
 
 export const roomBackend = new RoomBackend();

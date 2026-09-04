@@ -49,6 +49,7 @@ const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#ro
 let roomIdentity = null;
 let activeRooms = [];
 let afterNickname = null;
+let roomDailyRenderId = 0;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
@@ -450,6 +451,7 @@ function renderArchive() {
 function roomErrorMessage(error) {
   if (/room not found/i.test(error?.message || "")) return "코드를 다시 확인해주세요.";
   if (/nickname required/i.test(error?.message || "")) return "먼저 닉네임을 정해주세요.";
+  if (/already answered|이미 답변/i.test(error?.message || "")) return "오늘은 이미 답변을 남겼어요.";
   return "방을 연결하지 못했어요. 잠시 후 다시 시도해주세요.";
 }
 function setRoomStatus(message = "") { $("#room-status").textContent = message; }
@@ -463,6 +465,105 @@ function openJoinRoomSheet() {
   $("#join-room-sheet").classList.remove("is-hidden");
   window.setTimeout(() => $("#invite-code-input").focus(), 0);
 }
+function roomQuestionCandidate(roomId, day) {
+  let seed = 0;
+  for (const character of `${roomId}:${day}`) seed = ((seed << 5) - seed + character.charCodeAt(0)) | 0;
+  return questions[(seed >>> 0) % questions.length];
+}
+function roomQuestionById(id) { return questions.find((question) => question.id === id); }
+function hideRoomDaily() { $("#room-daily").classList.add("is-hidden"); }
+function setRoomAnswerField(question) {
+  const field = $("#room-answer-field");
+  field.replaceChildren();
+  if (question.type === "choice") {
+    const choices = document.createElement("div");
+    choices.className = "choice-list";
+    choices.innerHTML = question.options.map((option, index) => `<label><input required type="radio" name="room-answer" value="${option}" ${index === 0 ? "checked" : ""}/><span>${option}</span></label>`).join("");
+    field.append(choices);
+    return;
+  }
+  const input = document.createElement("textarea");
+  input.name = "room-answer";
+  input.required = true;
+  input.maxLength = 140;
+  input.rows = 4;
+  input.placeholder = "짧게 적어도 괜찮아요";
+  field.append(input);
+}
+function renderRoomMemberList(statuses) {
+  const list = $("#room-member-list");
+  list.replaceChildren();
+  statuses.forEach((member) => {
+    const item = document.createElement("li");
+    const name = document.createElement("strong");
+    const state = document.createElement("span");
+    name.textContent = member.nickname;
+    state.textContent = member.answered ? "답변 완료" : "아직 답하지 않았어요.";
+    state.classList.toggle("is-complete", member.answered);
+    item.append(name, state);
+    list.append(item);
+  });
+}
+function renderRevealedRoomAnswers(answers, statuses) {
+  const section = $("#room-revealed-answers");
+  const list = $("#room-answer-list");
+  const names = new Map(statuses.map((member) => [member.user_id, member.nickname]));
+  list.replaceChildren();
+  answers.forEach((answer) => {
+    const entry = document.createElement("article");
+    const name = document.createElement("strong");
+    const value = document.createElement("p");
+    name.textContent = names.get(answer.user_id) || "친구";
+    value.textContent = answer.answer;
+    entry.append(name, value);
+    list.append(entry);
+  });
+  section.classList.toggle("is-hidden", !answers.length);
+}
+async function renderRoomDaily(room) {
+  const renderId = ++roomDailyRenderId;
+  const day = syncToday();
+  try {
+    const proposed = roomQuestionCandidate(room.id, day);
+    const daily = await roomBackend.ensureDailyQuestion(room.id, day, proposed.id);
+    if (renderId !== roomDailyRenderId) return;
+    const question = roomQuestionById(daily.question_id);
+    if (!question) throw new Error("question unavailable");
+    const statuses = await roomBackend.memberDailyStatus(room.id, day);
+    if (renderId !== roomDailyRenderId) return;
+    const mine = statuses.find((member) => member.user_id === roomBackend.user.id);
+    const answers = await roomBackend.listRoomAnswers(room.id, day);
+    if (renderId !== roomDailyRenderId) return;
+    const owner = statuses.find((member) => member.user_id === room.owner_user_id);
+    $("#active-room-name").textContent = owner ? `${owner.nickname}의 작은 방` : "우리의 작은 방";
+    $("#room-daily-date").textContent = `TODAY · ${formatDate(day)}`;
+    $("#room-question-text").textContent = question.text;
+    $("#room-member-count").textContent = `${statuses.length}명`;
+    $("#room-daily").dataset.roomId = room.id;
+    $("#room-daily").dataset.date = day;
+    $("#room-daily").dataset.questionId = daily.question_id;
+    renderRoomMemberList(statuses);
+    const form = $("#room-answer-form");
+    const hint = $("#room-answer-hint");
+    if (mine?.answered) {
+      form.classList.add("is-hidden");
+      hint.textContent = "내 답변을 남겼어요. 오늘의 답이 열렸어요.";
+      renderRevealedRoomAnswers(answers, statuses);
+    } else {
+      form.classList.remove("is-hidden");
+      setRoomAnswerField(question);
+      hint.textContent = statuses.some((member) => member.user_id !== roomBackend.user.id && member.answered)
+        ? "친구가 먼저 답했어요. 나도 답하면 열려요."
+        : "내 답을 남기면 친구들의 답도 함께 열려요.";
+      renderRevealedRoomAnswers([], statuses);
+    }
+    $("#room-daily").classList.remove("is-hidden");
+  } catch (error) {
+    if (renderId !== roomDailyRenderId) return;
+    hideRoomDaily();
+    setRoomStatus("오늘의 방을 불러오지 못했어요. Phase 3 schema migration을 확인해주세요.");
+  }
+}
 function renderRoom() {
   const empty = $("#room-empty");
   const active = $("#active-room");
@@ -472,18 +573,20 @@ function renderRoom() {
     setRoomStatus("공유 방은 backend 연결 후 사용할 수 있어요.");
     empty.classList.remove("is-hidden");
     active.classList.add("is-hidden");
+    hideRoomDaily();
     create.disabled = true;
     join.disabled = true;
     return;
   }
   create.disabled = false;
   join.disabled = false;
-  if (!roomIdentity) { setRoomStatus("내 작은 방을 준비하고 있어요."); return; }
+  if (!roomIdentity) { setRoomStatus("내 작은 방을 준비하고 있어요."); hideRoomDaily(); return; }
   const room = activeRooms[0];
   if (!room) {
     setRoomStatus(roomIdentity.profile?.nickname ? `${roomIdentity.profile.nickname}님의 작은 방을 만들 수 있어요.` : "닉네임을 정하고 작은 방을 시작해보세요.");
     empty.classList.remove("is-hidden");
     active.classList.add("is-hidden");
+    hideRoomDaily();
     return;
   }
   setRoomStatus("");
@@ -498,6 +601,7 @@ async function refreshRooms() {
     roomIdentity = await roomBackend.initialize();
     activeRooms = roomIdentity.profile ? await roomBackend.listRooms() : [];
     renderRoom();
+    if (activeRooms[0]) await renderRoomDaily(activeRooms[0]);
     if (!roomIdentity.profile?.nickname) openNicknameSheet();
   } catch (error) {
     setRoomStatus("공유 방을 준비하지 못했어요. backend 설정을 확인해주세요.");
@@ -585,5 +689,19 @@ $("#join-room-form").addEventListener("submit", async (event) => {
   const input = $("#invite-code-input");
   input.value = normalizeInviteCode(input.value);
   if (await joinRoom(input.value)) closeJoinRoomSheet();
+});
+$("#room-answer-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const daily = $("#room-daily");
+  const value = new FormData(event.currentTarget).get("room-answer");
+  if (!daily.dataset.roomId || !value) return;
+  const submit = $("#room-answer-submit");
+  submit.disabled = true;
+  try {
+    await roomBackend.submitRoomAnswer({ roomId: daily.dataset.roomId, date: daily.dataset.date, questionId: daily.dataset.questionId, answer: value });
+    await refreshRooms();
+  } catch (error) {
+    $("#room-answer-hint").textContent = roomErrorMessage(error);
+  } finally { submit.disabled = false; }
 });
 $("#invite-code-input").addEventListener("input", (event) => { event.currentTarget.value = normalizeInviteCode(event.currentTarget.value); });
