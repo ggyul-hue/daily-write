@@ -209,6 +209,9 @@ declare pet_row public.pets;
 declare next_stage text;
 declare milestone_value integer;
 declare result_json jsonb;
+declare traits_json jsonb;
+declare primary_trait text;
+declare trait_index integer;
 begin
   if auth.uid() is null then raise exception 'authentication required'; end if;
   select f.* into fragment_row from public.fragment_events as f
@@ -253,8 +256,36 @@ begin
     'milestone', milestone_value
   );
 
+  if coalesce(btrim(pet_row.growth_seed), '') = '' then
+    update public.pets as p
+      set growth_seed = encode(gen_random_bytes(16), 'hex')
+      where p.id = pet_row.id
+      returning p.* into pet_row;
+  end if;
+
+  traits_json := pet_row.traits;
+  if pet_row.growth_points >= 3 and pet_row.traits ->> 'primary' is null then
+    trait_index := get_byte(
+      decode(substring(md5(pet_row.growth_seed || 'primary-trait:v1') from 1 for 2), 'hex'),
+      0
+    ) % 4;
+    primary_trait := case trait_index
+      when 0 then 'walker'
+      when 1 then 'sleepy'
+      when 2 then 'collector'
+      else 'reader'
+    end;
+    traits_json := jsonb_build_object(
+      'primary', primary_trait,
+      'level', 1,
+      'version', 1,
+      'assigned_at_points', pet_row.growth_points
+    );
+  end if;
+
   update public.pets as p
-    set growth_stage = next_stage
+    set growth_stage = next_stage,
+        traits = traits_json
     where p.id = pet_row.id
     returning p.* into pet_row;
   update public.fragment_events as f
