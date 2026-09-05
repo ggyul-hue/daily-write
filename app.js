@@ -226,34 +226,41 @@ async function recoverTodaySoloFragment(events) {
   return fragmentRecoveryPromise;
 }
 function renderFragmentCta() {
-  const fragment = fragmentForDate(syncToday());
+  const day = syncToday();
+  const consumedFragment = fragmentState.claimed.find((entry) => entry.date === day && entry.consumed_at);
+  const fragment = fragmentState.claimed.find((entry) => entry.date === day && !entry.consumed_at);
   const cta = $("#fragment-cta");
   const button = $("#feed-fragment");
+  const detail = $("#fragment-detail");
   updateFragmentDebug({
     ctaRenderStarted: "true",
     animalSpecies: activePetIdentity().species,
     animalVariant: activePetIdentity().variant,
     animalDisplayName: animalName(),
     pendingFragmentQueueCount: String(fragmentState.pending.length),
-    fragmentId: fragment?.id ? "present" : "missing",
-    fragmentConsumedAt: fragment?.consumed_at ? "present" : "null",
+    fragmentId: (fragment || consumedFragment)?.id ? "present" : "missing",
+    fragmentConsumedAt: consumedFragment ? "present" : "null",
   });
   cta.classList.toggle("is-hidden", !fragment);
   if (!fragment) {
-    updateFragmentDebug({ ctaState: "hidden:no-fragment", ctaLabel: "" });
+    $("#fragment-message").textContent = "";
+    detail.textContent = "";
+    button.textContent = "";
+    button.disabled = true;
+    updateFragmentDebug({ ctaState: consumedFragment ? "hidden:consumed" : "hidden:no-fragment", ctaLabel: "" });
     return;
   }
-  const isPending = fragmentState.pending.includes(fragment);
   const identity = activePetIdentity();
   const hasActivePet = activePet?.species === identity.species && activePet?.variant === identity.variant;
-  $("#fragment-message").textContent = fragmentCtaError || (isPending ? "오늘의 조각을 준비하고 있어요." : "오늘의 조각이 생겼어요.");
+  $("#fragment-message").textContent = fragmentCtaError || "오늘의 조각이 생겼어요.";
+  detail.textContent = `${animalName()}에게 줄 수 있어요.`;
   button.textContent = `${animalName()}에게 주기`;
-  button.disabled = isQaMode || isPending || !fragment.id || !hasActivePet || Boolean(activePetPromise);
+  button.disabled = isQaMode || !fragment.id || !hasActivePet || Boolean(activePetPromise);
   updateFragmentDebug({
-    ctaState: button.disabled ? (isPending ? "disabled:pending" : !fragment.id ? "disabled:no-fragment-id" : !hasActivePet ? "disabled:no-active-pet" : "disabled:qa") : "enabled",
+    ctaState: button.disabled ? (!fragment.id ? "disabled:no-fragment-id" : !hasActivePet ? "disabled:no-active-pet" : "disabled:qa") : "enabled",
     ctaLabel: button.textContent,
   });
-  if (!isQaMode && !isPending && !hasActivePet && !activePetPromise) {
+  if (!isQaMode && !hasActivePet && !activePetPromise) {
     void ensureActivePet().then(() => renderFragmentCta()).catch(() => {
       fragmentCtaError = "조각을 준비하지 못했어요. 잠시 후 다시 시도해주세요.";
       renderFragmentCta();
