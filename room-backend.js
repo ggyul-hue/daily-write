@@ -153,6 +153,26 @@ export class RoomBackend {
     return data;
   }
 
+  async getPetStateFromExistingSession({ species, variant }) {
+    if (!this.isConfigured) return null;
+    if (!this.#client) {
+      const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      this.#client = createClient(BACKEND_CONFIG.supabaseUrl, BACKEND_CONFIG.supabasePublishableKey);
+    }
+    const { data: sessionData, error: sessionError } = await this.#client.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!sessionData.session) return null;
+    this.#user = sessionData.session.user;
+    const { data, error } = await this.#client
+      .from("pets")
+      .select("id,species,variant,growth_stage,growth_points,growth_scale,traits")
+      .eq("species", species)
+      .eq("variant", variant)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
   async ensureActivePet({ species, variant }) {
     if (!this.#user) await this.initialize();
     const { data, error } = await this.#client.rpc("ensure_active_pet", { p_species: species, p_variant: variant });

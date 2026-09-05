@@ -1,7 +1,8 @@
 import { dailyQuestions, dateKey, questions } from "./data.js";
 import { behaviorWeights, chooseBehavior, createAnimalProfile, species } from "./animal-system.js";
 import { getAnimalDefinition } from "./animal-manifest.js";
-import { normalizeInviteCode, roomBackend } from "./room-backend.js?v=fragment-phase4b-v2";
+import { normalizeInviteCode, roomBackend } from "./room-backend.js?v=personality-phase4cc-v1";
+import { createRuntimePetState, effectiveGrowthScale, petIdentity, runtimeBehaviorWeights } from "./pet-runtime.js";
 
 const query = new URLSearchParams(location.search);
 const isFragmentDebug = query.get("debug") === "fragment4b";
@@ -47,6 +48,8 @@ let fragmentRecoveryPromise = null;
 let activePet = null;
 let activePetPromise = null;
 let activePetPromiseIdentity = null;
+let runtimePetState = createRuntimePetState("");
+let runtimePetLoadId = 0;
 let fragmentCtaError = "";
 const fragmentDebug = {
   backendConfigured: String(roomBackend.isConfigured),
@@ -141,6 +144,28 @@ function activePetIdentity() {
   const animal = animalDefinition();
   return { species: animal.species, variant: animal.variant };
 }
+function runtimePetIdentity() { return petIdentity(activePetIdentity()); }
+function applyRuntimePetScale() {
+  $("#hamster-motion")?.style.setProperty("--growth-scale", effectiveGrowthScale(runtimePetState).toFixed(3));
+}
+async function loadRuntimePetState({ force = false } = {}) {
+  const identity = runtimePetIdentity();
+  if (!force && runtimePetState.identity === identity && runtimePetState.loaded) return;
+  const loadId = ++runtimePetLoadId;
+  runtimePetState = createRuntimePetState(identity);
+  applyRuntimePetScale();
+  if (isQaMode || !roomBackend.isConfigured) return;
+  try {
+    const pet = await roomBackend.getPetStateFromExistingSession(activePetIdentity());
+    if (loadId !== runtimePetLoadId || runtimePetIdentity() !== identity) return;
+    runtimePetState = createRuntimePetState(identity, pet);
+    applyRuntimePetScale();
+  } catch {
+    if (loadId !== runtimePetLoadId || runtimePetIdentity() !== identity) return;
+    runtimePetState = { ...createRuntimePetState(identity), loaded: true };
+    applyRuntimePetScale();
+  }
+}
 async function ensureActivePet() {
   if (isQaMode || !roomBackend.isConfigured) return null;
   const identity = activePetIdentity();
@@ -160,6 +185,7 @@ async function ensureActivePet() {
   activePetPromise = roomBackend.ensureActivePet(identity)
     .then((pet) => {
       activePet = pet;
+      void loadRuntimePetState({ force: true });
       updateFragmentDebug({
         supabaseSessionExists: "true",
         backendInitialized: "true",
@@ -510,7 +536,8 @@ function renderAnimal({ pose = currentBehavior, captionBehavior = pose, stateNam
   });
 }
 function clearBehaviorTimers() { window.clearTimeout(behaviorTimer); window.clearInterval(walkFrameTimer); walkRunId += 1; }
-function chooseStationaryBehavior() { const weights = { ...(animalProfile.behaviorWeights || animalDefinition().behaviorWeights || behaviorWeights), "walk-a": 0, "walk-b": 0, read: Math.min((animalProfile.behaviorWeights || animalDefinition().behaviorWeights || behaviorWeights).read || 0, 3), carry: Math.min((animalProfile.behaviorWeights || animalDefinition().behaviorWeights || behaviorWeights).carry || 0, 3) }; return chooseBehavior(weights); }
+function runtimeAnimalWeights() { return runtimeBehaviorWeights(animalProfile.behaviorWeights || animalDefinition().behaviorWeights || behaviorWeights, runtimePetState.primaryTrait); }
+function chooseStationaryBehavior() { const source = runtimeAnimalWeights(); const weights = { ...source, "walk-a": 0, "walk-b": 0, read: Math.min(source.read || 0, 3), carry: Math.min(source.carry || 0, 3) }; return chooseBehavior(weights); }
 function scheduleStationary() { const [min, max] = dwellTimes[currentBehavior] || dwellTimes.idle; behaviorTimer = window.setTimeout(startNextBehavior, randomBetween(min, max)); }
 function landmarkFor(behavior) {
   const preferred = animalDefinition().preferredLandmarks || ["open-lawn"];
@@ -652,7 +679,7 @@ function startNextBehavior() {
   }
   const nextBehavior = chooseStationaryBehavior();
   const landmark = landmarkFor(nextBehavior);
-  const weights = animalProfile.behaviorWeights || animalDefinition().behaviorWeights || behaviorWeights;
+  const weights = runtimeAnimalWeights();
   const walkChance = Math.max(.16, Math.min(.5, .12 + ((weights["walk-a"] || 0) + (weights["walk-b"] || 0)) * .05));
   if (landmark !== "open-lawn" || Math.random() < walkChance) { startWalk(nextBehavior, landmark); return; }
   currentLandmark = "open-lawn";
@@ -711,6 +738,7 @@ function renderGarden({ resetAnimal = true } = {}) {
   }
   renderFragmentCta();
   renderFragmentDebug();
+  void loadRuntimePetState();
   if (resetAnimal) chooseAnimalBehavior();
 }
 function renderPreferences() { ["disliked", "liked"].forEach((kind) => { const container = $(`#${kind}-options`); container.replaceChildren(); species.forEach((name) => { const label = document.createElement("label"); label.innerHTML = `<input type="checkbox" value="${name}" ${preferences[`${kind}_species`].includes(name) ? "checked" : ""}/><span>${{ hamster: "햄스터", cat: "고양이", capybara: "카피바라", rabbit: "토끼" }[name]}</span>`; container.append(label); }); }); $("#no-dislike").checked = !preferences.disliked_species.length; }
