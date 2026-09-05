@@ -142,6 +142,17 @@ export class RoomBackend {
     return data;
   }
 
+  async getFragmentEvent(fragmentId) {
+    if (!this.#user) await this.initialize();
+    const { data, error } = await this.#client
+      .from("fragment_events")
+      .select("id,date,source,fragment_index,pet_id,consumed_at,growth_result,created_at")
+      .eq("id", fragmentId)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
   async ensureActivePet({ species, variant }) {
     if (!this.#user) await this.initialize();
     const { data, error } = await this.#client.rpc("ensure_active_pet", { p_species: species, p_variant: variant });

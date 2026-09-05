@@ -333,12 +333,23 @@ async function consumeTodayFragment() {
     if (!result || !["consumed", "already_consumed"].includes(result.status)) throw new Error("consume failed");
     if (result.status === "consumed") activePet = { ...pet, id: result.pet_id || pet.id, growth_points: result.growth_points };
     fragmentState.pending = fragmentState.pending.filter((entry) => entry.date !== fragment.date);
+    let growthResult = null;
+    try {
+      const updatedFragment = await roomBackend.getFragmentEvent(fragment.id);
+      growthResult = updatedFragment?.growth_result || null;
+      if (updatedFragment) {
+        fragmentState.claimed = fragmentState.claimed.map((entry) => entry.id === fragment.id ? updatedFragment : entry);
+      }
+    } catch (error) {
+      // Consumption has already committed; a reaction read failure must not turn it into a UI failure.
+      recordFragmentDebugError("fragment_growth_result", error);
+    }
     fragmentState.claimed = fragmentState.claimed.map((entry) => entry.id === fragment.id
       ? { ...entry, pet_id: result.pet_id, consumed_at: result.consumed_at }
       : entry);
     saveFragmentState();
     renderGarden({ resetAnimal: false });
-    if (result.status === "consumed") startFragmentReaction();
+    if (result.status === "consumed") startFragmentReaction(growthResult);
   } catch (error) {
     updateFragmentDebug({
       consumeRpcResult: "error",
@@ -395,6 +406,12 @@ const dwellTimes = { idle: [6000, 14000], sit: [8000, 16000], sleep: [15000, 350
 const randomBetween = (min, max) => min + Math.random() * (max - min);
 function animalDefinition() { return getAnimalDefinition(animalProfile); }
 function animalName() { return animalProfile.name || animalDefinition().displayName || "모찌"; }
+function animalNameWithParticle(consonant, vowel) {
+  const name = animalName();
+  const code = name.codePointAt(name.length - 1);
+  const hasFinalConsonant = code >= 0xac00 && code <= 0xd7a3 && (code - 0xac00) % 28 !== 0;
+  return `${name}${hasFinalConsonant ? consonant : vowel}`;
+}
 function animalSubjectName() {
   const name = animalName();
   const code = name.codePointAt(name.length - 1);
@@ -659,12 +676,21 @@ function startAnswerReaction() {
     scheduleStationary();
   }, 2600);
 }
-function startFragmentReaction() {
+function startFragmentReaction(growthResult) {
   clearBehaviorTimers();
   const runId = walkRunId;
+  const milestoneMessages = {
+    3: `${animalNameWithParticle("이", "가")} 조금 자란 것 같아요.`,
+    7: `${animalNameWithParticle("이", "가")} 제법 자랐어요.`,
+    14: `${animalNameWithParticle("이", "가")} 다 자랐어요.`,
+    30: `${animalNameWithParticle("과", "와")} 꽤 많은 시간을 함께했어요.`,
+  };
+  const message = growthResult?.type === "milestone" && milestoneMessages[growthResult.milestone]
+    ? milestoneMessages[growthResult.milestone]
+    : `${animalNameWithParticle("이", "가")} 오늘의 조각을 맛있게 먹었어요.`;
   currentLandmark = "open-lawn";
   currentBehavior = "carry";
-  renderAnimal({ pose: "carry", captionBehavior: "carry", stateName: "FRAGMENT_REACTION", message: `${animalName()}가 오늘의 조각을 맛있게 먹었어요.` });
+  renderAnimal({ pose: "carry", captionBehavior: "carry", stateName: "FRAGMENT_REACTION", message });
   behaviorTimer = window.setTimeout(() => {
     if (runId !== walkRunId) return;
     currentBehavior = "idle";
