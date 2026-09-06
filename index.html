@@ -12,7 +12,23 @@
   </head>
   <body>
     <main class="app-shell">
-      <section id="garden-view" class="view garden-view" aria-labelledby="page-date">
+      <section id="adoption-view" class="view adoption-view is-hidden" aria-labelledby="adoption-title">
+        <section id="adoption-choice" class="adoption-panel">
+          <p class="eyebrow">A LITTLE FRIEND</p>
+          <h1 id="adoption-title">오늘부터 함께 지낼<br />작은 친구를 만나볼까요?</h1>
+          <p class="adoption-copy">세 친구 중 마음이 가는 친구를 골라주세요.</p>
+          <div id="adoption-candidates" class="adoption-candidates" aria-label="입양할 친구 후보"></div>
+          <button id="adoption-refresh" class="adoption-refresh" type="button">다른 친구 만나보기</button>
+          <button id="adoption-confirm" class="submit-button adoption-confirm" type="button" disabled></button>
+        </section>
+        <section id="adoption-complete" class="adoption-complete is-hidden" aria-live="polite">
+          <p class="eyebrow">A LITTLE FRIEND</p>
+          <h1 id="adoption-complete-title"></h1>
+          <p>아직 서로 모르는 게 많아요.<br />하루에 하나씩 이야기를 남기며<br />천천히 알아가보세요.</p>
+          <button id="adoption-enter-garden" class="submit-button" type="button">정원으로 가기</button>
+        </section>
+      </section>
+      <section id="garden-view" class="view garden-view is-hidden" aria-labelledby="page-date">
         <header class="topbar"><p id="page-date" class="date"></p><div class="top-actions"><button id="preferences-button" class="preferences-button" type="button" aria-label="동물 취향 설정">⚙</button><button id="archive-button" class="archive-button" type="button" aria-label="지난 조각 열기"><span aria-hidden="true">◷</span>지난 조각</button></div></header>
         <section class="garden" aria-label="햄스터 정원">
           <img class="garden-backdrop" src="assets/garden/garden-doodle-v3.png" alt="" aria-hidden="true" />

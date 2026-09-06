@@ -1,0 +1,21 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { animalManifest } from "./animal-manifest.js";
+import { adoptionCandidates, createAdoptionDraft, nextAdoptionDraft } from "./onboarding.js";
+
+const draft = createAdoptionDraft(animalManifest, "qa-seed");
+assert.equal(draft.candidates.length, 3);
+assert.equal(new Set(draft.candidates.map((candidate) => candidate.species)).size, 3);
+assert.deepEqual(adoptionCandidates(animalManifest, "qa-seed"), draft.candidates);
+assert.deepEqual(createAdoptionDraft(animalManifest, "qa-seed"), draft);
+const nextDraft = nextAdoptionDraft(animalManifest, draft);
+const omittedSpecies = [...new Set(animalManifest.map((animal) => animal.species))].find((species) => !draft.candidates.some((candidate) => candidate.species === species));
+assert.notDeepEqual(nextDraft.candidates, draft.candidates);
+assert.ok(nextDraft.candidates.some((candidate) => candidate.species === omittedSpecies));
+const app = readFileSync("app.js", "utf8");
+assert.match(app, /const isNewUser = !storedAnimalProfile && !hasLegacyUsageEvidence/);
+assert.doesNotMatch(app, /if \(!animalProfile\) \{ animalProfile = createAnimalProfile\("hamster"\); localStorage\.setItem\(ANIMAL_KEY/);
+assert.match(app, /function saveActiveAnimalProfile\(speciesName, variant\)/);
+assert.match(app, /if \(isNewUser\) \{\s*renderAdoption\(\);\s*showView\("adoption"\);/);
+assert.match(app, /else \{\s*beginNormalApp\(\);\s*\}/);
+console.log("phase 6A onboarding checks passed");

@@ -1,18 +1,20 @@
 import { dailyQuestions, dateKey, questions } from "./data.js";
 import { behaviorWeights, chooseBehavior, createAnimalProfile, species } from "./animal-system.js";
-import { getAnimalDefinition } from "./animal-manifest.js";
+import { animalManifest, getAnimalDefinition } from "./animal-manifest.js";
 import { normalizeInviteCode, roomBackend } from "./room-backend.js?v=personality-phase4cc-v1";
 import { createRuntimePetState, effectiveGrowthScale, petIdentity, runtimeBehaviorWeights } from "./pet-runtime.js";
 import { growthProfile, speciesLabel } from "./pet-profile-ui.js";
 import { isCompletedMonth, selectMonthlyMemories, monthlySummary } from "./monthly-memory.js";
+import { createAdoptionDraft, nextAdoptionDraft } from "./onboarding.js";
 
 const query = new URLSearchParams(location.search);
 const isFragmentDebug = query.get("debug") === "fragment4b";
 const requestedQaDate = query.get("qaDate");
 const parsedQaDate = requestedQaDate && /^\d{4}-\d{2}-\d{2}$/.test(requestedQaDate) ? new Date(`${requestedQaDate}T12:00:00`) : null;
 const isQaMode = query.get("qa") === "1" && Boolean(parsedQaDate) && dateKey(parsedQaDate) === requestedQaDate;
+const isOnboardingQa = isQaMode && query.get("qaOnboarding") === "1";
 const qaDate = isQaMode ? requestedQaDate : null;
-const storagePrefix = isQaMode ? `dailyWrite.qa.${qaDate}` : "daily-write";
+const storagePrefix = isOnboardingQa ? `dailyWrite.qa.onboarding.${qaDate}` : isQaMode ? `dailyWrite.qa.${qaDate}` : "daily-write";
 const STORAGE_KEY = isQaMode ? `${storagePrefix}.solo-v1` : "daily-write-solo-v1";
 let storedState;
 try { storedState = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); } catch { storedState = null; }
@@ -29,8 +31,23 @@ let selectedQuestion;
 const ANIMAL_KEY = isQaMode ? `${storagePrefix}.animal-profile-v1` : "daily-write-animal-profile-v1";
 const PREFERENCES_KEY = isQaMode ? `${storagePrefix}.preferences-v1` : "daily-write-preferences-v1";
 const FRAGMENT_STATE_KEY = isQaMode ? `${storagePrefix}.fragment-state-v1` : "daily-write-fragment-state-v1";
-let animalProfile = JSON.parse(localStorage.getItem(ANIMAL_KEY) || "null");
-if (!animalProfile) { animalProfile = createAnimalProfile("hamster"); localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile)); }
+const ADOPTION_DRAFT_KEY = isQaMode ? `${storagePrefix}.adoption-draft-v1` : "daily-write-adoption-draft-v1";
+const readJson = (key) => { try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; } };
+const storedAnimalProfile = readJson(ANIMAL_KEY);
+const storedPreferences = readJson(PREFERENCES_KEY);
+const storedFragmentStateForOnboarding = readJson(FRAGMENT_STATE_KEY);
+const hasLegacyUsageEvidence = Boolean(
+  localStorage.getItem(STORAGE_KEY)
+  || localStorage.getItem(PREFERENCES_KEY)
+  || localStorage.getItem(FRAGMENT_STATE_KEY)
+  || state.answers.length
+  || Object.keys(state.dailyQuestionSets).length
+  || storedPreferences
+  || storedFragmentStateForOnboarding,
+);
+const isNewUser = !storedAnimalProfile && !hasLegacyUsageEvidence;
+const legacyFallbackProfile = createAnimalProfile("hamster", () => 0);
+let animalProfile = storedAnimalProfile || (isNewUser ? null : legacyFallbackProfile);
 const previewId = location.hostname === "127.0.0.1" ? new URLSearchParams(location.search).get("animalPreview") : null;
 const previewPose = location.hostname === "127.0.0.1" ? new URLSearchParams(location.search).get("animalPreviewPose") : null;
 if (previewId) {
@@ -38,9 +55,9 @@ if (previewId) {
   const previewAnimal = getAnimalDefinition({ species: speciesName, variant });
   animalProfile = { species: previewAnimal.species, variant: previewAnimal.variant, name: previewAnimal.displayName, behaviorWeights: { ...previewAnimal.behaviorWeights } };
 }
-let preferences = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{"disliked_species":[],"liked_species":[]}');
+let preferences = storedPreferences || { disliked_species: [], liked_species: [] };
 let storedFragmentState;
-try { storedFragmentState = JSON.parse(localStorage.getItem(FRAGMENT_STATE_KEY) || "null"); } catch { storedFragmentState = null; }
+storedFragmentState = storedFragmentStateForOnboarding;
 let fragmentState = {
   pending: Array.isArray(storedFragmentState?.pending) ? storedFragmentState.pending.filter((fragment) => fragment?.date && fragment?.source) : [],
   claimed: Array.isArray(storedFragmentState?.claimed) ? storedFragmentState.claimed.filter((fragment) => fragment?.date) : [],
@@ -120,14 +137,96 @@ function updateFragmentDebug(values) {
 function recordFragmentDebugError(stage, error) {
   updateFragmentDebug({ lastErrorStage: stage, lastErrorMessage: safeDebugMessage(error) });
 }
-const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), roomInterior: $("#room-interior-view"), archive: $("#archive-view"), "monthly-memory": $("#monthly-memory-view"), "monthly-keepsake": $("#monthly-keepsake-view") };
+const views = { adoption: $("#adoption-view"), garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), roomInterior: $("#room-interior-view"), archive: $("#archive-view"), "monthly-memory": $("#monthly-memory-view"), "monthly-keepsake": $("#monthly-keepsake-view") };
 let roomIdentity = null;
 let activeRooms = [];
 let afterNickname = null;
 let roomDailyRenderId = 0;
+let adoptionDraft = null;
+let selectedAdoption = null;
+let normalAppBootstrapped = false;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function saveFragmentState() { localStorage.setItem(FRAGMENT_STATE_KEY, JSON.stringify(fragmentState)); }
+function newAdoptionSeed() {
+  const values = new Uint32Array(2);
+  crypto.getRandomValues(values);
+  return `${values[0].toString(36)}${values[1].toString(36)}`;
+}
+function isValidAdoptionDraft(draft) {
+  return Boolean(draft && typeof draft.seed === "string" && Number.isInteger(draft.revision) && Array.isArray(draft.candidates)
+    && draft.candidates.length === 3 && new Set(draft.candidates.map((candidate) => candidate.species)).size === 3
+    && draft.candidates.every((candidate) => animalManifest.some((animal) => animal.species === candidate.species && animal.variant === candidate.variant)));
+}
+function currentAdoptionDraft() {
+  const stored = readJson(ADOPTION_DRAFT_KEY);
+  if (isValidAdoptionDraft(stored)) return stored;
+  const draft = createAdoptionDraft(animalManifest, newAdoptionSeed());
+  localStorage.setItem(ADOPTION_DRAFT_KEY, JSON.stringify(draft));
+  return draft;
+}
+function profileForAnimal(animal) {
+  const coat = animal.species === "hamster" ? ({ cream: "cream", mochi: "golden", almond: "brown", sugar: "cream" }[animal.variant]) : undefined;
+  return { species: animal.species, variant: animal.variant, name: animal.displayName, coat, behaviorWeights: { ...animal.behaviorWeights } };
+}
+function saveActiveAnimalProfile(speciesName, variant) {
+  const animal = animalManifest.find((candidate) => candidate.species === speciesName && candidate.variant === variant);
+  if (!animal) throw new Error("invalid animal identity");
+  animalProfile = profileForAnimal(animal);
+  localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile));
+  activePet = null;
+  activePetPromise = null;
+  activePetPromiseIdentity = null;
+  runtimePetState = createRuntimePetState(petIdentity(animal));
+  applyRuntimePetScale();
+  return animal;
+}
+function renderAdoption() {
+  adoptionDraft = currentAdoptionDraft();
+  const cards = $("#adoption-candidates");
+  cards.replaceChildren();
+  adoptionDraft.candidates.forEach((identity) => {
+    const animal = animalManifest.find((candidate) => candidate.species === identity.species && candidate.variant === identity.variant);
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "adoption-candidate";
+    card.dataset.species = animal.species;
+    card.dataset.variant = animal.variant;
+    card.setAttribute("aria-pressed", String(selectedAdoption?.species === animal.species && selectedAdoption?.variant === animal.variant));
+    const portrait = document.createElement("img");
+    portrait.src = animal.poseAssets.idle;
+    portrait.alt = "";
+    const name = document.createElement("strong");
+    name.textContent = animal.displayName;
+    const kind = document.createElement("small");
+    kind.textContent = speciesLabel(animal.species);
+    card.append(portrait, name, kind);
+    card.addEventListener("click", () => {
+      selectedAdoption = { species: animal.species, variant: animal.variant };
+      renderAdoption();
+    });
+    cards.append(card);
+  });
+  const selected = selectedAdoption && animalManifest.find((animal) => animal.species === selectedAdoption.species && animal.variant === selectedAdoption.variant);
+  const confirm = $("#adoption-confirm");
+  confirm.disabled = !selected;
+  confirm.textContent = selected ? `${selected.displayName}과 함께하기` : "친구를 골라주세요";
+}
+function showAdoptionComplete(animal) {
+  $("#adoption-choice").classList.add("is-hidden");
+  $("#adoption-complete").classList.remove("is-hidden");
+  $("#adoption-complete-title").textContent = `${animal.displayName}이 우리 집에 왔어요. 🌱`;
+}
+function beginNormalApp() {
+  if (normalAppBootstrapped) return;
+  normalAppBootstrapped = true;
+  if (isMochi()) preloadMochiPhaseAAssets();
+  renderGarden();
+  renderToday();
+  void restoreFragmentEvents();
+  if (fragmentState.pending.length) void syncPendingFragments();
+  showView("garden");
+}
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
 function syncToday() {
   if (isQaMode) return qaDate;
@@ -410,6 +509,7 @@ function dailyQuestionSet(day = syncToday()) {
 }
 function showView(name) {
   Object.entries(views).forEach(([key, view]) => view.classList.toggle("is-hidden", key !== name));
+  $(".bottom-nav").classList.toggle("is-hidden", name === "adoption");
   const navView = name === "roomInterior" ? "room" : name;
   document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === navView));
   if (name === "room") void refreshRooms();
@@ -1298,10 +1398,18 @@ $("#save-monthly-keepsake").addEventListener("click", () => { void exportMonthly
 $("#share-monthly-keepsake").addEventListener("click", () => { void exportMonthlyKeepsake("share"); });
 $("#archive-prev").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() - 1, 1); selectedDate = null; renderArchive(); });
 $("#archive-next").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() + 1, 1); selectedDate = null; renderArchive(); });
-$("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday(); void restoreFragmentEvents(); if (fragmentState.pending.length) void syncPendingFragments();
+$("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet);
 $("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
 $("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });
+$("#adoption-refresh").addEventListener("click", () => { adoptionDraft = nextAdoptionDraft(animalManifest, currentAdoptionDraft()); localStorage.setItem(ADOPTION_DRAFT_KEY, JSON.stringify(adoptionDraft)); selectedAdoption = null; renderAdoption(); });
+$("#adoption-confirm").addEventListener("click", () => {
+  if (!selectedAdoption) return;
+  const animal = saveActiveAnimalProfile(selectedAdoption.species, selectedAdoption.variant);
+  localStorage.removeItem(ADOPTION_DRAFT_KEY);
+  showAdoptionComplete(animal);
+});
+$("#adoption-enter-garden").addEventListener("click", beginNormalApp);
 $("#create-room").addEventListener("click", () => { void createRoom(); });
 $("#open-join-room").addEventListener("click", () => { void runWithNickname(async () => openJoinRoomSheet()); });
 $("#active-room").addEventListener("click", () => { void openRoomInterior(); });
@@ -1353,5 +1461,11 @@ $("#room-answer-form").addEventListener("submit", async (event) => {
     $("#room-answer-hint").textContent = roomErrorMessage(error);
   } finally { submit.disabled = false; }
 });
+if (isNewUser) {
+  renderAdoption();
+  showView("adoption");
+} else {
+  beginNormalApp();
+}
 $("#feed-fragment").addEventListener("click", () => { void consumeTodayFragment(); });
 $("#invite-code-input").addEventListener("input", (event) => { event.currentTarget.value = normalizeInviteCode(event.currentTarget.value); });
