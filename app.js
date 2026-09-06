@@ -4,6 +4,7 @@ import { getAnimalDefinition } from "./animal-manifest.js";
 import { normalizeInviteCode, roomBackend } from "./room-backend.js?v=personality-phase4cc-v1";
 import { createRuntimePetState, effectiveGrowthScale, petIdentity, runtimeBehaviorWeights } from "./pet-runtime.js";
 import { growthProfile, speciesLabel } from "./pet-profile-ui.js";
+import { selectMonthlyMemories, monthlySummary } from "./monthly-memory.js";
 
 const query = new URLSearchParams(location.search);
 const isFragmentDebug = query.get("debug") === "fragment4b";
@@ -119,7 +120,7 @@ function updateFragmentDebug(values) {
 function recordFragmentDebugError(stage, error) {
   updateFragmentDebug({ lastErrorStage: stage, lastErrorMessage: safeDebugMessage(error) });
 }
-const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), roomInterior: $("#room-interior-view"), archive: $("#archive-view") };
+const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), roomInterior: $("#room-interior-view"), archive: $("#archive-view"), "monthly-memory": $("#monthly-memory-view") };
 let roomIdentity = null;
 let activeRooms = [];
 let afterNickname = null;
@@ -847,6 +848,9 @@ function renderArchive() {
   const list = $("#archive-list"); const calendar = $("#archive-calendar"); list.replaceChildren(); calendar.replaceChildren(); $("#archive-paper").classList.add("is-hidden");
   const year = viewedMonth.getFullYear(); const month = viewedMonth.getMonth(); $("#archive-month").textContent = `${year}년 ${month + 1}월`;
   const monthAnswers = answersInViewedMonth();
+  const monthlyEntry = $("#monthly-memory-entry");
+  monthlyEntry.classList.toggle("is-hidden", monthAnswers.length === 0);
+  monthlyEntry.textContent = `${month + 1}월의 작은 기록 →`;
   const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const answerDates = new Set(monthAnswers.map((answer) => answer.date));
   for (let index = 0; index < firstDay; index += 1) { const spacer = document.createElement("span"); spacer.className = "calendar-spacer"; calendar.append(spacer); }
   for (let day = 1; day <= daysInMonth; day += 1) {
@@ -876,6 +880,43 @@ function renderArchive() {
     list.append(item);
   });
   showArchiveAnswer(selectedDate ? answerForDate(selectedDate) : null);
+}
+
+function renderMonthlyMemory() {
+  const records = answersInViewedMonth();
+  if (!records.length) return false;
+  const year = viewedMonth.getFullYear();
+  const month = viewedMonth.getMonth();
+  $("#monthly-memory-title").textContent = `${month + 1}월의 작은 기록`;
+  $("#monthly-memory-meta").textContent = `${year} · ${String(month + 1).padStart(2, "0")}`;
+  $("#monthly-memory-summary").textContent = monthlySummary(year, month, syncToday(), animalNameWithParticle("과", "와"), records.length);
+  const list = $("#monthly-memory-list");
+  list.replaceChildren();
+  for (const record of selectMonthlyMemories(records, year, month)) {
+    const card = document.createElement("article");
+    card.className = "monthly-memory-card";
+    const date = document.createElement("time");
+    date.dateTime = record.date;
+    date.textContent = formatDate(record.date);
+    const question = document.createElement("h2");
+    question.textContent = record.question;
+    const answer = document.createElement("p");
+    answer.className = "monthly-memory-answer";
+    answer.textContent = answerText(record);
+    card.append(date, question, answer);
+    list.append(card);
+  }
+  const companion = $("#monthly-memory-companion");
+  const profile = growthProfile(runtimePetState);
+  const ready = profile.kind === "ready" && runtimePetState.identity === runtimePetIdentity();
+  companion.classList.toggle("is-hidden", !ready);
+  companion.textContent = ready
+    ? runtimePetState.primaryTrait
+      ? `요즘 ${animalNameWithParticle("은", "는")} ${profile.trait}`
+      : `지금 ${animalNameWithParticle("은", "는")} ${profile.stage}${profile.stage === "자라는 중" ? "이에요" : "예요"}.`
+    : "";
+  $("#monthly-memory-closing").textContent = `${month + 1}월도 잘 간직해둘게요. 🌱`;
+  return true;
 }
 
 function roomErrorMessage(error) {
@@ -1116,6 +1157,8 @@ $("#archive-button").addEventListener("click", () => {
   showView("archive");
 });
 $("#archive-back").addEventListener("click", () => showView("garden"));
+$("#monthly-memory-entry").addEventListener("click", () => { if (renderMonthlyMemory()) showView("monthly-memory"); });
+$("#monthly-memory-back").addEventListener("click", () => showView("archive"));
 $("#archive-prev").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() - 1, 1); selectedDate = null; renderArchive(); });
 $("#archive-next").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() + 1, 1); selectedDate = null; renderArchive(); });
 $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday(); void restoreFragmentEvents(); if (fragmentState.pending.length) void syncPendingFragments();

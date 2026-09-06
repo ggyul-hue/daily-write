@@ -1,0 +1,27 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { selectMonthlyMemories, monthlySummary } from "./monthly-memory.js";
+
+const records = days => days.map(day => ({ date: `2026-09-${String(day).padStart(2, "0")}`, question: "질문", answer: "답" }));
+const selected = days => selectMonthlyMemories(records(days), 2026, 8).map(record => Number(record.date.slice(8)));
+assert.deepEqual(selected([]), []);
+assert.deepEqual(selected([6]), [6]);
+assert.deepEqual(selected([6, 4]), [4, 6]);
+assert.deepEqual(selected([30, 16, 1, 15]), [1, 15, 30]);
+assert.deepEqual(selected([1, 2, 3, 4]), [1, 3, 4]);
+assert.deepEqual(selected([28, 29, 30]), [28, 29, 30]);
+const input = records([30, 16, 1, 15]);
+const before = JSON.stringify(input);
+assert.deepEqual(selectMonthlyMemories(input, 2026, 8), selectMonthlyMemories(JSON.parse(before), 2026, 8));
+assert.equal(JSON.stringify(input), before);
+assert.equal(monthlySummary(2026, 8, "2026-09-06", "크림과", 6), "9월, 지금까지 크림과 6개의 조각을 남겼어요.");
+assert.equal(monthlySummary(2026, 7, "2026-09-06", "크림과", 18), "8월에는 크림과 18개의 조각을 남겼어요.");
+assert.equal(monthlySummary(2025, 8, "2026-09-06", "치즈와", 1), "9월에는 치즈와 1개의 조각을 남겼어요.");
+const app = readFileSync("app.js", "utf8");
+const renderer = app.slice(app.indexOf("function renderMonthlyMemory()"), app.indexOf("function roomErrorMessage("));
+assert.match(renderer, /answersInViewedMonth\(\)/);
+assert.match(renderer, /answerText\(record\)/);
+assert.match(renderer, /runtimePetState.identity === runtimePetIdentity\(\)/);
+assert.doesNotMatch(renderer, /localStorage|roomBackend|Math\.random|\.innerHTML|fetch\(/);
+assert.match(app, /monthly-memory-back"\)\.addEventListener\("click", \(\) => showView\("archive"\)\)/);
+console.log("phase 5A monthly memory checks passed");

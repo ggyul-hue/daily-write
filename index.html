@@ -25,7 +25,15 @@
         </section>
         <article id="garden-record" class="garden-record is-hidden" aria-label="오늘의 조각"><p class="garden-record-label"></p><strong class="garden-record-value"></strong><span class="garden-record-mark" aria-hidden="true">↗</span></article>
         <section id="fragment-cta" class="fragment-cta is-hidden" aria-live="polite"><p id="fragment-message"></p><button id="feed-fragment" type="button" disabled></button><small id="fragment-detail"></small></section>
-        <section id="pet-record" class="pet-record" aria-live="polite"><p class="eyebrow">A LITTLE FRIEND · ADOPTION RECORD</p><div class="pet-record-heading"><div><h2><span id="pet-record-name"></span>의 입양 기록서</h2><p id="pet-record-subtitle" class="pet-record-subtitle"></p></div><figure class="pet-record-photo"><img id="pet-record-photo-image" alt="" /></figure></div><div id="pet-record-content" class="pet-record-content"></div></section>
+        <section id="pet-record" class="pet-record" aria-live="polite"><p class="eyebrow">A LITTLE FRIEND · ADOPTION RECORD</p><div class="pet-record-heading"><div><h2><span id="pet-record-name"></span>의 입양 기록서</h2><p id="pet-record-subtitle" class="pet-record-subtitle"></p></div><figure class="pet-record-photo"><div class="pet-record-photo-scene"><img id="pet-record-photo-image" alt="" /></div></figure></div><div id="pet-record-content" class="pet-record-content"></div>
+          <div class="adoption-decor" aria-hidden="true">
+            <svg class="adoption-heart" viewBox="0 0 32 36"><path d="M14 30C10 25 2 14 5 7C8 1 14 5 16 12C19 3 28 4 27 12C26 19 19 26 14 30Z" /></svg>
+            <svg class="adoption-flowers" viewBox="0 0 68 88">
+              <g class="adoption-flower-a"><path class="flower-stem" d="M32 83Q31 51 22 28M29 64Q15 48 8 54Q12 65 29 67" /><path class="flower-petals" d="M21 15C12 0 3 14 12 22C-2 23 4 38 16 31C13 46 30 44 29 32C43 38 48 22 33 21C43 9 26 3 21 15Z" /><circle cx="22" cy="24" r="6" /></g>
+              <g class="adoption-flower-b"><path class="flower-stem" d="M43 84Q44 66 52 51M46 72Q56 59 62 64Q58 73 45 77" /><path class="flower-petals" d="M51 40C45 31 38 40 44 46C34 47 38 57 47 52C45 63 57 62 56 53C66 57 70 46 59 46C66 38 54 32 51 40Z" /><circle cx="51" cy="47" r="4" /></g>
+            </svg>
+          </div>
+        </section>
         <section id="fragment-debug" class="fragment-debug is-hidden" aria-live="polite"><strong>Fragment 4B diagnostic</strong><pre id="fragment-debug-output"></pre></section>
       </section>
 
@@ -40,7 +48,19 @@
       </section>
 
       <section id="archive-view" class="view is-hidden" aria-labelledby="archive-title">
-        <section class="archive-panel"><header class="archive-heading"><button id="archive-back" class="screen-back" type="button" aria-label="정원으로 돌아가기">←</button><h1 id="archive-title">지난 조각</h1></header><div class="month-switcher"><button id="archive-prev" type="button" aria-label="이전 달">‹</button><span id="archive-month"></span><button id="archive-next" type="button" aria-label="다음 달">›</button></div><p class="archive-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></p><div id="archive-calendar" class="archive-calendar" aria-label="기록 날짜"></div><div id="archive-list" class="archive-list"></div><article id="archive-paper" class="archive-paper is-hidden" aria-live="polite"><p id="paper-date" class="paper-date"></p><h2 id="paper-question"></h2><p id="paper-answer"></p><span class="paper-mark" aria-hidden="true">✎</span></article></section>
+        <section class="archive-panel"><header class="archive-heading"><button id="archive-back" class="screen-back" type="button" aria-label="정원으로 돌아가기">←</button><h1 id="archive-title">지난 조각</h1></header><div class="month-switcher"><button id="archive-prev" type="button" aria-label="이전 달">‹</button><span id="archive-month"></span><button id="archive-next" type="button" aria-label="다음 달">›</button></div><p class="archive-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></p><div id="archive-calendar" class="archive-calendar" aria-label="기록 날짜"></div>
+          <button id="monthly-memory-entry" class="monthly-memory-entry is-hidden" type="button"></button>
+          <div id="archive-list" class="archive-list"></div><article id="archive-paper" class="archive-paper is-hidden" aria-live="polite"><p id="paper-date" class="paper-date"></p><h2 id="paper-question"></h2><p id="paper-answer"></p><span class="paper-mark" aria-hidden="true">✎</span></article></section>
+      </section>
+
+      <section id="monthly-memory-view" class="view is-hidden" aria-labelledby="monthly-memory-title">
+        <section class="monthly-memory-page">
+          <header class="archive-heading"><button id="monthly-memory-back" class="screen-back" type="button" aria-label="지난 조각으로 돌아가기">←</button><h1 id="monthly-memory-title"></h1></header>
+          <div class="monthly-memory-intro"><p id="monthly-memory-meta" class="eyebrow"></p><p id="monthly-memory-summary"></p></div>
+          <div id="monthly-memory-list" class="monthly-memory-list"></div>
+          <p id="monthly-memory-companion" class="monthly-memory-companion is-hidden"></p>
+          <p id="monthly-memory-closing" class="monthly-memory-closing"></p>
+        </section>
       </section>
 
       <section id="room-view" class="view is-hidden" aria-labelledby="room-title">

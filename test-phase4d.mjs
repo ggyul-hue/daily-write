@@ -38,7 +38,7 @@ assert.doesNotMatch(app, /openPetProfile|closePetProfile|petProfileOpen/);
 assert.doesNotMatch(app.slice(app.indexOf("function renderPetRecord"), app.indexOf("function renderAnimal")), /roomBackend/);
 assert.match(css, /\.pet-record \{[^}]*border-radius:8px/);
 assert.match(css, /\.pet-record-progress \{[^}]*height:2px/);
-assert.match(css, /\.pet-record-photo \{[^}]*width:78px[^}]*height:78px/);
+assert.match(css, /\.pet-record-photo-scene \{[^}]*width:78px[^}]*height:78px/);
 assert.match(css, /Nanum Pen Script/);
 assert.match(app, /오늘도 조금씩 \$\{animalNameWithParticle\("을", "를"\)\} 알아가는 중/);
 console.log("phase 4D profile checks passed");

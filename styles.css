@@ -132,25 +132,59 @@ html,body { overflow-x:hidden; }
 .fragment-debug { margin:10px 0 0; padding:10px 12px; border:1px dashed #cbbca9; border-radius:12px; background:#fffaf0; color:#5d5044; font:11px/1.45 ui-monospace,Consolas,monospace; }
 .fragment-debug strong { display:block; margin-bottom:6px; font:700 11px/1.2 ui-monospace,Consolas,monospace; }
 .fragment-debug pre { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; }
-.pet-record { position:relative; margin:12px 0 0; padding:17px 16px 15px; overflow:hidden; border:1px solid #dfcfba; border-radius:8px; background:#fbf2df; box-shadow:2px 7px 12px #a7835a18; transform:rotate(-.25deg); }
-.pet-record::before { content:""; position:absolute; inset:0; pointer-events:none; opacity:.5; background:radial-gradient(circle at 12% 16%,#b5946f30 0 1px,transparent 1.4px),radial-gradient(circle at 77% 38%,#c2a2772c 0 .8px,transparent 1.2px),radial-gradient(circle at 38% 76%,#a9886726 0 .9px,transparent 1.3px),repeating-linear-gradient(0deg,transparent 0 4px,#b8997314 5px 6px); background-size:13px 11px,17px 19px,23px 17px,auto; }
-.pet-record::after { content:"♡"; position:absolute; right:13px; bottom:21px; color:#d99678; font:26px/1 "Nanum Pen Script",cursive; transform:rotate(-13deg); }
-.pet-record .eyebrow { position:relative; margin:0 0 9px; color:#aa8164; font-size:.59rem; letter-spacing:.1em; }
-.pet-record-heading { position:relative; display:grid; grid-template-columns:minmax(0,1fr) 78px; align-items:start; gap:12px; }
+.pet-record { position:relative; isolation:isolate; margin:12px 0 0; padding:18px 16px 15px; overflow:hidden; border:1px solid #e8dac4; border-radius:8px; background:linear-gradient(115deg,#fbf3e4,#faf0dd); box-shadow:2px 7px 12px #a7835a18; transform:rotate(-.25deg); }
+.pet-record::before { content:""; position:absolute; inset:0; z-index:-1; pointer-events:none; opacity:.09; mix-blend-mode:multiply; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Cpath fill='%23897961' filter='url(%23grain)' d='M0 0h512v512H0z'/%3E%3C/svg%3E"); }
+.adoption-decor { position:absolute; inset:0; z-index:2; pointer-events:none; }
+.adoption-heart { position:absolute; right:22px; top:163px; width:24px; height:28px; fill:none; stroke:#d99678; stroke-width:2.3; stroke-linecap:round; stroke-linejoin:round; transform:rotate(-10deg); }
+.adoption-flowers { position:absolute; right:20px; top:202px; width:60px; height:78px; overflow:visible; }
+.flower-stem { fill:#c6ce9a; stroke:#b6c18d; stroke-width:2; stroke-linecap:round; }
+.flower-petals { fill:#fff0cb; stroke:#e7b280; stroke-width:2; stroke-linejoin:round; }
+.adoption-flower-a circle, .adoption-flower-b circle { fill:#f1ca73; }
+.adoption-flower-b .flower-petals { stroke:#dca07e; }
+.pet-record:not(:has(.pet-record-fields)) .pet-record-note { padding-right:76px; }
+.pet-record:not(:has(.pet-record-fields)) .adoption-heart { top:auto; bottom:22px; right:62px; width:18px; height:21px; }
+.pet-record:not(:has(.pet-record-fields)) .adoption-flowers { top:auto; bottom:15px; width:36px; height:47px; }
+.pet-record .eyebrow { position:relative; margin:0 0 13px; color:#aa8164; font-size:.59rem; letter-spacing:.1em; }
+.pet-record-heading { position:relative; display:grid; grid-template-columns:minmax(0,1fr) 90px; align-items:start; gap:10px; }
 .pet-record h2 { margin:-2px 0 0; color:#513528; font:32px/1.08 "Nanum Pen Script",cursive; letter-spacing:-.04em; }
-.pet-record-subtitle { margin:6px 0 0; color:var(--muted); font-size:.78rem; line-height:1.45; word-break:keep-all; }
-.pet-record-photo { position:relative; z-index:1; display:grid; place-items:center; width:78px; height:78px; margin:-3px 0 0; padding:5px; overflow:visible; border:1px solid #e5d5c0; border-radius:1px; background:#fffdf7; box-shadow:3px 5px 7px #84654824; transform:rotate(3deg); }
-.pet-record-photo::before { content:""; position:absolute; z-index:2; top:-4px; left:18px; width:41px; height:12px; border:1px solid #d9be98aa; background:#ecd5aecc; transform:rotate(-7deg); }
-.pet-record-photo img { position:relative; z-index:1; width:100%; height:100%; object-fit:contain; }
+.pet-record-subtitle { margin:6px 0 0; color:#897057; font:19px/1.2 "Nanum Pen Script",cursive; word-break:keep-all; }
+.pet-record-photo { position:relative; z-index:1; width:90px; margin:0; padding:5px 5px 16px; overflow:visible; border:1px solid #e5d5c0; border-radius:1px; background:#fffdf7; box-shadow:2px 5px 7px #84654828; transform:rotate(3deg); }
+.pet-record-photo::before { content:""; position:absolute; z-index:2; top:-7px; left:23px; width:41px; height:15px; border:1px solid #dbc3a38c; background:linear-gradient(100deg,#e6c7a6b3,#ecd8b9d9,#e3c7a4ad); box-shadow:0 1px 1px #a7835a12; transform:rotate(-7deg); }
+.pet-record-photo-scene { width:78px; height:78px; overflow:hidden; background:linear-gradient(155deg,#eee3d0,#e4e7d3 72%,#d8dfc5); box-shadow:inset 0 0 0 1px #c8b99f26; }
+.pet-record-photo img { display:block; width:100%; height:100%; object-fit:contain; }
 .pet-record-content { position:relative; display:grid; gap:8px; margin-top:15px; }
-.pet-record-note { margin:0; color:var(--muted); font-size:.83rem; line-height:1.5; }
-.pet-record-fields { display:grid; gap:3px; margin:0; padding:12px 0 10px; border-top:1px dashed #d9bfa0; border-bottom:1px dashed #d9bfa0; }
+.pet-record-note { margin:0; color:#897057; font:20px/1.3 "Nanum Pen Script",cursive; }
+.pet-record-fields { display:grid; gap:4px; margin:0; padding:0 0 10px; }
 .pet-record-fields > div { display:grid; grid-template-columns:85px minmax(0,1fr); align-items:center; gap:10px; min-height:28px; }
-.pet-record-fields dt { justify-self:start; padding:3px 10px; border-radius:999px; background:#f1dfbc; color:#896b54; font-size:.69rem; }
+.pet-record-fields > div:nth-child(-n+4) { padding-right:64px; }
+.pet-record-fields dt { justify-self:start; padding:3px 9px; border-radius:999px; background:#f1dfbc99; color:#896b54; font-size:11px; }
 .pet-record-fields dd { margin:0; color:#60402e; font:21px/1.12 "Nanum Pen Script",cursive; letter-spacing:.01em; word-break:keep-all; }
 .pet-record-fields > div:nth-child(2) dd { transform:translateX(2px) rotate(-.4deg); }
 .pet-record-fields > div:nth-child(3) dd { transform:translateY(1px) rotate(.25deg); }
 .pet-record-fields > div:nth-child(4) dd { transform:translateX(-1px) rotate(-.2deg); }
-.pet-record-next { margin:2px 20px 0 0; color:#77935f; font:19px/1.25 "Nanum Pen Script",cursive; letter-spacing:.01em; }
-.pet-record-progress { height:2px; margin-top:3px; overflow:hidden; border-radius:999px; background:#eadcc6; }
-.pet-record-progress span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#b7cd8e,#d4b06f); }
+.pet-record-next { position:relative; margin:2px 0 0; padding-top:10px; color:#77935f; font:19px/1.25 "Nanum Pen Script",cursive; letter-spacing:.01em; }
+.pet-record-next::before { content:""; position:absolute; top:0; left:0; right:4px; height:1px; opacity:.65; background:linear-gradient(90deg,transparent,#bea17b99 8%,#bea17b66 90%,transparent); transform:rotate(-.3deg); }
+.pet-record-progress { height:2px; margin-top:3px; overflow:hidden; border-radius:60% 30% 65% 40%; background:#c5b59818; transform:rotate(-.2deg); }
+.pet-record-progress span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#b6ac8070,#c4a27988 90%,transparent); }
+
+/* Handwritten memories; controls, labels and date metadata retain the UI font. */
+.animal-caption { font:400 19px/1.25 "Nanum Pen Script",cursive; }
+.garden-record-value { font:400 22px/1.25 "Nanum Pen Script",cursive; }
+.archive-paper #paper-question { font:400 23px/1.3 "Nanum Pen Script",cursive; }
+.archive-paper #paper-answer { font:400 25px/1.4 "Nanum Pen Script",cursive; }
+
+.monthly-memory-entry { display:block; width:100%; max-width:460px; margin:22px auto 0; padding:15px 18px; border:1px solid #e2ceb0; border-radius:14px; background:#faf0dd; color:#785039; text-align:left; }
+.monthly-memory-entry.is-hidden { display:none; }
+.monthly-memory-page { max-width:460px; margin:36px auto 0; }
+.monthly-memory-page .archive-heading h1 { font-size:1.4rem; }
+.monthly-memory-intro { margin:30px 4px 26px; }
+.monthly-memory-intro .eyebrow { color:#a07d60; }
+#monthly-memory-summary { margin:10px 0 0; color:#705844; font-size:.93rem; line-height:1.75; word-break:keep-all; }
+.monthly-memory-list { display:grid; gap:20px; }
+.monthly-memory-card { position:relative; padding:25px 21px 24px; border:1px solid #e9dbc5; border-radius:5px 9px 7px 4px; background:linear-gradient(120deg,#fffaf0,#fcf1df); box-shadow:1px 4px 9px #9d7a4810; }
+.monthly-memory-card:first-child::before { content:""; position:absolute; top:-7px; right:24px; width:44px; height:13px; background:#e7cda49c; transform:rotate(5deg); pointer-events:none; }
+.monthly-memory-card time { color:#96816c; font-size:.74rem; }
+.monthly-memory-card h2 { margin:15px 0 12px; color:#79583e; font:400 23px/1.3 "Nanum Pen Script",cursive; overflow-wrap:anywhere; }
+.monthly-memory-answer { margin:0; color:#49382b; font:400 25px/1.4 "Nanum Pen Script",cursive; white-space:pre-wrap; word-break:keep-all; overflow-wrap:anywhere; }
+.monthly-memory-companion { margin:28px 4px 0; padding-top:17px; border-top:1px solid #e7dac6; color:#829367; font:400 22px/1.35 "Nanum Pen Script",cursive; }
+.monthly-memory-closing { margin:24px 4px 8px; color:#88715b; font:400 23px/1.35 "Nanum Pen Script",cursive; }
