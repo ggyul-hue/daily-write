@@ -528,10 +528,10 @@ function renderPetRecord() {
   addField("분류", speciesLabel(animalDefinition().species));
   addField("지금 모습", profile.stage);
   addField("함께한 조각", `${profile.points}개`);
-  addField("성격", runtimePetState.primaryTrait ? profile.trait : "아직 알아가는 중");
+  addField("성격", runtimePetState.primaryTrait ? profile.trait : "아직 알아가는 중이에요");
   const next = document.createElement("p");
   next.className = "pet-record-next";
-  next.textContent = `🌱 조금 더 함께하면 ${name}의 새로운 모습을 만날 수 있어요.`;
+  next.textContent = `🌱 오늘도 조금씩 ${animalNameWithParticle("을", "를")} 알아가는 중.`;
   const progress = document.createElement("div");
   progress.className = "pet-record-progress";
   progress.setAttribute("role", "progressbar");
