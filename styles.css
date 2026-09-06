@@ -233,7 +233,7 @@ html,body { overflow-x:hidden; }
 .monthly-keepsake-actions button:disabled { opacity:.55; }
 .monthly-keepsake-actions .is-hidden { display:none; }
 .monthly-keepsake-export-status { min-height:20px; margin:8px 2px 0; color:#8d765f; font-size:.75rem; text-align:center; }
-.monthly-keepsake-export { position:fixed; z-index:-1; top:0; left:0; width:1080px; height:1350px; overflow:hidden; pointer-events:none; background:#fff9ed; color:#4d392c; }
+.monthly-keepsake-capture-host { position:fixed; z-index:-1; top:0; left:-100000px; width:1080px; height:1350px; overflow:hidden; pointer-events:none; background:#fff9ed; color:#4d392c; }
 .export-keepsake-paper { position:relative; box-sizing:border-box; width:1080px; min-height:1350px; padding:86px 78px 101px; overflow:hidden; border:2px solid #e5d5bf; border-radius:18px; background:linear-gradient(118deg,#fff8e9,#fbefd9); box-shadow:6px 14px 28px #9d7a481c; }
 .export-keepsake-paper::before { content:""; position:absolute; inset:0; z-index:0; opacity:.08; mix-blend-mode:multiply; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Cpath fill='%23897961' filter='url(%23grain)' d='M0 0h512v512H0z'/%3E%3C/svg%3E"); }
 .export-keepsake-paper > * { position:relative; z-index:1; }

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 
 const app = readFileSync("app.js", "utf8");
 const html = readFileSync("index.html", "utf8");
-const exportRenderer = app.slice(app.indexOf("function renderMonthlyKeepsakeExport("), app.indexOf("function monthlyKeepsakeExportName("));
+const exportRenderer = app.slice(app.indexOf("function createMonthlyKeepsakeCaptureHost("), app.indexOf("function monthlyKeepsakeExportName("));
 const generator = app.slice(app.indexOf("async function createMonthlyKeepsakePng()"), app.indexOf("async function exportMonthlyKeepsake("));
 assert.match(exportRenderer, /selectMonthlyMemories\(records, year, month\)/);
 assert.match(exportRenderer, /answerText\(record\)/);
@@ -11,8 +11,10 @@ assert.doesNotMatch(exportRenderer, /localStorage|roomBackend|Math\.random|fetch
 assert.match(generator, /isCompletedMonth\(year, month, syncToday\(\)\)/);
 assert.match(generator, /window\.htmlToImage\.toPng/);
 assert.match(generator, /width: 1080, height: 1350/);
+assert.match(generator, /createMonthlyKeepsakeCaptureHost/);
+assert.match(generator, /finally\s*\{\s*host\.remove\(\)/);
 assert.match(html, /html-to-image@1\.11\.13/);
-assert.match(html, /id="monthly-keepsake-export"/);
+assert.doesNotMatch(html, /id="monthly-keepsake-export"/);
 assert.match(app, /navigator\.share/);
 assert.match(app, /downloadMonthlyKeepsake/);
 console.log("phase 5C monthly keepsake export checks passed");

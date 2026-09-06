@@ -952,19 +952,28 @@ function renderMonthlyKeepsake() {
     slip.append(date, question, answer);
     slips.append(slip);
   });
-  renderMonthlyKeepsakeExport(records, year, month, selected);
   $("#monthly-keepsake-export-status").textContent = "";
   $("#share-monthly-keepsake").classList.toggle("is-hidden", !navigator.share);
   return true;
 }
 
-function renderMonthlyKeepsakeExport(records, year, month, selected = selectMonthlyMemories(records, year, month)) {
-  $("#export-keepsake-meta").textContent = `MONTHLY KEEPSAKE · ${year}.${String(month + 1).padStart(2, "0")}`;
-  $("#export-keepsake-heading").textContent = `${month + 1}월의 작은 조각들`;
-  $("#export-keepsake-count").textContent = `${month + 1}월에는 ${records.length}개의 조각을 남겼어요.`;
-  $("#export-keepsake-closing").textContent = `${month + 1}월도 여기 잘 보관해둘게요. 🌱`;
-  $("#export-keepsake-stamp").textContent = `KEPT · ${year}.${String(month + 1).padStart(2, "0")}`;
-  const slips = $("#export-keepsake-slips");
+function createMonthlyKeepsakeCaptureHost() {
+  const host = document.createElement("section");
+  host.className = "monthly-keepsake-capture-host";
+  host.setAttribute("aria-hidden", "true");
+  host.innerHTML = `<article class="export-keepsake-paper"><p data-export="meta"></p><h1 data-export="heading"></h1><p data-export="count"></p><div data-export="slips" class="export-keepsake-slips"></div><p data-export="closing"></p><span data-export="stamp"></span><span class="export-keepsake-heart">♡</span><span class="export-keepsake-flower export-keepsake-flower-a">✿</span><span class="export-keepsake-flower export-keepsake-flower-b">✿</span></article>`;
+  document.body.append(host);
+  return host;
+}
+
+function renderMonthlyKeepsakeExport(host, records, year, month, selected = selectMonthlyMemories(records, year, month)) {
+  const find = (name) => host.querySelector(`[data-export="${name}"]`);
+  find("meta").textContent = `MONTHLY KEEPSAKE · ${year}.${String(month + 1).padStart(2, "0")}`;
+  find("heading").textContent = `${month + 1}월의 작은 조각들`;
+  find("count").textContent = `${month + 1}월에는 ${records.length}개의 조각을 남겼어요.`;
+  find("closing").textContent = `${month + 1}월도 여기 잘 보관해둘게요. 🌱`;
+  find("stamp").textContent = `KEPT · ${year}.${String(month + 1).padStart(2, "0")}`;
+  const slips = find("slips");
   slips.className = `export-keepsake-slips is-${selected.length}`;
   slips.replaceChildren();
   selected.forEach((record, index) => {
@@ -1005,9 +1014,14 @@ async function createMonthlyKeepsakePng() {
   const month = viewedMonth.getMonth();
   if (!records.length || !isCompletedMonth(year, month, syncToday())) throw new Error("keepsake unavailable");
   if (!window.htmlToImage?.toPng) throw new Error("image renderer unavailable");
-  renderMonthlyKeepsakeExport(records, year, month);
-  await document.fonts.ready;
-  return window.htmlToImage.toPng($("#monthly-keepsake-export"), { width: 1080, height: 1350, pixelRatio: 1, cacheBust: false });
+  const host = createMonthlyKeepsakeCaptureHost();
+  try {
+    renderMonthlyKeepsakeExport(host, records, year, month);
+    await document.fonts.ready;
+    return await window.htmlToImage.toPng(host, { width: 1080, height: 1350, pixelRatio: 1, cacheBust: false });
+  } finally {
+    host.remove();
+  }
 }
 
 async function exportMonthlyKeepsake(mode) {
