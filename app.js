@@ -3,7 +3,7 @@ import { behaviorWeights, chooseBehavior, createAnimalProfile, species } from ".
 import { getAnimalDefinition } from "./animal-manifest.js";
 import { normalizeInviteCode, roomBackend } from "./room-backend.js?v=personality-phase4cc-v1";
 import { createRuntimePetState, effectiveGrowthScale, petIdentity, runtimeBehaviorWeights } from "./pet-runtime.js";
-import { growthProfile, speciesLabel } from "./pet-profile-ui.js";
+import { growthProfile } from "./pet-profile-ui.js";
 
 const query = new URLSearchParams(location.search);
 const isFragmentDebug = query.get("debug") === "fragment4b";
@@ -51,7 +51,6 @@ let activePetPromise = null;
 let activePetPromiseIdentity = null;
 let runtimePetState = createRuntimePetState("");
 let runtimePetLoadId = 0;
-let petProfileOpen = false;
 let fragmentCtaError = "";
 const fragmentDebug = {
   backendConfigured: String(roomBackend.isConfigured),
@@ -156,10 +155,10 @@ async function loadRuntimePetState({ force = false } = {}) {
   const loadId = ++runtimePetLoadId;
   runtimePetState = createRuntimePetState(identity);
   applyRuntimePetScale();
-  refreshOpenPetProfile();
+  renderPetRecord();
   if (isQaMode || !roomBackend.isConfigured) {
     runtimePetState = { ...createRuntimePetState(identity), loaded: true };
-    refreshOpenPetProfile();
+    renderPetRecord();
     return;
   }
   try {
@@ -167,12 +166,12 @@ async function loadRuntimePetState({ force = false } = {}) {
     if (loadId !== runtimePetLoadId || runtimePetIdentity() !== identity) return;
     runtimePetState = pet ? createRuntimePetState(identity, pet) : { ...createRuntimePetState(identity), loaded: true };
     applyRuntimePetScale();
-    refreshOpenPetProfile();
+    renderPetRecord();
   } catch {
     if (loadId !== runtimePetLoadId || runtimePetIdentity() !== identity) return;
     runtimePetState = { ...createRuntimePetState(identity), loaded: true };
     applyRuntimePetScale();
-    refreshOpenPetProfile();
+    renderPetRecord();
   }
 }
 async function ensureActivePet() {
@@ -494,68 +493,38 @@ function setAnimalPosition(position) {
 }
 function stateNameFor(behavior) { return { idle: "REST", sit: "REST", sleep: "SLEEP", read: "READ", carry: "CARRY", walk: "WALK", "walk-a": "WALK", "walk-b": "WALK", "look-around": "LOOK_AROUND", observe: "OBSERVE" }[behavior] || behavior.toUpperCase(); }
 function setCaption(message) { $("#animal-caption").textContent = message; }
-function renderPetProfile() {
-  const title = $("#pet-profile-title");
-  const species = $("#pet-profile-species");
-  const content = $("#pet-profile-content");
-  const hamster = $("#hamster");
-  if (!title || !species || !content) return;
-
-  const animal = animalDefinition();
+function renderPetRecord() {
+  const subtitle = $("#pet-record-subtitle");
+  const content = $("#pet-record-content");
+  if (!subtitle || !content) return;
   const name = animalName();
-  title.textContent = name;
-  species.textContent = speciesLabel(animal.species);
-  hamster?.setAttribute("aria-label", `${name} 정보 보기`);
-
+  subtitle.textContent = `${name}에 대해 하나씩 알아가고 있어요.`;
   const profile = growthProfile(runtimePetState);
   content.replaceChildren();
   if (profile.kind !== "ready") {
     const note = document.createElement("p");
-    note.className = "pet-profile-note";
-    note.textContent = profile.kind === "loading" ? "성장 정보를 불러오고 있어요." : "아직 함께 자라기 시작하지 않았어요.";
+    note.className = "pet-record-note";
+    note.textContent = profile.kind === "loading" ? `${name}과 함께한 기록을 불러오고 있어요.` : "아직 함께 자라기 시작하지 않았어요.";
     content.append(note);
     return;
   }
-
-  const details = document.createElement("dl");
-  details.className = "pet-profile-details";
-  const addDetail = (label, value) => {
-    const row = document.createElement("div");
-    const term = document.createElement("dt");
-    const definition = document.createElement("dd");
-    term.textContent = label;
-    definition.textContent = value;
-    row.append(term, definition);
-    details.append(row);
-  };
-  addDetail("성장 단계", profile.stage);
-  addDetail("함께한 조각", `${profile.points}개`);
-  addDetail("다음 성장까지", profile.next);
-  addDetail("성향", profile.trait);
+  const summary = document.createElement("p");
+  summary.className = "pet-record-summary";
+  summary.textContent = `${profile.stage} · 함께한 조각 ${profile.points}개`;
+  const trait = document.createElement("p");
+  trait.className = "pet-record-trait";
+  trait.textContent = profile.trait;
   const progress = document.createElement("div");
-  progress.className = "pet-profile-progress";
+  progress.className = "pet-record-progress";
   progress.setAttribute("role", "progressbar");
-  progress.setAttribute("aria-label", "다음 성장까지의 진행도");
+  progress.setAttribute("aria-label", "성장 단계의 진행도");
   progress.setAttribute("aria-valuemin", "0");
   progress.setAttribute("aria-valuemax", "100");
   progress.setAttribute("aria-valuenow", String(Math.round(profile.progress * 100)));
   const fill = document.createElement("span");
   fill.style.width = `${profile.progress * 100}%`;
   progress.append(fill);
-  content.append(details, progress);
-}
-function refreshOpenPetProfile() { if (petProfileOpen) renderPetProfile(); }
-function openPetProfile() {
-  petProfileOpen = true;
-  renderPetProfile();
-  $("#pet-profile-sheet")?.classList.remove("is-hidden");
-  requestAnimationFrame(() => $("#close-pet-profile")?.focus());
-}
-function closePetProfile() {
-  if (!petProfileOpen) return;
-  petProfileOpen = false;
-  $("#pet-profile-sheet")?.classList.add("is-hidden");
-  $("#hamster")?.focus({ preventScroll: true });
+  content.append(summary, trait, progress);
 }
 function renderAnimal({ pose = currentBehavior, captionBehavior = pose, stateName = stateNameFor(captionBehavior), message } = {}) {
   const renderId = ++animalRenderId;
@@ -569,7 +538,7 @@ function renderAnimal({ pose = currentBehavior, captionBehavior = pose, stateNam
       const isWalking = isWalkPose(pose);
       asset.className = `hamster-asset species-${animalDefinition().species} coat-${animalProfile.coat || "golden"}`;
       hamster.className = `hamster ${isWalking ? "is-walking" : "is-stationary"}`;
-      hamster.setAttribute("aria-label", `${animalName()} 정보 보기`);
+      hamster.setAttribute("aria-label", `${animalName()}의 모습`);
       if (!isWalking) setAnimalPosition(animalPosition);
       hamster.style.setProperty("--face-direction", isMochi() && !isMochiSidePose(pose) ? "1" : (hamster.dataset.direction || "1"));
       asset.style.setProperty("--pose-scale", String(isMochi() ? (mochiPoseVisualScale[pose] || 1) : 1));
@@ -810,6 +779,7 @@ function renderGarden({ resetAnimal = true } = {}) {
     record.querySelector(".garden-record-value").textContent = `“${answerText(answer)}”을 남겼어요.`;
   }
   renderFragmentCta();
+  renderPetRecord();
   renderFragmentDebug();
   void loadRuntimePetState();
   if (resetAnimal) chooseAnimalBehavior();
@@ -1131,15 +1101,6 @@ $("#archive-back").addEventListener("click", () => showView("garden"));
 $("#archive-prev").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() - 1, 1); selectedDate = null; renderArchive(); });
 $("#archive-next").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() + 1, 1); selectedDate = null; renderArchive(); });
 $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday(); void restoreFragmentEvents(); if (fragmentState.pending.length) void syncPendingFragments();
-$("#hamster").addEventListener("click", openPetProfile);
-$("#hamster").addEventListener("keydown", (event) => {
-  if (event.key !== "Enter" && event.key !== " ") return;
-  event.preventDefault();
-  openPetProfile();
-});
-$("#pet-profile-backdrop").addEventListener("click", closePetProfile);
-$("#close-pet-profile").addEventListener("click", closePetProfile);
-document.addEventListener("keydown", (event) => { if (event.key === "Escape" && petProfileOpen) closePetProfile(); });
 $("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
 $("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });

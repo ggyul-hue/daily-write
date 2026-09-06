@@ -132,18 +132,13 @@ html,body { overflow-x:hidden; }
 .fragment-debug { margin:10px 0 0; padding:10px 12px; border:1px dashed #cbbca9; border-radius:12px; background:#fffaf0; color:#5d5044; font:11px/1.45 ui-monospace,Consolas,monospace; }
 .fragment-debug strong { display:block; margin-bottom:6px; font:700 11px/1.2 ui-monospace,Consolas,monospace; }
 .fragment-debug pre { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; }
-.hamster[role="button"] { cursor:pointer; }
-.hamster[role="button"]:focus-visible { outline:3px solid #fffaf0; outline-offset:4px; }
-.pet-profile-sheet { position:fixed; z-index:14; inset:0; display:flex; align-items:flex-end; }
-.pet-profile-sheet.is-hidden { display:none; }
-.pet-profile-panel { position:relative; z-index:1; box-sizing:border-box; width:100%; max-width:540px; max-height:min(78vh,670px); margin:auto; padding:9px 22px 104px; overflow-y:auto; border-radius:27px 27px 0 0; background:var(--paper); box-shadow:0 -8px 30px #45372a22; animation:sheet-up .28s ease-out both; }
-.pet-profile-panel h1 { margin:8px 0 3px; font-size:clamp(30px,8vw,38px); line-height:1.25; }
-.pet-profile-species { margin:0; color:var(--muted); font-size:.9rem; }
-.pet-profile-content { display:grid; gap:14px; margin-top:26px; }
-.pet-profile-note { margin:0; color:var(--muted); line-height:1.6; }
-.pet-profile-details { display:grid; gap:0; margin:0; border-top:1px solid #e6dacb; }
-.pet-profile-details > div { display:grid; grid-template-columns:104px minmax(0,1fr); gap:12px; padding:15px 0; border-bottom:1px solid #e6dacb; }
-.pet-profile-details dt { color:var(--muted); font-size:.83rem; }
-.pet-profile-details dd { margin:0; color:var(--ink); font-size:.95rem; font-weight:700; line-height:1.45; word-break:keep-all; }
-.pet-profile-progress { height:6px; overflow:hidden; border-radius:999px; background:#eee2d1; }
-.pet-profile-progress span { display:block; height:100%; border-radius:inherit; background:var(--orange); }
+.pet-record { margin:12px 0 0; padding:16px; border:1px solid #e6dacb; border-radius:20px; background:#fffdf7; box-shadow:0 2px 0 #e8dccb; }
+.pet-record .eyebrow { margin:0 0 5px; }
+.pet-record h2 { margin:0; color:var(--ink); font-size:1rem; }
+.pet-record-subtitle { margin:5px 0 15px; color:var(--muted); font-size:.8rem; }
+.pet-record-content { display:grid; gap:8px; }
+.pet-record-summary,.pet-record-trait,.pet-record-note { margin:0; line-height:1.5; }
+.pet-record-summary { color:var(--ink); font-size:.88rem; font-weight:700; }
+.pet-record-trait,.pet-record-note { color:var(--muted); font-size:.83rem; }
+.pet-record-progress { height:5px; overflow:hidden; border-radius:999px; background:#eee2d1; }
+.pet-record-progress span { display:block; height:100%; border-radius:inherit; background:var(--orange); }
