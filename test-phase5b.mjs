@@ -9,7 +9,7 @@ assert.equal(isCompletedMonth(2025, 11, "2026-01-01"), true);
 const records = [4, 15, 16, 20].map(day => ({ date: `2026-09-${String(day).padStart(2, "0")}`, question: "질문", answer: "답" }));
 assert.deepEqual(selectMonthlyMemories(records, 2026, 8).map(record => record.date), ["2026-09-04", "2026-09-15", "2026-09-20"]);
 const app = readFileSync("app.js", "utf8");
-const keepsake = app.slice(app.indexOf("function renderMonthlyKeepsake()"), app.indexOf("function roomErrorMessage("));
+const keepsake = app.slice(app.indexOf("function renderMonthlyKeepsake()"), app.indexOf("function renderMonthlyKeepsakeExport("));
 assert.match(keepsake, /answersInViewedMonth\(\)/);
 assert.match(keepsake, /selectMonthlyMemories\(records, year, month\)/);
 assert.match(keepsake, /answerText\(record\)/);

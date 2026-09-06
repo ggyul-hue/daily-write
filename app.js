@@ -952,7 +952,90 @@ function renderMonthlyKeepsake() {
     slip.append(date, question, answer);
     slips.append(slip);
   });
+  renderMonthlyKeepsakeExport(records, year, month, selected);
+  $("#monthly-keepsake-export-status").textContent = "";
+  $("#share-monthly-keepsake").classList.toggle("is-hidden", !navigator.share);
   return true;
+}
+
+function renderMonthlyKeepsakeExport(records, year, month, selected = selectMonthlyMemories(records, year, month)) {
+  $("#export-keepsake-meta").textContent = `MONTHLY KEEPSAKE · ${year}.${String(month + 1).padStart(2, "0")}`;
+  $("#export-keepsake-heading").textContent = `${month + 1}월의 작은 조각들`;
+  $("#export-keepsake-count").textContent = `${month + 1}월에는 ${records.length}개의 조각을 남겼어요.`;
+  $("#export-keepsake-closing").textContent = `${month + 1}월도 여기 잘 보관해둘게요. 🌱`;
+  $("#export-keepsake-stamp").textContent = `KEPT · ${year}.${String(month + 1).padStart(2, "0")}`;
+  const slips = $("#export-keepsake-slips");
+  slips.className = `export-keepsake-slips is-${selected.length}`;
+  slips.replaceChildren();
+  selected.forEach((record, index) => {
+    const slip = document.createElement("article");
+    slip.className = `export-keepsake-slip export-keepsake-slip-${index + 1}`;
+    const date = document.createElement("time");
+    date.dateTime = record.date;
+    date.textContent = formatDate(record.date);
+    const question = document.createElement("p");
+    question.className = "export-keepsake-question";
+    question.textContent = record.question;
+    const answer = document.createElement("p");
+    answer.className = "export-keepsake-answer";
+    answer.textContent = answerText(record);
+    slip.append(date, question, answer);
+    slips.append(slip);
+  });
+}
+
+function monthlyKeepsakeExportName() {
+  const year = viewedMonth.getFullYear();
+  const month = String(viewedMonth.getMonth() + 1).padStart(2, "0");
+  return `daily-write-keepsake-${year}-${month}.png`;
+}
+
+function downloadMonthlyKeepsake(dataUrl) {
+  const link = document.createElement("a");
+  link.href = dataUrl;
+  link.download = monthlyKeepsakeExportName();
+  document.body.append(link);
+  link.click();
+  link.remove();
+}
+
+async function createMonthlyKeepsakePng() {
+  const records = answersInViewedMonth();
+  const year = viewedMonth.getFullYear();
+  const month = viewedMonth.getMonth();
+  if (!records.length || !isCompletedMonth(year, month, syncToday())) throw new Error("keepsake unavailable");
+  if (!window.htmlToImage?.toPng) throw new Error("image renderer unavailable");
+  renderMonthlyKeepsakeExport(records, year, month);
+  await document.fonts.ready;
+  return window.htmlToImage.toPng($("#monthly-keepsake-export"), { width: 1080, height: 1350, pixelRatio: 1, cacheBust: false });
+}
+
+async function exportMonthlyKeepsake(mode) {
+  const controls = [$("#save-monthly-keepsake"), $("#share-monthly-keepsake")];
+  const status = $("#monthly-keepsake-export-status");
+  controls.forEach((button) => { button.disabled = true; });
+  status.textContent = "한 장의 기록을 준비하고 있어요.";
+  try {
+    const dataUrl = await createMonthlyKeepsakePng();
+    if (mode === "share" && navigator.share) {
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], monthlyKeepsakeExportName(), { type: "image/png" });
+      if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: "한 달의 작은 조각들" });
+        status.textContent = "공유할 기록을 준비했어요.";
+      } else {
+        downloadMonthlyKeepsake(dataUrl);
+        status.textContent = "이미지로 저장했어요.";
+      }
+    } else {
+      downloadMonthlyKeepsake(dataUrl);
+      status.textContent = "이미지로 저장했어요.";
+    }
+  } catch (error) {
+    status.textContent = error?.name === "AbortError" ? "" : "이미지를 만들지 못했어요. 다시 시도해주세요.";
+  } finally {
+    controls.forEach((button) => { button.disabled = false; });
+  }
 }
 
 function roomErrorMessage(error) {
@@ -1197,6 +1280,8 @@ $("#monthly-memory-entry").addEventListener("click", () => { if (renderMonthlyMe
 $("#monthly-memory-back").addEventListener("click", () => showView("archive"));
 $("#monthly-keepsake-entry").addEventListener("click", () => { if (renderMonthlyKeepsake()) showView("monthly-keepsake"); });
 $("#monthly-keepsake-back").addEventListener("click", () => showView("monthly-memory"));
+$("#save-monthly-keepsake").addEventListener("click", () => { void exportMonthlyKeepsake("download"); });
+$("#share-monthly-keepsake").addEventListener("click", () => { void exportMonthlyKeepsake("share"); });
 $("#archive-prev").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() - 1, 1); selectedDate = null; renderArchive(); });
 $("#archive-next").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() + 1, 1); selectedDate = null; renderArchive(); });
 $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday(); void restoreFragmentEvents(); if (fragmentState.pending.length) void syncPendingFragments();

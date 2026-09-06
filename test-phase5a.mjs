@@ -18,7 +18,7 @@ assert.equal(monthlySummary(2026, 8, "2026-09-06", "크림과", 6), "9월, 지�
 assert.equal(monthlySummary(2026, 7, "2026-09-06", "크림과", 18), "8월에는 크림과 18개의 조각을 남겼어요.");
 assert.equal(monthlySummary(2025, 8, "2026-09-06", "치즈와", 1), "9월에는 치즈와 1개의 조각을 남겼어요.");
 const app = readFileSync("app.js", "utf8");
-const renderer = app.slice(app.indexOf("function renderMonthlyMemory()"), app.indexOf("function roomErrorMessage("));
+const renderer = app.slice(app.indexOf("function renderMonthlyMemory()"), app.indexOf("function renderMonthlyKeepsake()"));
 assert.match(renderer, /answersInViewedMonth\(\)/);
 assert.match(renderer, /answerText\(record\)/);
 assert.match(renderer, /runtimePetState.identity === runtimePetIdentity\(\)/);
