@@ -14,3 +14,8 @@ export function monthlySummary(year, monthIndex, today, companion, count) {
   const opening = currentMonth ? `${monthIndex + 1}월, 지금까지` : `${monthIndex + 1}월에는`;
   return `${opening} ${companion} ${count}개의 조각을 남겼어요.`;
 }
+
+export function isCompletedMonth(year, monthIndex, today) {
+  const [todayYear, todayMonth] = today.slice(0, 7).split("-").map(Number);
+  return year < todayYear || (year === todayYear && monthIndex + 1 < todayMonth);
+}

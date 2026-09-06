@@ -4,7 +4,7 @@ import { getAnimalDefinition } from "./animal-manifest.js";
 import { normalizeInviteCode, roomBackend } from "./room-backend.js?v=personality-phase4cc-v1";
 import { createRuntimePetState, effectiveGrowthScale, petIdentity, runtimeBehaviorWeights } from "./pet-runtime.js";
 import { growthProfile, speciesLabel } from "./pet-profile-ui.js";
-import { selectMonthlyMemories, monthlySummary } from "./monthly-memory.js";
+import { isCompletedMonth, selectMonthlyMemories, monthlySummary } from "./monthly-memory.js";
 
 const query = new URLSearchParams(location.search);
 const isFragmentDebug = query.get("debug") === "fragment4b";
@@ -120,7 +120,7 @@ function updateFragmentDebug(values) {
 function recordFragmentDebugError(stage, error) {
   updateFragmentDebug({ lastErrorStage: stage, lastErrorMessage: safeDebugMessage(error) });
 }
-const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), roomInterior: $("#room-interior-view"), archive: $("#archive-view"), "monthly-memory": $("#monthly-memory-view") };
+const views = { garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), roomInterior: $("#room-interior-view"), archive: $("#archive-view"), "monthly-memory": $("#monthly-memory-view"), "monthly-keepsake": $("#monthly-keepsake-view") };
 let roomIdentity = null;
 let activeRooms = [];
 let afterNickname = null;
@@ -916,6 +916,42 @@ function renderMonthlyMemory() {
       : `지금 ${animalNameWithParticle("은", "는")} ${profile.stage}${profile.stage === "자라는 중" ? "이에요" : "예요"}.`
     : "";
   $("#monthly-memory-closing").textContent = `${month + 1}월도 잘 간직해둘게요. 🌱`;
+  const keepsakeEntry = $("#monthly-keepsake-entry");
+  keepsakeEntry.classList.toggle("is-hidden", !isCompletedMonth(year, month, syncToday()));
+  keepsakeEntry.textContent = `${month + 1}월을 한 장으로 간직하기 →`;
+  return true;
+}
+
+function renderMonthlyKeepsake() {
+  const records = answersInViewedMonth();
+  const year = viewedMonth.getFullYear();
+  const month = viewedMonth.getMonth();
+  if (!records.length || !isCompletedMonth(year, month, syncToday())) return false;
+  $("#monthly-keepsake-title").textContent = `${month + 1}월의 보관 페이지`;
+  $("#monthly-keepsake-meta").textContent = `MONTHLY KEEPSAKE · ${year}.${String(month + 1).padStart(2, "0")}`;
+  $("#monthly-keepsake-heading").textContent = `${month + 1}월의 작은 조각들`;
+  $("#monthly-keepsake-count").textContent = `${month + 1}월에는 ${records.length}개의 조각을 남겼어요.`;
+  $("#monthly-keepsake-closing").textContent = `${month + 1}월도 여기 잘 보관해둘게요. 🌱`;
+  $("#monthly-keepsake-stamp").textContent = `KEPT · ${year}.${String(month + 1).padStart(2, "0")}`;
+  const slips = $("#monthly-keepsake-slips");
+  const selected = selectMonthlyMemories(records, year, month);
+  slips.className = `monthly-keepsake-slips is-${selected.length}`;
+  slips.replaceChildren();
+  selected.forEach((record, index) => {
+    const slip = document.createElement("article");
+    slip.className = `keepsake-slip keepsake-slip-${index + 1}`;
+    const date = document.createElement("time");
+    date.dateTime = record.date;
+    date.textContent = formatDate(record.date);
+    const question = document.createElement("p");
+    question.className = "keepsake-question";
+    question.textContent = record.question;
+    const answer = document.createElement("p");
+    answer.className = "keepsake-answer";
+    answer.textContent = answerText(record);
+    slip.append(date, question, answer);
+    slips.append(slip);
+  });
   return true;
 }
 
@@ -1159,6 +1195,8 @@ $("#archive-button").addEventListener("click", () => {
 $("#archive-back").addEventListener("click", () => showView("garden"));
 $("#monthly-memory-entry").addEventListener("click", () => { if (renderMonthlyMemory()) showView("monthly-memory"); });
 $("#monthly-memory-back").addEventListener("click", () => showView("archive"));
+$("#monthly-keepsake-entry").addEventListener("click", () => { if (renderMonthlyKeepsake()) showView("monthly-keepsake"); });
+$("#monthly-keepsake-back").addEventListener("click", () => showView("monthly-memory"));
 $("#archive-prev").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() - 1, 1); selectedDate = null; renderArchive(); });
 $("#archive-next").addEventListener("click", () => { viewedMonth = new Date(viewedMonth.getFullYear(), viewedMonth.getMonth() + 1, 1); selectedDate = null; renderArchive(); });
 $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").addEventListener("click", closeSheet); if (isMochi()) preloadMochiPhaseAAssets(); renderGarden(); renderToday(); void restoreFragmentEvents(); if (fragmentState.pending.length) void syncPendingFragments();
