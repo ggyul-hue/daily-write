@@ -3,7 +3,7 @@ import { behaviorWeights, chooseBehavior, createAnimalProfile, species } from ".
 import { getAnimalDefinition } from "./animal-manifest.js";
 import { normalizeInviteCode, roomBackend } from "./room-backend.js?v=personality-phase4cc-v1";
 import { createRuntimePetState, effectiveGrowthScale, petIdentity, runtimeBehaviorWeights } from "./pet-runtime.js";
-import { growthProfile } from "./pet-profile-ui.js";
+import { growthProfile, speciesLabel } from "./pet-profile-ui.js";
 
 const query = new URLSearchParams(location.search);
 const isFragmentDebug = query.get("debug") === "fragment4b";
@@ -497,10 +497,13 @@ function renderPetRecord() {
   const titleName = $("#pet-record-name");
   const subtitle = $("#pet-record-subtitle");
   const content = $("#pet-record-content");
-  if (!titleName || !subtitle || !content) return;
+  const photo = $("#pet-record-photo-image");
+  if (!titleName || !subtitle || !content || !photo) return;
   const name = animalName();
   titleName.textContent = name;
-  subtitle.textContent = `${name}에 대해 하나씩 알아가고 있어요.`;
+  subtitle.textContent = "우리 집에 온 작은 친구를 천천히 알아가고 있어요.";
+  photo.src = imagePath("idle");
+  photo.alt = `${name}의 증명사진`;
   const profile = growthProfile(runtimePetState);
   content.replaceChildren();
   if (profile.kind !== "ready") {
@@ -510,15 +513,25 @@ function renderPetRecord() {
     content.append(note);
     return;
   }
-  const summary = document.createElement("p");
-  summary.className = "pet-record-summary";
-  summary.textContent = `${profile.stage} · 함께한 조각 ${profile.points}개`;
-  const trait = document.createElement("p");
-  trait.className = "pet-record-trait";
-  trait.textContent = profile.trait;
+  const fields = document.createElement("dl");
+  fields.className = "pet-record-fields";
+  const addField = (label, value) => {
+    const row = document.createElement("div");
+    const term = document.createElement("dt");
+    const definition = document.createElement("dd");
+    term.textContent = label;
+    definition.textContent = value;
+    row.append(term, definition);
+    fields.append(row);
+  };
+  addField("이름", name);
+  addField("분류", speciesLabel(animalDefinition().species));
+  addField("지금 모습", profile.stage);
+  addField("함께한 조각", `${profile.points}개`);
+  addField("성격", runtimePetState.primaryTrait ? profile.trait : "아직 알아가는 중");
   const next = document.createElement("p");
   next.className = "pet-record-next";
-  next.textContent = `조금 더 함께하면 ${name}의 새로운 모습을 만날 수 있어요.`;
+  next.textContent = `🌱 조금 더 함께하면 ${name}의 새로운 모습을 만날 수 있어요.`;
   const progress = document.createElement("div");
   progress.className = "pet-record-progress";
   progress.setAttribute("role", "progressbar");
@@ -529,7 +542,7 @@ function renderPetRecord() {
   const fill = document.createElement("span");
   fill.style.width = `${profile.progress * 100}%`;
   progress.append(fill);
-  content.append(summary, trait, next, progress);
+  content.append(fields, next, progress);
 }
 function renderAnimal({ pose = currentBehavior, captionBehavior = pose, stateName = stateNameFor(captionBehavior), message } = {}) {
   const renderId = ++animalRenderId;
