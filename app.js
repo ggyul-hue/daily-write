@@ -494,10 +494,12 @@ function setAnimalPosition(position) {
 function stateNameFor(behavior) { return { idle: "REST", sit: "REST", sleep: "SLEEP", read: "READ", carry: "CARRY", walk: "WALK", "walk-a": "WALK", "walk-b": "WALK", "look-around": "LOOK_AROUND", observe: "OBSERVE" }[behavior] || behavior.toUpperCase(); }
 function setCaption(message) { $("#animal-caption").textContent = message; }
 function renderPetRecord() {
+  const titleName = $("#pet-record-name");
   const subtitle = $("#pet-record-subtitle");
   const content = $("#pet-record-content");
-  if (!subtitle || !content) return;
+  if (!titleName || !subtitle || !content) return;
   const name = animalName();
+  titleName.textContent = name;
   subtitle.textContent = `${name}에 대해 하나씩 알아가고 있어요.`;
   const profile = growthProfile(runtimePetState);
   content.replaceChildren();
@@ -514,6 +516,9 @@ function renderPetRecord() {
   const trait = document.createElement("p");
   trait.className = "pet-record-trait";
   trait.textContent = profile.trait;
+  const next = document.createElement("p");
+  next.className = "pet-record-next";
+  next.textContent = `조금 더 함께하면 ${name}의 새로운 모습을 만날 수 있어요.`;
   const progress = document.createElement("div");
   progress.className = "pet-record-progress";
   progress.setAttribute("role", "progressbar");
@@ -524,7 +529,7 @@ function renderPetRecord() {
   const fill = document.createElement("span");
   fill.style.width = `${profile.progress * 100}%`;
   progress.append(fill);
-  content.append(summary, trait, progress);
+  content.append(summary, trait, next, progress);
 }
 function renderAnimal({ pose = currentBehavior, captionBehavior = pose, stateName = stateNameFor(captionBehavior), message } = {}) {
   const renderId = ++animalRenderId;

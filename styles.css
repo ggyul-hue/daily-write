@@ -132,13 +132,17 @@ html,body { overflow-x:hidden; }
 .fragment-debug { margin:10px 0 0; padding:10px 12px; border:1px dashed #cbbca9; border-radius:12px; background:#fffaf0; color:#5d5044; font:11px/1.45 ui-monospace,Consolas,monospace; }
 .fragment-debug strong { display:block; margin-bottom:6px; font:700 11px/1.2 ui-monospace,Consolas,monospace; }
 .fragment-debug pre { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; }
-.pet-record { margin:12px 0 0; padding:16px; border:1px solid #e6dacb; border-radius:20px; background:#fffdf7; box-shadow:0 2px 0 #e8dccb; }
-.pet-record .eyebrow { margin:0 0 5px; }
-.pet-record h2 { margin:0; color:var(--ink); font-size:1rem; }
-.pet-record-subtitle { margin:5px 0 15px; color:var(--muted); font-size:.8rem; }
-.pet-record-content { display:grid; gap:8px; }
-.pet-record-summary,.pet-record-trait,.pet-record-note { margin:0; line-height:1.5; }
+.pet-record { position:relative; margin:12px 0 0; padding:17px 16px 14px; overflow:hidden; border:1px solid #e6dacb; border-radius:20px; background:linear-gradient(135deg,#fffdf7 0%,#fff9ed 100%); box-shadow:0 2px 0 #e8dccb; }
+.pet-record::before { content:""; position:absolute; top:-24px; right:-18px; width:92px; height:62px; border:1px solid #eddfca; border-radius:50%; opacity:.58; transform:rotate(-18deg); }
+.pet-record .eyebrow { position:relative; margin:0 0 5px; color:#af886a; font-size:.62rem; letter-spacing:.13em; }
+.pet-record-heading { position:relative; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.pet-record h2 { margin:0; color:var(--ink); font-size:1.12rem; letter-spacing:-.03em; }
+.pet-record-heart { color:#d99a79; font-size:1.55rem; line-height:1; transform:rotate(-12deg); }
+.pet-record-subtitle { position:relative; margin:6px 0 15px; color:var(--muted); font-size:.81rem; }
+.pet-record-content { position:relative; display:grid; gap:5px; }
+.pet-record-summary,.pet-record-trait,.pet-record-next,.pet-record-note { margin:0; line-height:1.5; }
 .pet-record-summary { color:var(--ink); font-size:.88rem; font-weight:700; }
 .pet-record-trait,.pet-record-note { color:var(--muted); font-size:.83rem; }
-.pet-record-progress { height:5px; overflow:hidden; border-radius:999px; background:#eee2d1; }
-.pet-record-progress span { display:block; height:100%; border-radius:inherit; background:var(--orange); }
+.pet-record-next { margin-top:3px; color:#a67959; font-size:.76rem; }
+.pet-record-progress { height:3px; margin-top:7px; overflow:hidden; border-radius:999px; background:#eee2d1; }
+.pet-record-progress span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#dca173,#e6c476); }
