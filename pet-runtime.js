@@ -13,9 +13,11 @@ export function primaryTraitFrom(traits) {
 export function createRuntimePetState(identity, pet = null) {
   const growthStage = STAGE_MULTIPLIERS[pet?.growth_stage] ? pet.growth_stage : null;
   const growthScale = Number(pet?.growth_scale);
+  const growthPoints = Number(pet?.growth_points);
   return {
     identity,
     growthStage,
+    growthPoints: Number.isInteger(growthPoints) && growthPoints >= 0 ? growthPoints : null,
     growthScale: Number.isFinite(growthScale) && growthScale > 0 ? growthScale : 1,
     primaryTrait: primaryTraitFrom(pet?.traits),
     loaded: Boolean(pet),
