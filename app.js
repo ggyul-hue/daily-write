@@ -1189,9 +1189,9 @@ function openRoomInviteSheet() {
   $("#copy-room-invite").textContent = "코드 복사";
   $("#room-invite-sheet").classList.remove("is-hidden");
 }
-function roomQuestionCandidate(roomId, day) {
+function roomQuestionCandidate(day) {
   let seed = 0;
-  for (const character of `${roomId}:${day}`) seed = ((seed << 5) - seed + character.charCodeAt(0)) | 0;
+  for (const character of day) seed = ((seed << 5) - seed + character.charCodeAt(0)) | 0;
   return questions[(seed >>> 0) % questions.length];
 }
 function roomQuestionById(id) { return questions.find((question) => question.id === id); }
@@ -1250,7 +1250,7 @@ async function renderRoomDaily(room) {
   const renderId = ++roomDailyRenderId;
   const day = syncToday();
   try {
-    const proposed = roomQuestionCandidate(room.id, day);
+    const proposed = roomQuestionCandidate(day);
     const daily = await roomBackend.ensureDailyQuestion(room.id, day, proposed.id);
     if (renderId !== roomDailyRenderId) return;
     const question = roomQuestionById(daily.question_id);
