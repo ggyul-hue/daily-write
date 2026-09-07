@@ -5,8 +5,8 @@ import { duplicateRoomTriplets, normalizeQuestion, validateBank } from "./questi
 const partial = validateBank(questionBank);
 assert.equal(partial.ok, true);
 assert.equal(partial.errors.length, 0);
-assert.equal(questionBank.length, 249);
-assert.equal(questionBank.filter((question) => question.roomEligible).length, 89);
+assert.equal(questionBank.length, 369);
+assert.equal(questionBank.filter((question) => question.roomEligible).length, 129);
 assert.equal(normalizeQuestion(" 오늘은 괜찮았나요?  "), "오늘은 괜찮았나요");
 
 const base = { id: "dq-v1-0001", text: "오늘의 질문", category: "scene", dailySlot: "scene", roomEligible: false };
