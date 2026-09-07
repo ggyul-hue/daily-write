@@ -31,6 +31,17 @@ export function duplicateRoomTriplets(bank) {
   return duplicates;
 }
 
+export function duplicateUnorderedRoomTriplets(bank) {
+  const seen = new Map(); const duplicates = [];
+  bank.forEach((question) => {
+    if (!question?.roomEligible || !Array.isArray(question.roomChoices) || question.roomChoices.length !== 3) return;
+    const key = question.roomChoices.map((choice) => normalizeQuestion(choice)).sort().join("|");
+    if (seen.has(key)) duplicates.push({ key, first: seen.get(key), duplicate: question.id });
+    else seen.set(key, question.id);
+  });
+  return duplicates;
+}
+
 export function validateBank(bank, { final = false } = {}) {
   const errors = [];
   const warnings = [];
@@ -71,6 +82,7 @@ export function validateBank(bank, { final = false } = {}) {
     if (a.length > 8 && b.length > 8 && nearDuplicate(a, b)) warnings.push(warn(`near-duplicate candidate: ${bank[i].id} / ${bank[j].id}`));
   }
   duplicateRoomTriplets(bank).forEach(({ first, duplicate }) => warnings.push(warn(`duplicate room choice triplet: ${first} / ${duplicate}`)));
+  duplicateUnorderedRoomTriplets(bank).forEach(({ first, duplicate }) => warnings.push(warn(`unordered normalized triplet duplicate: ${first} / ${duplicate}`)));
   if (final) {
     if (bank.length !== 1500) errors.push(fail(`final total must be 1500, got ${bank.length}`));
     if (bank.filter((question) => question.roomEligible).length !== 500) errors.push(fail(`final roomEligible must be 500`));

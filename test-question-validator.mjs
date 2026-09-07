@@ -1,12 +1,21 @@
 import assert from "node:assert/strict";
-import { questionBank } from "./question-bank.js";
-import { duplicateRoomTriplets, normalizeQuestion, validateBank } from "./question-validator.mjs";
+import { questionBank, batch04RoomChoices, selectedBatch04RoomIds } from "./question-bank.js";
+import { duplicateRoomTriplets, duplicateUnorderedRoomTriplets, normalizeQuestion, validateBank } from "./question-validator.mjs";
 
 const partial = validateBank(questionBank);
 assert.equal(partial.ok, true);
 assert.equal(partial.errors.length, 0);
-assert.equal(questionBank.length, 369);
-assert.equal(questionBank.filter((question) => question.roomEligible).length, 129);
+assert.equal(questionBank.length, 489);
+assert.equal(questionBank.filter((question) => question.roomEligible).length, 169);
+const batch04 = questionBank.filter((question) => { const id = Number(question.id.slice(-4)); return id >= 361 && id <= 480; });
+assert.equal(selectedBatch04RoomIds.size, 40);
+assert.equal(Object.keys(batch04RoomChoices).length, 40);
+assert.deepEqual([...selectedBatch04RoomIds].sort(), Object.keys(batch04RoomChoices).sort());
+assert.equal(batch04.filter((question) => question.roomEligible).length, 40);
+assert.equal(batch04.filter((question) => !question.roomEligible && question.roomChoices != null).length, 0);
+assert.equal(duplicateRoomTriplets(batch04).length, 0);
+assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, batch04.filter((question) => question.dailySlot === slot).length])), { light: 40, scene: 40, reflect: 40 });
+assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, questionBank.filter((question) => question.dailySlot === slot).length])), { light: 163, scene: 163, reflect: 163 });
 assert.equal(normalizeQuestion(" 오늘은 괜찮았나요?  "), "오늘은 괜찮았나요");
 
 const base = { id: "dq-v1-0001", text: "오늘의 질문", category: "scene", dailySlot: "scene", roomEligible: false };
@@ -17,6 +26,7 @@ assert.equal(validateBank([{ ...base, roomEligible: true, roomChoices: ["하나"
 assert.equal(validateBank([{ ...base, roomEligible: true, roomChoices: ["하나", "둘"] }]).errors.some(({ message }) => message.includes("roomChoices length")), true);
 const duplicateTripletBank = [{ ...base, roomEligible: true, roomChoices: ["친구", "가족", "동료"] }, { ...base, id: "dq-v1-0002", roomEligible: true, roomChoices: ["친구", "가족", "동료"] }];
 assert.equal(duplicateRoomTriplets(duplicateTripletBank).length, 1);
+assert.equal(duplicateUnorderedRoomTriplets([{ ...base, roomEligible: true, roomChoices: ["친구", "가족", "동료"] }, { ...base, id: "dq-v1-0002", roomEligible: true, roomChoices: ["가족", "동료", "친구"] }]).length, 1);
 assert.equal(validateBank(duplicateTripletBank).warnings.some(({ message }) => message.includes("duplicate room choice triplet")), true);
 assert.equal(validateBank([base], { final: true }).ok, false);
 assert.equal(validateBank(Array.from({ length: 1500 }, (_, index) => ({ ...base, id: `dq-v1-${String(index).padStart(4, "0")}` })), { final: true }).errors.some(({ message }) => message.includes("scene quota")), true);
