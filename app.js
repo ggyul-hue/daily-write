@@ -1202,20 +1202,46 @@ function hideRoomDaily() { $("#room-daily").classList.add("is-hidden"); }
 function setRoomAnswerField(question) {
   const field = $("#room-answer-field");
   field.replaceChildren();
-  if (question.type === "choice") {
-    const choices = document.createElement("div");
-    choices.className = "choice-list";
-    choices.innerHTML = question.options.map((option, index) => `<label><input required type="radio" name="room-answer" value="${option}" ${index === 0 ? "checked" : ""}/><span>${option}</span></label>`).join("");
-    field.append(choices);
-    return;
-  }
-  const input = document.createElement("textarea");
-  input.name = "room-answer";
-  input.required = true;
-  input.maxLength = 140;
-  input.rows = 4;
-  input.placeholder = "짧게 적어도 괜찮아요";
-  field.append(input);
+  const choices = document.createElement("div");
+  choices.className = "room-choice-list";
+  const custom = document.createElement("input");
+  custom.className = "room-custom-answer";
+  custom.type = "text";
+  custom.maxLength = 30;
+  custom.placeholder = "짧게 적어도 괜찮아요";
+  custom.setAttribute("aria-label", "직접 적기");
+  const count = document.createElement("small");
+  count.className = "room-custom-count";
+  const options = [...(question.roomChoices || question.options || [])];
+  [...options, "직접 적기"].forEach((option, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "room-choice";
+    button.textContent = option;
+    button.dataset.value = option;
+    button.setAttribute("aria-pressed", "false");
+    button.addEventListener("click", () => {
+      choices.querySelectorAll(".room-choice").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      field.closest("form").dataset.roomAnswer = index === options.length ? "custom" : option;
+      const customSelected = index === options.length;
+      custom.classList.toggle("is-visible", customSelected);
+      count.classList.toggle("is-visible", customSelected);
+      if (customSelected) { custom.focus(); updateRoomAnswerSubmit(field.closest("form")); }
+      else updateRoomAnswerSubmit(field.closest("form"));
+    });
+    choices.append(button);
+  });
+  custom.addEventListener("input", () => { count.textContent = `${custom.value.length} / 30`; updateRoomAnswerSubmit(field.closest("form")); });
+  field.append(choices, custom, count);
+  field.closest("form").dataset.roomAnswer = "";
+  updateRoomAnswerSubmit(field.closest("form"));
+}
+function updateRoomAnswerSubmit(form) {
+  const submit = form?.querySelector("#room-answer-submit");
+  if (!submit) return;
+  const custom = form.querySelector(".room-custom-answer");
+  const selected = form.dataset.roomAnswer || "";
+  submit.disabled = !selected || (selected === "custom" && !custom?.value.trim());
 }
 function renderRoomSeats(statuses, answers, unlocked) {
   const list = $("#room-seat-list");
@@ -1471,8 +1497,11 @@ $("#join-room-form").addEventListener("submit", async (event) => {
 $("#room-answer-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const daily = $("#room-daily");
-  const value = new FormData(event.currentTarget).get("room-answer");
+  const form = event.currentTarget;
+  const selected = form.dataset.roomAnswer || "";
+  const value = selected === "custom" ? form.querySelector(".room-custom-answer")?.value.trim() : selected;
   if (!daily.dataset.roomId || !value) return;
+  if (value.length > 30) return;
   const submit = $("#room-answer-submit");
   submit.disabled = true;
   try {
