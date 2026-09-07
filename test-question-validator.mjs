@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { questionBank } from "./question-bank.js";
-import { normalizeQuestion, validateBank } from "./question-validator.mjs";
+import { duplicateRoomTriplets, normalizeQuestion, validateBank } from "./question-validator.mjs";
 
 const partial = validateBank(questionBank);
 assert.equal(partial.ok, true);
@@ -15,6 +15,9 @@ assert.equal(validateBank([{ ...base, category: "unknown" }]).errors.some(({ mes
 assert.equal(validateBank([{ ...base, dailySlot: "unknown" }]).errors.some(({ message }) => message.includes("invalid dailySlot")), true);
 assert.equal(validateBank([{ ...base, roomEligible: true, roomChoices: ["하나", "하나", "셋"] }]).errors.some(({ message }) => message.includes("duplicate room choice")), true);
 assert.equal(validateBank([{ ...base, roomEligible: true, roomChoices: ["하나", "둘"] }]).errors.some(({ message }) => message.includes("roomChoices length")), true);
+const duplicateTripletBank = [{ ...base, roomEligible: true, roomChoices: ["친구", "가족", "동료"] }, { ...base, id: "dq-v1-0002", roomEligible: true, roomChoices: ["친구", "가족", "동료"] }];
+assert.equal(duplicateRoomTriplets(duplicateTripletBank).length, 1);
+assert.equal(validateBank(duplicateTripletBank).warnings.some(({ message }) => message.includes("duplicate room choice triplet")), true);
 assert.equal(validateBank([base], { final: true }).ok, false);
 assert.equal(validateBank(Array.from({ length: 1500 }, (_, index) => ({ ...base, id: `dq-v1-${String(index).padStart(4, "0")}` })), { final: true }).errors.some(({ message }) => message.includes("scene quota")), true);
 console.log("question validator tests passed");

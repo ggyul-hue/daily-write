@@ -20,6 +20,17 @@ function nearDuplicate(a, b) {
   return overlap >= 3 && overlap / Math.min(left.size, right.size) >= 0.7;
 }
 
+export function duplicateRoomTriplets(bank) {
+  const seen = new Map(); const duplicates = [];
+  bank.forEach((question) => {
+    if (!question?.roomEligible || !Array.isArray(question.roomChoices) || question.roomChoices.length !== 3) return;
+    const key = question.roomChoices.map((choice) => normalizeQuestion(choice)).join("|");
+    if (seen.has(key)) duplicates.push({ key, first: seen.get(key), duplicate: question.id });
+    else seen.set(key, question.id);
+  });
+  return duplicates;
+}
+
 export function validateBank(bank, { final = false } = {}) {
   const errors = [];
   const warnings = [];
@@ -59,6 +70,7 @@ export function validateBank(bank, { final = false } = {}) {
     const a = normalizeQuestion(bank[i]?.text); const b = normalizeQuestion(bank[j]?.text);
     if (a.length > 8 && b.length > 8 && nearDuplicate(a, b)) warnings.push(warn(`near-duplicate candidate: ${bank[i].id} / ${bank[j].id}`));
   }
+  duplicateRoomTriplets(bank).forEach(({ first, duplicate }) => warnings.push(warn(`duplicate room choice triplet: ${first} / ${duplicate}`)));
   if (final) {
     if (bank.length !== 1500) errors.push(fail(`final total must be 1500, got ${bank.length}`));
     if (bank.filter((question) => question.roomEligible).length !== 500) errors.push(fail(`final roomEligible must be 500`));
