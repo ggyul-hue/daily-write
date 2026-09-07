@@ -141,6 +141,7 @@ function recordFragmentDebugError(stage, error) {
 const views = { adoption: $("#adoption-view"), garden: $("#garden-view"), today: $("#today-view"), room: $("#room-view"), roomInterior: $("#room-interior-view"), archive: $("#archive-view"), "monthly-memory": $("#monthly-memory-view"), "monthly-keepsake": $("#monthly-keepsake-view") };
 let roomIdentity = null;
 let activeRooms = [];
+let activeRoomId = null;
 let afterNickname = null;
 let roomDailyRenderId = 0;
 let adoptionDraft = null;
@@ -1165,6 +1166,8 @@ async function exportMonthlyKeepsake(mode) {
 }
 
 function roomErrorMessage(error) {
+  if (/ROOM_FULL/i.test(error?.message || "")) return "이 작은 방은 친구들이 모두 모였어요.";
+  if (/ROOM_LIMIT_REACHED/i.test(error?.message || "")) return "함께할 수 있는 작은 방이 가득 찼어요. 최대 10개의 방에서 함께할 수 있어요.";
   if (/room not found/i.test(error?.message || "")) return "코드를 다시 확인해주세요.";
   if (/nickname required/i.test(error?.message || "")) return "먼저 닉네임을 정해주세요.";
   if (/already answered|이미 답변/i.test(error?.message || "")) return "오늘은 이미 답변을 남겼어요.";
@@ -1183,7 +1186,7 @@ function openJoinRoomSheet() {
   window.setTimeout(() => $("#invite-code-input").focus(), 0);
 }
 function openRoomInviteSheet() {
-  const room = activeRooms[0];
+  const room = activeRooms.find((item) => item.id === activeRoomId);
   if (!room) return;
   $("#room-invite-code").textContent = room.invite_code;
   $("#copy-room-invite").textContent = "코드 복사";
@@ -1290,45 +1293,54 @@ async function renderRoomDaily(room) {
     setRoomStatus("오늘의 방을 불러오지 못했어요. Phase 3 schema migration을 확인해주세요.");
   }
 }
-async function renderRoomLobby(room) {
-  const statuses = await roomBackend.memberDailyStatus(room.id, syncToday());
-  $("#active-room-name").textContent = roomName(room, statuses);
-  $("#active-room-members").textContent = statuses.map((member) => member.nickname).join(" · ");
-  const answered = statuses.filter((member) => member.answered).length;
-  $("#active-room-summary").textContent = `오늘 ${answered}/${statuses.length}명이 답했어요.`;
+async function renderRoomLobby() {
+  const day = syncToday();
+  $("#room-shared-question-text").textContent = roomQuestionById(roomQuestionCandidate(day).id)?.text || "";
+  const cards = $("#room-list");
+  cards.replaceChildren();
+  const entries = await Promise.all(activeRooms.map(async (room) => ({ room, statuses: await roomBackend.memberDailyStatus(room.id, day) })));
+  entries.forEach(({ room, statuses }) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "room-card";
+    const answered = statuses.filter((member) => member.answered).length;
+    card.innerHTML = `<strong>${roomName(room, statuses)}</strong><span>${statuses.length}명 · 오늘 ${answered}/${statuses.length}명이 답했어요 <b aria-hidden="true">→</b></span>`;
+    card.addEventListener("click", () => { void openRoomInterior(room.id); });
+    cards.append(card);
+  });
 }
-async function openRoomInterior() {
-  const room = activeRooms[0];
+async function openRoomInterior(roomId) {
+  const room = activeRooms.find((item) => item.id === roomId);
   if (!room) return;
+  activeRoomId = room.id;
   showView("roomInterior");
   await renderRoomDaily(room);
 }
 function renderRoom() {
   const empty = $("#room-empty");
-  const active = $("#active-room");
+  const list = $("#room-list");
   const create = $("#create-room");
   const join = $("#open-join-room");
   if (!roomBackend.isConfigured) {
     setRoomStatus("공유 방은 backend 연결 후 사용할 수 있어요.");
     empty.classList.remove("is-hidden");
-    active.classList.add("is-hidden");
+    list.classList.add("is-hidden");
     create.disabled = true;
     join.disabled = true;
     return;
   }
-  create.disabled = false;
+  create.disabled = activeRooms.length >= 10;
   join.disabled = false;
   if (!roomIdentity) { setRoomStatus("내 작은 방을 준비하고 있어요."); return; }
-  const room = activeRooms[0];
-  if (!room) {
+  if (!activeRooms.length) {
     setRoomStatus(roomIdentity.profile?.nickname ? `${roomIdentity.profile.nickname}님의 작은 방을 만들 수 있어요.` : "닉네임을 정하고 작은 방을 시작해보세요.");
     empty.classList.remove("is-hidden");
-    active.classList.add("is-hidden");
+    list.classList.add("is-hidden");
     return;
   }
   setRoomStatus("");
   empty.classList.add("is-hidden");
-  active.classList.remove("is-hidden");
+  list.classList.remove("is-hidden");
 }
 async function refreshRooms() {
   renderRoom();
@@ -1337,10 +1349,9 @@ async function refreshRooms() {
     roomIdentity = await roomBackend.initialize();
     activeRooms = roomIdentity.profile ? await roomBackend.listRooms() : [];
     renderRoom();
-    if (activeRooms[0]) {
-      await renderRoomLobby(activeRooms[0]);
-      if (!views.roomInterior.classList.contains("is-hidden")) await renderRoomDaily(activeRooms[0]);
-    }
+    activeRoomId = activeRooms.some((room) => room.id === activeRoomId) ? activeRoomId : null;
+    await renderRoomLobby();
+    if (!views.roomInterior.classList.contains("is-hidden") && activeRoomId) await renderRoomDaily(activeRooms.find((room) => room.id === activeRoomId));
     if (!roomIdentity.profile?.nickname) openNicknameSheet();
   } catch (error) {
     setRoomStatus("공유 방을 준비하지 못했어요. backend 설정을 확인해주세요.");
@@ -1424,8 +1435,7 @@ $("#adoption-confirm").addEventListener("click", () => {
 $("#adoption-enter-garden").addEventListener("click", beginNormalApp);
 $("#create-room").addEventListener("click", () => { void createRoom(); });
 $("#open-join-room").addEventListener("click", () => { void runWithNickname(async () => openJoinRoomSheet()); });
-$("#active-room").addEventListener("click", () => { void openRoomInterior(); });
-$("#room-interior-back").addEventListener("click", () => showView("room"));
+$("#room-interior-back").addEventListener("click", () => { activeRoomId = null; showView("room"); });
 $("#open-room-invite").addEventListener("click", openRoomInviteSheet);
 $("#nickname-backdrop").addEventListener("click", closeNicknameSheet); $("#close-nickname").addEventListener("click", closeNicknameSheet);
 $("#join-room-backdrop").addEventListener("click", closeJoinRoomSheet); $("#close-join-room").addEventListener("click", closeJoinRoomSheet);
