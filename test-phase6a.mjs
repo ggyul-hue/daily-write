@@ -15,12 +15,17 @@ const omittedSpecies = [...new Set(animalManifest.map((animal) => animal.species
 assert.notDeepEqual(nextDraft.candidates, draft.candidates);
 assert.ok(nextDraft.candidates.some((candidate) => candidate.species === omittedSpecies));
 const app = readFileSync("app.js", "utf8");
+const css = readFileSync("styles.css", "utf8");
 assert.match(app, /const isNewUser = !storedAnimalProfile && !hasLegacyUsageEvidence/);
 assert.doesNotMatch(app, /if \(!animalProfile\) \{ animalProfile = createAnimalProfile\("hamster"\); localStorage\.setItem\(ANIMAL_KEY/);
 assert.match(app, /function saveActiveAnimalProfile\(speciesName, variant\)/);
 assert.match(app, /if \(isNewUser\) \{\s*renderAdoption\(\);\s*showView\("adoption"\);/);
 assert.match(app, /else \{\s*beginNormalApp\(\);\s*\}/);
 assert.match(app, /animalNameWithParticle\("과", "와", selected\.displayName\)\} 함께하기/);
+assert.match(css, /\.adoption-candidates \{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+assert.doesNotMatch(css, /\.adoption-candidate:first-child \{\s*grid-column:1 \/ -1/);
+assert.match(css, /@media \(max-width:599px\)/);
+assert.match(css, /\.adoption-view h1 \{ margin:10px 0 8px; font-size:clamp\(29px,8vw,33px\); line-height:1\.16; \}/);
 assert.match(app, /const canUseFragmentBackend = !isQaMode \|\| isOnboardingQa/);
 assert.match(app, /function startFragmentLifecycle\(\) \{\s*return fragmentState\.pending\.length \? syncPendingFragments\(\) : restoreFragmentEvents\(\);\s*\}/);
 assert.match(app, /await roomBackend\.initialize\(\)[\s\S]*?await restoreFragmentEvents\(\)/);
