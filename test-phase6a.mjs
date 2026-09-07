@@ -19,6 +19,7 @@ assert.doesNotMatch(app, /if \(!animalProfile\) \{ animalProfile = createAnimalP
 assert.match(app, /function saveActiveAnimalProfile\(speciesName, variant\)/);
 assert.match(app, /if \(isNewUser\) \{\s*renderAdoption\(\);\s*showView\("adoption"\);/);
 assert.match(app, /else \{\s*beginNormalApp\(\);\s*\}/);
+assert.match(app, /animalNameWithParticle\("과", "와", selected\.displayName\)\} 함께하기/);
 // Run the production functions without starting a browser or backend.
 const functionSource = (name) => app.match(new RegExp(`function ${name}\\([^]*?\\n\\}`))[0];
 const elements = new Map();
@@ -40,12 +41,13 @@ runInNewContext([
   'function animalName() { return animalProfile.name; }',
   ...["animalNameWithParticle", "animalSubjectName", "showAdoptionComplete", "isValidAdoptionDraft", "currentAdoptionDraft", "profileForAnimal", "saveActiveAnimalProfile"].map(functionSource),
 ].join("\n"), context);
-for (const [name, expected] of [["크림", "크림이"], ["구름", "구름이"], ["밀크", "밀크가"], ["모찌", "모찌가"], ["밤이", "밤이가"], ["클로버", "클로버가"]]) {
+for (const [name, subject, companion] of [["크림", "크림이", "크림과"], ["구름", "구름이", "구름과"], ["밀크", "밀크가", "밀크와"], ["모찌", "모찌가", "모찌와"], ["밤이", "밤이가", "밤이와"], ["클로버", "클로버가", "클로버와"], ["치즈", "치즈가", "치즈와"], ["귤이", "귤이가", "귤이와"]]) {
   context.animalProfile = { name };
-  assert.equal(context.animalNameWithParticle("이", "가"), expected);
-  assert.equal(context.animalSubjectName(), expected);
+  assert.equal(context.animalNameWithParticle("이", "가"), subject);
+  assert.equal(context.animalSubjectName(), subject);
+  assert.equal(context.animalNameWithParticle("과", "와"), companion);
   context.showAdoptionComplete({ displayName: name });
-  assert.equal(elements.get("#adoption-complete-title").textContent, `${expected} 우리 집에 왔어요. 🌱`);
+  assert.equal(elements.get("#adoption-complete-title").textContent, `${subject} 우리 집에 왔어요. 🌱`);
 }
 const beforeRefresh = JSON.stringify(context.currentAdoptionDraft());
 context.newAdoptionSeed = () => { throw new Error("refresh must reuse the stored draft"); };

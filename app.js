@@ -210,7 +210,7 @@ function renderAdoption() {
   const selected = selectedAdoption && animalManifest.find((animal) => animal.species === selectedAdoption.species && animal.variant === selectedAdoption.variant);
   const confirm = $("#adoption-confirm");
   confirm.disabled = !selected;
-  confirm.textContent = selected ? `${selected.displayName}과 함께하기` : "친구를 골라주세요";
+  confirm.textContent = selected ? `${animalNameWithParticle("과", "와", selected.displayName)} 함께하기` : "친구를 골라주세요";
 }
 function showAdoptionComplete(animal) {
   $("#adoption-choice").classList.add("is-hidden");
@@ -606,7 +606,7 @@ function renderPetRecord() {
   if (profile.kind !== "ready") {
     const note = document.createElement("p");
     note.className = "pet-record-note";
-    note.textContent = profile.kind === "loading" ? `${name}과 함께한 기록을 불러오고 있어요.` : "아직 함께 자라기 시작하지 않았어요.";
+    note.textContent = profile.kind === "loading" ? `${animalNameWithParticle("과", "와", name)} 함께한 기록을 불러오고 있어요.` : "아직 함께 자라기 시작하지 않았어요.";
     content.append(note);
     return;
   }
