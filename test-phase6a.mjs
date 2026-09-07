@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 import { animalManifest } from "./animal-manifest.js";
 import { adoptionCandidates, createAdoptionDraft, nextAdoptionDraft } from "./onboarding.js";
+import { createRuntimePetState } from "./pet-runtime.js";
 
 const draft = createAdoptionDraft(animalManifest, "qa-seed");
 assert.equal(draft.candidates.length, 3);
@@ -24,6 +25,9 @@ assert.match(app, /const canUseFragmentBackend = !isQaMode \|\| isOnboardingQa/)
 assert.match(app, /function startFragmentLifecycle\(\) \{\s*return fragmentState\.pending\.length \? syncPendingFragments\(\) : restoreFragmentEvents\(\);\s*\}/);
 assert.match(app, /await roomBackend\.initialize\(\)[\s\S]*?await restoreFragmentEvents\(\)/);
 assert.match(app, /\$\("#answer-form button\[type=submit\]\"\)\.textContent = `\$\{animalName\(\)\}에게 들려주기`/);
+assert.match(app, /runtimePetState = createRuntimePetState\(identity, \{ \.\.\.pet, growth_points: result\.growth_points \}\)/);
+assert.match(app, /await loadRuntimePetState\(\{ force: true \}\)/);
+assert.match(app, /previousState\.identity === identity && previousState\.loaded/);
 // Run the production functions without starting a browser or backend.
 const functionSource = (name) => app.match(new RegExp(`function ${name}\\([^]*?\\n\\}`))[0];
 const elements = new Map();
@@ -70,4 +74,8 @@ runInNewContext(`${app.match(/const isNewUser = [^;]+;/)[0]}\n${bootDecision}`, 
   beginNormalApp: () => { normalBoots += 1; },
 });
 assert.equal(normalBoots, 1);
+for (const [points, stage, trait] of [[3, "SMALL", "walker"], [7, "GROWING", "sleepy"], [14, "GROWN", "reader"]]) {
+  const state = createRuntimePetState("capybara:towel", { growth_points: points, growth_stage: stage, growth_scale: 1, traits: { primary: trait } });
+  assert.deepEqual({ points: state.growthPoints, stage: state.growthStage, scale: state.growthScale, trait: state.primaryTrait, loaded: state.loaded, identity: state.identity }, { points, stage, scale: 1, trait, loaded: true, identity: "capybara:towel" });
+}
 console.log("phase 6A onboarding, Korean particles, and refresh persistence checks passed");

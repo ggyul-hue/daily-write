@@ -253,9 +253,12 @@ async function loadRuntimePetState({ force = false } = {}) {
   const identity = runtimePetIdentity();
   if (!force && runtimePetState.identity === identity && runtimePetState.loaded) return;
   const loadId = ++runtimePetLoadId;
-  runtimePetState = createRuntimePetState(identity);
-  applyRuntimePetScale();
-  renderPetRecord();
+  const previousState = runtimePetState;
+  if (!force) {
+    runtimePetState = createRuntimePetState(identity);
+    applyRuntimePetScale();
+    renderPetRecord();
+  }
   if (!canUseFragmentBackend || !roomBackend.isConfigured) {
     runtimePetState = { ...createRuntimePetState(identity), loaded: true };
     renderPetRecord();
@@ -269,7 +272,9 @@ async function loadRuntimePetState({ force = false } = {}) {
     renderPetRecord();
   } catch {
     if (loadId !== runtimePetLoadId || runtimePetIdentity() !== identity) return;
-    runtimePetState = { ...createRuntimePetState(identity), loaded: true };
+    runtimePetState = force && previousState.identity === identity && previousState.loaded
+      ? previousState
+      : { ...createRuntimePetState(identity), loaded: true };
     applyRuntimePetScale();
     renderPetRecord();
   }
@@ -485,6 +490,13 @@ async function consumeTodayFragment() {
     fragmentState.claimed = fragmentState.claimed.map((entry) => entry.id === fragment.id
       ? { ...entry, pet_id: result.pet_id, consumed_at: result.consumed_at }
       : entry);
+    if (result.status === "consumed") {
+      const identity = runtimePetIdentity();
+      runtimePetState = createRuntimePetState(identity, { ...pet, growth_points: result.growth_points });
+      applyRuntimePetScale();
+      renderPetRecord();
+      await loadRuntimePetState({ force: true });
+    }
     saveFragmentState();
     renderGarden({ resetAnimal: false });
     if (result.status === "consumed") startFragmentReaction(growthResult);
