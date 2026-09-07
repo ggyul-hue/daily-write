@@ -215,7 +215,7 @@ function renderAdoption() {
 function showAdoptionComplete(animal) {
   $("#adoption-choice").classList.add("is-hidden");
   $("#adoption-complete").classList.remove("is-hidden");
-  $("#adoption-complete-title").textContent = `${animal.displayName}이 우리 집에 왔어요. 🌱`;
+  $("#adoption-complete-title").textContent = `${animalNameWithParticle("이", "가", animal.displayName)} 우리 집에 왔어요. 🌱`;
 }
 function beginNormalApp() {
   if (normalAppBootstrapped) return;
@@ -541,17 +541,13 @@ const dwellTimes = { idle: [6000, 14000], sit: [8000, 16000], sleep: [15000, 350
 const randomBetween = (min, max) => min + Math.random() * (max - min);
 function animalDefinition() { return getAnimalDefinition(animalProfile); }
 function animalName() { return animalProfile.name || animalDefinition().displayName || "모찌"; }
-function animalNameWithParticle(consonant, vowel) {
-  const name = animalName();
+function animalNameWithParticle(consonant, vowel, name = animalName()) {
   const code = name.codePointAt(name.length - 1);
   const hasFinalConsonant = code >= 0xac00 && code <= 0xd7a3 && (code - 0xac00) % 28 !== 0;
   return `${name}${hasFinalConsonant ? consonant : vowel}`;
 }
 function animalSubjectName() {
-  const name = animalName();
-  const code = name.codePointAt(name.length - 1);
-  const hasFinalConsonant = code >= 0xac00 && code <= 0xd7a3 && (code - 0xac00) % 28 !== 0;
-  return `${name}${hasFinalConsonant ? "이" : "가"}`;
+  return animalNameWithParticle("이", "가");
 }
 const mochiPhaseAPoses = ["idle", "sit", "read", "carry", "sleep", "stand-front", "stand-back", "walk-side-01", "walk-side-02", "walk-side-03", "walk-side-04"];
 const mochiWalkFrames = ["walk-side-01", "walk-side-02", "walk-side-03", "walk-side-04"];
@@ -852,8 +848,8 @@ function startAnswerReaction() {
   clearBehaviorTimers();
   const runId = walkRunId;
   const reaction = Math.random() < .5
-    ? { pose: "carry", stateName: "ANSWER_REACTION", message: `${animalName()}가 오늘의 이야기를 꼭 품었어요.` }
-    : { pose: "read", stateName: "ANSWER_REACTION", message: `${animalName()}가 오늘의 이야기를 천천히 읽고 있어요.` };
+    ? { pose: "carry", stateName: "ANSWER_REACTION", message: `${animalSubjectName()} 오늘의 이야기를 꼭 품었어요.` }
+    : { pose: "read", stateName: "ANSWER_REACTION", message: `${animalSubjectName()} 오늘의 이야기를 천천히 읽고 있어요.` };
   currentLandmark = "open-lawn";
   currentBehavior = reaction.pose;
   renderAnimal({ pose: reaction.pose, captionBehavior: reaction.pose, stateName: reaction.stateName, message: reaction.message });
