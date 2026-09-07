@@ -20,6 +20,10 @@ assert.match(app, /function saveActiveAnimalProfile\(speciesName, variant\)/);
 assert.match(app, /if \(isNewUser\) \{\s*renderAdoption\(\);\s*showView\("adoption"\);/);
 assert.match(app, /else \{\s*beginNormalApp\(\);\s*\}/);
 assert.match(app, /animalNameWithParticle\("과", "와", selected\.displayName\)\} 함께하기/);
+assert.match(app, /const canUseFragmentBackend = !isQaMode \|\| isOnboardingQa/);
+assert.match(app, /function startFragmentLifecycle\(\) \{\s*return fragmentState\.pending\.length \? syncPendingFragments\(\) : restoreFragmentEvents\(\);\s*\}/);
+assert.match(app, /await roomBackend\.initialize\(\)[\s\S]*?await restoreFragmentEvents\(\)/);
+assert.match(app, /\$\("#answer-form button\[type=submit\]\"\)\.textContent = `\$\{animalName\(\)\}에게 들려주기`/);
 // Run the production functions without starting a browser or backend.
 const functionSource = (name) => app.match(new RegExp(`function ${name}\\([^]*?\\n\\}`))[0];
 const elements = new Map();

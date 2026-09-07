@@ -13,6 +13,7 @@ const requestedQaDate = query.get("qaDate");
 const parsedQaDate = requestedQaDate && /^\d{4}-\d{2}-\d{2}$/.test(requestedQaDate) ? new Date(`${requestedQaDate}T12:00:00`) : null;
 const isQaMode = query.get("qa") === "1" && Boolean(parsedQaDate) && dateKey(parsedQaDate) === requestedQaDate;
 const isOnboardingQa = isQaMode && query.get("qaOnboarding") === "1";
+const canUseFragmentBackend = !isQaMode || isOnboardingQa;
 const qaDate = isQaMode ? requestedQaDate : null;
 const storagePrefix = isOnboardingQa ? `dailyWrite.qa.onboarding.${qaDate}` : isQaMode ? `dailyWrite.qa.${qaDate}` : "daily-write";
 const STORAGE_KEY = isQaMode ? `${storagePrefix}.solo-v1` : "daily-write-solo-v1";
@@ -223,8 +224,7 @@ function beginNormalApp() {
   if (isMochi()) preloadMochiPhaseAAssets();
   renderGarden();
   renderToday();
-  void restoreFragmentEvents();
-  if (fragmentState.pending.length) void syncPendingFragments();
+  void startFragmentLifecycle();
   showView("garden");
 }
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
@@ -256,7 +256,7 @@ async function loadRuntimePetState({ force = false } = {}) {
   runtimePetState = createRuntimePetState(identity);
   applyRuntimePetScale();
   renderPetRecord();
-  if (isQaMode || !roomBackend.isConfigured) {
+  if (!canUseFragmentBackend || !roomBackend.isConfigured) {
     runtimePetState = { ...createRuntimePetState(identity), loaded: true };
     renderPetRecord();
     return;
@@ -275,7 +275,7 @@ async function loadRuntimePetState({ force = false } = {}) {
   }
 }
 async function ensureActivePet() {
-  if (isQaMode || !roomBackend.isConfigured) return null;
+  if (!canUseFragmentBackend || !roomBackend.isConfigured) return null;
   const identity = activePetIdentity();
   updateFragmentDebug({
     ensurePetStarted: "true",
@@ -312,7 +312,7 @@ async function ensureActivePet() {
   return activePetPromise;
 }
 async function restoreFragmentEvents() {
-  if (isQaMode || !roomBackend.isConfigured) return;
+  if (!canUseFragmentBackend || !roomBackend.isConfigured) return;
   updateFragmentDebug({ fragmentRestoreStarted: "true", fragmentRestoreResult: "loading" });
   try {
     const events = await roomBackend.listFragmentEventsFromExistingSession();
@@ -336,7 +336,7 @@ async function recoverTodaySoloFragment(events) {
   const day = syncToday();
   const hasTodayFragment = events.some((event) => event.date === day);
   const hasPendingClaim = fragmentState.pending.some((fragment) => fragment.date === day);
-  if (isQaMode || !todayAnswer() || hasTodayFragment || hasPendingClaim || fragmentRecoveryPromise) return fragmentRecoveryPromise;
+  if (!canUseFragmentBackend || !todayAnswer() || hasTodayFragment || hasPendingClaim || fragmentRecoveryPromise) return fragmentRecoveryPromise;
 
   updateFragmentDebug({ fragmentRestoreResult: "recovering:solo" });
   fragmentRecoveryPromise = (async () => {
@@ -389,12 +389,12 @@ function renderFragmentCta() {
   $("#fragment-message").textContent = fragmentCtaError || "오늘의 조각이 생겼어요.";
   detail.textContent = `${animalName()}에게 줄 수 있어요.`;
   button.textContent = `${animalName()}에게 주기`;
-  button.disabled = isQaMode || !fragment.id || !hasActivePet || Boolean(activePetPromise);
+  button.disabled = !canUseFragmentBackend || !fragment.id || !hasActivePet || Boolean(activePetPromise);
   updateFragmentDebug({
     ctaState: button.disabled ? (!fragment.id ? "disabled:no-fragment-id" : !hasActivePet ? "disabled:no-active-pet" : "disabled:qa") : "enabled",
     ctaLabel: button.textContent,
   });
-  if (!isQaMode && !hasActivePet && !activePetPromise) {
+  if (canUseFragmentBackend && !hasActivePet && !activePetPromise) {
     void ensureActivePet().then(() => renderFragmentCta()).catch(() => {
       fragmentCtaError = "조각을 준비하지 못했어요. 잠시 후 다시 시도해주세요.";
       renderFragmentCta();
@@ -407,10 +407,13 @@ function queueDailyFragment(source, day = syncToday()) {
   fragmentState.pending.push({ date: day, source });
   saveFragmentState();
   renderGarden({ resetAnimal: false });
-  void syncPendingFragments();
+  void startFragmentLifecycle();
+}
+function startFragmentLifecycle() {
+  return fragmentState.pending.length ? syncPendingFragments() : restoreFragmentEvents();
 }
 async function syncPendingFragments() {
-  if (isQaMode || !fragmentState.pending.length || fragmentSyncPromise) return fragmentSyncPromise;
+  if (!canUseFragmentBackend || !fragmentState.pending.length || fragmentSyncPromise) return fragmentSyncPromise;
   fragmentSyncPromise = (async () => {
     try {
       updateFragmentDebug({ backendInitialized: "starting" });
@@ -422,6 +425,7 @@ async function syncPendingFragments() {
         fragmentState.claimed = [...fragmentState.claimed.filter((entry) => entry.date !== claimed.date), claimed];
         fragmentState.pending = fragmentState.pending.filter((entry) => entry !== fragment);
       }
+      await restoreFragmentEvents();
     } catch (error) {
       recordFragmentDebugError("pending_fragment_sync", error);
       // Keep the local queue: a later Garden visit retries without blocking the saved answer.
@@ -436,7 +440,7 @@ async function syncPendingFragments() {
 async function consumeTodayFragment() {
   const fragment = fragmentForDate(syncToday());
   const button = $("#feed-fragment");
-  if (!fragment?.id || button.disabled || isQaMode) return;
+  if (!fragment?.id || button.disabled || !canUseFragmentBackend) return;
   button.disabled = true;
   fragmentCtaError = "";
   button.textContent = "먹이고 있어요...";
@@ -513,7 +517,7 @@ function showView(name) {
   const navView = name === "roomInterior" ? "room" : name;
   document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("is-active", item.dataset.view === navView));
   if (name === "room") void refreshRooms();
-  if (name === "garden") void syncPendingFragments();
+  if (name === "garden") void startFragmentLifecycle();
   window.scrollTo(0, 0);
 }
 const behaviorMessages = {
@@ -911,7 +915,7 @@ function renderToday() {
 
 function openAnswer(question) {
   if (todayAnswer()) { renderToday(); return; }
-  selectedQuestion = question; $("#answer-question").textContent = question.text; const field = $("#answer-field"); field.replaceChildren();
+  selectedQuestion = question; $("#answer-question").textContent = question.text; $("#answer-form button[type=submit]").textContent = `${animalName()}에게 들려주기`; const field = $("#answer-field"); field.replaceChildren();
   if (question.type === "choice") { const choices = document.createElement("div"); choices.className = "choice-list"; choices.innerHTML = question.options.map((option, index) => `<label><input required type="radio" name="answer" value="${option}" ${index === 0 ? "checked" : ""}/><span>${option}</span></label>`).join(""); field.append(choices); }
   else { const input = document.createElement("textarea"); input.name = "answer"; input.required = true; input.maxLength = 140; input.rows = 4; input.placeholder = "짧게 적어도 괜찮아요"; field.append(input); input.focus(); }
   $("#answer-sheet").classList.remove("is-hidden");
