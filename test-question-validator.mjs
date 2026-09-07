@@ -5,8 +5,8 @@ import { normalizeQuestion, validateBank } from "./question-validator.mjs";
 const partial = validateBank(questionBank);
 assert.equal(partial.ok, true);
 assert.equal(partial.errors.length, 0);
-assert.equal(questionBank.length, 9);
-assert.equal(questionBank.filter((question) => question.roomEligible).length, 9);
+assert.equal(questionBank.length, 129);
+assert.equal(questionBank.filter((question) => question.roomEligible).length, 49);
 assert.equal(normalizeQuestion(" 오늘은 괜찮았나요?  "), "오늘은 괜찮았나요");
 
 const base = { id: "dq-v1-0001", text: "오늘의 질문", category: "scene", dailySlot: "scene", roomEligible: false };
