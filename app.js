@@ -1043,12 +1043,22 @@ function renderToday() {
   dailyQuestionSet(today).forEach((question, index) => { const button = document.createElement("button"); button.type = "button"; button.className = "question-card"; button.innerHTML = `<span>0${index + 1}</span><strong>${question.text}</strong><i>→</i>`; button.addEventListener("click", () => openAnswer(question)); container.append(button); });
 }
 
+function setupAnswerCounter(input) {
+  input.maxLength = 100;
+  const counter = document.createElement("output");
+  counter.className = "answer-length-counter";
+  const update = () => { counter.textContent = `${[...input.value].length} / 100`; };
+  input.addEventListener("input", update);
+  update();
+  input.insertAdjacentElement("afterend", counter);
+}
+
 function openAnswer(question) {
   if (todayAnswer()) { renderToday(); return; }
   editingAnswerDate = null;
   selectedQuestion = question; $("#answer-question").textContent = question.text; $("#answer-form button[type=submit]").textContent = `${animalName()}에게 들려주기`; const field = $("#answer-field"); field.replaceChildren();
   if (question.type === "choice") { const choices = document.createElement("div"); choices.className = "choice-list"; choices.innerHTML = question.options.map((option, index) => `<label><input required type="radio" name="answer" value="${option}" ${index === 0 ? "checked" : ""}/><span>${option}</span></label>`).join(""); field.append(choices); }
-  else { const input = document.createElement("textarea"); input.name = "answer"; input.required = true; input.maxLength = 140; input.rows = 4; input.placeholder = "짧게 적어도 괜찮아요"; field.append(input); input.focus(); }
+  else { const input = document.createElement("textarea"); input.name = "answer"; input.required = true; input.rows = 4; input.placeholder = "짧게 적어도 괜찮아요"; field.append(input); setupAnswerCounter(input); input.focus(); }
   $("#answer-sheet").classList.remove("is-hidden");
 }
 
@@ -1060,7 +1070,7 @@ function openEditAnswer(answer) {
   $("#answer-question").textContent = answer.question;
   $("#answer-form button[type=submit]").textContent = "수정 저장";
   const field = $("#answer-field"); field.replaceChildren();
-  const input = document.createElement("textarea"); input.name = "answer"; input.required = true; input.maxLength = 140; input.rows = 4; input.placeholder = "짧게 적어도 괜찮아요"; input.value = answerText(answer); field.append(input);
+  const input = document.createElement("textarea"); input.name = "answer"; input.required = true; input.rows = 4; input.placeholder = "짧게 적어도 괜찮아요"; input.value = answerText(answer); field.append(input); setupAnswerCounter(input);
   $("#answer-sheet").classList.remove("is-hidden");
   input.focus();
 }
@@ -1553,6 +1563,7 @@ $("#answer-form").addEventListener("submit", (event) => {
   syncToday();
   const value = new FormData(event.currentTarget).get("answer")?.trim();
   if (!value || !selectedQuestion) { closeSheet(); renderToday(); return; }
+  if ([...value].length > 100) return;
   if (editingAnswerDate) {
     const existing = state.answers.find((answer) => answer.date === editingAnswerDate);
     if (existing) {

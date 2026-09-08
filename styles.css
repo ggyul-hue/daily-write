@@ -146,6 +146,7 @@ body { font-family:var(--font-ui); }
 .daily-status { font-size:21px; line-height:1.4; }
 .sheet-panel textarea { font-size:21px; line-height:1.58; }
 .sheet-panel textarea::placeholder { font-family:var(--font-handwriting); font-size:20px; opacity:.72; }
+.answer-length-counter { display:block; margin:5px 2px 0; color:var(--muted); font:12px/1 var(--font-ui); text-align:right; }
 .preferences-button,.archive-button,.month-switcher,.archive-weekdays,.calendar-day,.bottom-nav,
 .submit-button,.room-primary,.room-secondary,.nav-item,.preferences-panel,
 .preference-options,.preference-none,.room-actions,.room-answer-hint { font-family:var(--font-ui); }
