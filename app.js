@@ -174,15 +174,15 @@ function normalizePetName(value) {
   const name = String(value ?? "").trim();
   return name && !/[\r\n]/u.test(name) && [...name].length <= 10 ? name : "";
 }
-function profileForAnimal(animal, displayName = animal.displayName) {
+function profileForAnimal(animal, displayName = animal.displayName, nameFinalized = false) {
   const coat = animal.species === "hamster" ? ({ cream: "cream", mochi: "golden", almond: "brown", sugar: "cream" }[animal.variant]) : undefined;
-  return { species: animal.species, variant: animal.variant, name: displayName, coat, behaviorWeights: { ...animal.behaviorWeights } };
+  return { species: animal.species, variant: animal.variant, name: displayName, nameFinalized, coat, behaviorWeights: { ...animal.behaviorWeights } };
 }
 function saveActiveAnimalProfile(speciesName, variant) {
   const animal = animalManifest.find((candidate) => candidate.species === speciesName && candidate.variant === variant);
   if (!animal) throw new Error("invalid animal identity");
   const displayName = arguments[2] ?? animal.displayName;
-  animalProfile = profileForAnimal(animal, displayName);
+  animalProfile = profileForAnimal(animal, displayName, true);
   localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile));
   activePet = null;
   activePetPromise = null;
@@ -259,6 +259,9 @@ function fragmentForDate(day) {
 }
 function canEditDailyAnswer(day) {
   return Boolean(answerForDate(day) && !fragmentState.claimed.some((fragment) => fragment.date === day && fragment.consumed_at));
+}
+function isNameFinalized() {
+  return Boolean(animalProfile?.nameFinalized || animalProfile?.name !== animalDefinition().displayName);
 }
 function activePetIdentity() {
   const animal = animalDefinition();
@@ -675,6 +678,12 @@ function renderPetRecord() {
   const photo = $("#pet-record-photo-image");
   if (!titleName || !subtitle || !content || !photo) return;
   const name = animalName();
+  const rename = $("#rename-pet");
+  if (rename) {
+    const finalized = isNameFinalized();
+    rename.classList.toggle("is-hidden", finalized);
+    rename.textContent = "이름 정하기";
+  }
   titleName.textContent = name;
   subtitle.textContent = "우리 집에 온 작은 친구를 천천히 알아가고 있어요.";
   photo.src = imagePath("idle");
@@ -684,7 +693,7 @@ function renderPetRecord() {
   if (profile.kind !== "ready") {
     const note = document.createElement("p");
     note.className = "pet-record-note";
-    note.textContent = profile.kind === "loading" ? `${animalNameWithParticle("과", "와", name)} 함께한 기록을 불러오고 있어요.` : "아직 함께 자라기 시작하지 않았어요.";
+    note.textContent = profile.kind === "loading" ? `${animalNameWithParticle("과", "와", name)} 함께한 기록을 불러오고 있어요.` : "아직 조각을 먹이지 않았어요.";
     content.append(note);
     return;
   }
@@ -706,7 +715,7 @@ function renderPetRecord() {
   addField("성격", runtimePetState.primaryTrait ? profile.trait : "아직 알아가는 중이에요");
   const next = document.createElement("p");
   next.className = "pet-record-next";
-  next.textContent = `🌱 오늘도 조금씩 ${animalNameWithParticle("을", "를")} 알아가는 중.`;
+  next.textContent = `🌱 오늘도 조금씩 ${name}에 대해 알아가는 중.`;
   const progress = document.createElement("div");
   progress.className = "pet-record-progress";
   progress.setAttribute("role", "progressbar");
@@ -731,13 +740,12 @@ function closePetRename() { $("#rename-pet-form").classList.add("is-hidden"); }
 function savePetRename(value) {
   const name = normalizePetName(value);
   if (!name) return false;
-  if (name !== animalProfile.name) {
-    animalProfile = { ...animalProfile, name };
-    localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile));
-  }
+  animalProfile = { ...animalProfile, name, nameFinalized: true };
+  localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile));
   renderPetRecord();
   renderGarden({ resetAnimal: false });
   renderFragmentCta();
+  closePetRename();
   return true;
 }
 function renderAnimal({ pose = currentBehavior, captionBehavior = pose, stateName = stateNameFor(captionBehavior), message } = {}) {
@@ -991,6 +999,13 @@ function renderGarden({ resetAnimal = true } = {}) {
   if (answer) {
     record.querySelector(".garden-record-label").textContent = `오늘의 조각 · ${formatDate(answer.date)}`;
     record.querySelector(".garden-record-value").textContent = `“${answerText(answer)}”을 남겼어요.`;
+    const editable = canEditDailyAnswer(answer.date);
+    $("#garden-edit-answer").classList.toggle("is-hidden", !editable);
+    $("#garden-record-lock").classList.toggle("is-hidden", editable);
+    $("#garden-edit-answer").onclick = () => openEditAnswer(answer);
+  } else {
+    $("#garden-edit-answer").classList.add("is-hidden");
+    $("#garden-record-lock").classList.add("is-hidden");
   }
   renderFragmentCta();
   renderPetRecord();
@@ -1004,7 +1019,16 @@ function closePreferences() { $("#preferences-sheet").classList.add("is-hidden")
 function renderToday() {
   syncToday();
   const answer = todayAnswer(); const container = $("#question-cards"); $("#daily-status").textContent = answer ? `오늘은 “${answerText(answer)}”을 남겼어요.` : "아래 세 장 중 하나만 골라주세요."; $("#today-complete").classList.toggle("is-hidden", !answer); container.replaceChildren();
-  if (answer) { $("#today-complete").textContent = `${animalSubjectName()} 오늘의 이야기를 품고 있어요.`; return; }
+  if (answer) {
+    const editable = canEditDailyAnswer(answer.date);
+    $("#today-complete").textContent = `${animalSubjectName()} 오늘의 이야기를 품고 있어요.`;
+    $("#today-edit-answer").classList.toggle("is-hidden", !editable);
+    $("#today-record-lock").classList.toggle("is-hidden", editable);
+    $("#today-edit-answer").onclick = () => openEditAnswer(answer);
+    return;
+  }
+  $("#today-edit-answer").classList.add("is-hidden");
+  $("#today-record-lock").classList.add("is-hidden");
   dailyQuestionSet(today).forEach((question, index) => { const button = document.createElement("button"); button.type = "button"; button.className = "question-card"; button.innerHTML = `<span>0${index + 1}</span><strong>${question.text}</strong><i>→</i>`; button.addEventListener("click", () => openAnswer(question)); container.append(button); });
 }
 
@@ -1050,10 +1074,6 @@ function showArchiveAnswer(answer) {
   $("#paper-date").textContent = createdLabel(answer);
   $("#paper-question").textContent = answer.question;
   $("#paper-answer").textContent = answerText(answer);
-  const editable = canEditDailyAnswer(answer.date);
-  $("#edit-answer").classList.toggle("is-hidden", !editable);
-  $("#paper-lock").classList.toggle("is-hidden", editable);
-  $("#edit-answer").onclick = () => openEditAnswer(answer);
   paper.classList.remove("is-hidden");
 }
 function renderArchive() {

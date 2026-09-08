@@ -40,7 +40,7 @@
           <div id="hamster" class="hamster is-idle" role="img" aria-label="오늘의 햄스터"><div class="hamster-motion"><div id="hamster-asset" class="hamster-asset" aria-hidden="true"></div></div></div>
           <p id="animal-caption" class="animal-caption"></p>
         </section>
-        <article id="garden-record" class="garden-record is-hidden" aria-label="오늘의 조각"><p class="garden-record-label"></p><strong class="garden-record-value"></strong><span class="garden-record-mark" aria-hidden="true">↗</span></article>
+        <article id="garden-record" class="garden-record is-hidden" aria-label="오늘의 조각"><p class="garden-record-label"></p><strong class="garden-record-value"></strong><button id="garden-edit-answer" class="edit-answer-button is-hidden" type="button">수정</button><p id="garden-record-lock" class="record-lock is-hidden">먹인 조각은 수정할 수 없어요.</p><span class="garden-record-mark" aria-hidden="true">↗</span></article>
         <section id="fragment-cta" class="fragment-cta is-hidden" aria-live="polite"><span class="fragment-token" aria-hidden="true">✦</span><p id="fragment-message"></p><button id="feed-fragment" type="button" disabled></button><small id="fragment-detail"></small></section>
         <section id="pet-record" class="pet-record" aria-live="polite"><p class="eyebrow">A LITTLE FRIEND · ADOPTION RECORD</p><div class="pet-record-heading"><div><h2><span id="pet-record-name"></span>의 입양 기록서</h2><p id="pet-record-subtitle" class="pet-record-subtitle"></p><button id="rename-pet" class="rename-pet-button" type="button">이름 수정</button></div><figure class="pet-record-photo"><div class="pet-record-photo-scene"><img id="pet-record-photo-image" alt="" /></div></figure></div><form id="rename-pet-form" class="rename-pet-form is-hidden"><label for="rename-pet-input">새 이름</label><input id="rename-pet-input" type="text" maxlength="10" autocomplete="off" /><p id="rename-pet-error" aria-live="polite"></p><div><button id="rename-pet-cancel" type="button">취소</button><button type="submit">저장</button></div></form><div id="pet-record-content" class="pet-record-content"></div>
           <div class="adoption-decor" aria-hidden="true">
@@ -56,7 +56,7 @@
 
       <section id="today-view" class="view today-view is-hidden" aria-labelledby="today-title">
         <header class="section-heading"><p class="eyebrow">ONE LITTLE ANSWER</p><h1 id="today-title">오늘 하나만 골라볼까요?</h1><p id="daily-status" class="daily-status"></p></header>
-        <div id="question-cards" class="question-cards"></div><p id="today-complete" class="today-complete is-hidden"></p>
+        <div id="question-cards" class="question-cards"></div><p id="today-complete" class="today-complete is-hidden"></p><button id="today-edit-answer" class="edit-answer-button is-hidden" type="button">수정</button><p id="today-record-lock" class="record-lock is-hidden">먹인 조각은 수정할 수 없어요.</p>
       </section>
 
       <section id="answer-sheet" class="answer-sheet is-hidden" aria-labelledby="answer-question" aria-modal="true" role="dialog">
@@ -67,7 +67,7 @@
       <section id="archive-view" class="view is-hidden" aria-labelledby="archive-title">
         <section class="archive-panel"><header class="archive-heading"><button id="archive-back" class="screen-back" type="button" aria-label="정원으로 돌아가기">←</button><h1 id="archive-title">지난 조각</h1></header><div class="month-switcher"><button id="archive-prev" type="button" aria-label="이전 달">‹</button><span id="archive-month"></span><button id="archive-next" type="button" aria-label="다음 달">›</button></div><p class="archive-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></p><div id="archive-calendar" class="archive-calendar" aria-label="기록 날짜"></div>
           <button id="monthly-memory-entry" class="monthly-memory-entry is-hidden" type="button"></button>
-          <div id="archive-list" class="archive-list"></div><article id="archive-paper" class="archive-paper is-hidden" aria-live="polite"><p id="paper-date" class="paper-date"></p><h2 id="paper-question"></h2><p id="paper-answer"></p><button id="edit-answer" class="edit-answer-button" type="button">수정</button><p id="paper-lock" class="paper-lock is-hidden">먹인 조각은 수정할 수 없어요.</p><span class="paper-mark" aria-hidden="true">✎</span></article></section>
+          <div id="archive-list" class="archive-list"></div><article id="archive-paper" class="archive-paper is-hidden" aria-live="polite"><p id="paper-date" class="paper-date"></p><h2 id="paper-question"></h2><p id="paper-answer"></p><span class="paper-mark" aria-hidden="true">✎</span></article></section>
       </section>
 
       <section id="monthly-memory-view" class="view is-hidden" aria-labelledby="monthly-memory-title">
