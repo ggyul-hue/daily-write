@@ -685,11 +685,13 @@ function renderPetRecord() {
   if (!titleName || !subtitle || !content || !photo) return;
   const name = animalName();
   const rename = $("#rename-pet");
+  const renameEditor = $("#rename-pet-form");
   if (rename) {
     const finalized = isNameFinalized();
+    if (finalized) renameEditorOpen = false;
     rename.classList.toggle("is-hidden", finalized);
     rename.textContent = "이름 정하기";
-    if (finalized) closePetRename();
+    renameEditor?.classList.toggle("is-hidden", finalized || !renameEditorOpen);
   }
   titleName.textContent = name;
   subtitle.textContent = "우리 집에 온 작은 친구를 천천히 알아가고 있어요.";

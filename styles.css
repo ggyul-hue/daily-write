@@ -114,6 +114,7 @@ html,body { overflow-x:hidden; }
 .adoption-name-error { min-height:18px; margin:5px 0 0; color:#9a6a4b; font-family:var(--font-ui); font-size:.78rem; }
 .rename-pet-button { margin-top:6px; padding:5px 10px; border:1px solid #d9c3a3; border-radius:10px; background:#fff8e9; color:#76513b; font-family:var(--font-ui); font-size:.76rem; }
 .rename-pet-form { display:grid; gap:7px; margin-top:14px; padding:12px; border:1px solid #e5d5c0; border-radius:14px; background:#fff8e9; }
+.rename-pet-form.is-hidden { display:none; }
 .rename-pet-form label,.rename-pet-form button { font-family:var(--font-ui); font-size:.8rem; }
 .rename-pet-form input { min-height:44px; padding:8px 12px; border:1px solid #d8c7b1; border-radius:12px; background:#fffdf8; color:var(--ink); font:400 20px/1.25 var(--font-handwriting); outline-color:var(--orange); }
 .rename-pet-form p { min-height:16px; margin:0; color:#9a6a4b; font-family:var(--font-ui); font-size:.75rem; }
