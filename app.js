@@ -1136,7 +1136,8 @@ function renderMonthlyMemory() {
   $("#monthly-memory-summary").textContent = monthlySummary(year, month, syncToday(), animalNameWithParticle("과", "와"), records.length);
   const list = $("#monthly-memory-list");
   list.replaceChildren();
-  for (const record of selectMonthlyMemories(records, year, month)) {
+  const monthlyRecords = [...records].sort((a, b) => a.date.localeCompare(b.date));
+  for (const record of monthlyRecords) {
     const card = document.createElement("article");
     card.className = "monthly-memory-card";
     const date = document.createElement("time");
