@@ -29,6 +29,7 @@ const state = Array.isArray(storedState?.answers)
   : { answers: [], animal: { name: "모찌" }, dailyQuestionSets: {} };
 let today = qaDate || dateKey();
 let selectedQuestion;
+let editingAnswerDate = null;
 const ANIMAL_KEY = isQaMode ? `${storagePrefix}.animal-profile-v1` : "daily-write-animal-profile-v1";
 const PREFERENCES_KEY = isQaMode ? `${storagePrefix}.preferences-v1` : "daily-write-preferences-v1";
 const FRAGMENT_STATE_KEY = isQaMode ? `${storagePrefix}.fragment-state-v1` : "daily-write-fragment-state-v1";
@@ -71,6 +72,7 @@ let activePetPromiseIdentity = null;
 let runtimePetState = createRuntimePetState("");
 let runtimePetLoadId = 0;
 let fragmentCtaError = "";
+let feedInteraction = "idle";
 const fragmentDebug = {
   backendConfigured: String(roomBackend.isConfigured),
   supabaseSessionExists: "unknown",
@@ -146,6 +148,7 @@ let afterNickname = null;
 let roomDailyRenderId = 0;
 let adoptionDraft = null;
 let selectedAdoption = null;
+let adoptionNameDraft = "";
 let normalAppBootstrapped = false;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
@@ -167,14 +170,19 @@ function currentAdoptionDraft() {
   localStorage.setItem(ADOPTION_DRAFT_KEY, JSON.stringify(draft));
   return draft;
 }
-function profileForAnimal(animal) {
+function normalizePetName(value) {
+  const name = String(value ?? "").trim();
+  return name && !/[\r\n]/u.test(name) && [...name].length <= 10 ? name : "";
+}
+function profileForAnimal(animal, displayName = animal.displayName) {
   const coat = animal.species === "hamster" ? ({ cream: "cream", mochi: "golden", almond: "brown", sugar: "cream" }[animal.variant]) : undefined;
-  return { species: animal.species, variant: animal.variant, name: animal.displayName, coat, behaviorWeights: { ...animal.behaviorWeights } };
+  return { species: animal.species, variant: animal.variant, name: displayName, coat, behaviorWeights: { ...animal.behaviorWeights } };
 }
 function saveActiveAnimalProfile(speciesName, variant) {
   const animal = animalManifest.find((candidate) => candidate.species === speciesName && candidate.variant === variant);
   if (!animal) throw new Error("invalid animal identity");
-  animalProfile = profileForAnimal(animal);
+  const displayName = arguments[2] ?? animal.displayName;
+  animalProfile = profileForAnimal(animal, displayName);
   localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile));
   activePet = null;
   activePetPromise = null;
@@ -210,9 +218,16 @@ function renderAdoption() {
     cards.append(card);
   });
   const selected = selectedAdoption && animalManifest.find((animal) => animal.species === selectedAdoption.species && animal.variant === selectedAdoption.variant);
+  const nameField = $("#adoption-name-field");
+  const nameInput = $("#adoption-name");
+  nameField.classList.toggle("is-hidden", !selected);
+  if (selected && nameInput.value !== adoptionNameDraft) nameInput.value = adoptionNameDraft;
   const confirm = $("#adoption-confirm");
-  confirm.disabled = !selected;
-  confirm.textContent = selected ? `${animalNameWithParticle("과", "와", selected.displayName)} 함께하기` : "친구를 골라주세요";
+  const validName = Boolean(normalizePetName(adoptionNameDraft));
+  confirm.disabled = !selected || !validName;
+  const legacyConfirmLabel = selected ? `${animalNameWithParticle("과", "와", selected.displayName)} 함께하기` : "친구를 골라주세요";
+  confirm.textContent = selected ? `${animalNameWithParticle("과", "와", adoptionNameDraft || selected.displayName)} 함께하기` : legacyConfirmLabel;
+  $("#adoption-name-error").textContent = selected && adoptionNameDraft && !validName ? "이름은 10자 이내로 적어주세요." : "";
 }
 function showAdoptionComplete(animal) {
   $("#adoption-choice").classList.add("is-hidden");
@@ -241,6 +256,9 @@ function fragmentForDate(day) {
   if (fragmentState.claimed.some((fragment) => fragment.date === day && fragment.consumed_at)) return null;
   return fragmentState.claimed.find((fragment) => fragment.date === day && !fragment.consumed_at)
     || fragmentState.pending.find((fragment) => fragment.date === day);
+}
+function canEditDailyAnswer(day) {
+  return Boolean(answerForDate(day) && !fragmentState.claimed.some((fragment) => fragment.date === day && fragment.consumed_at));
 }
 function activePetIdentity() {
   const animal = animalDefinition();
@@ -331,6 +349,7 @@ async function restoreFragmentEvents() {
     fragmentState.pending = fragmentState.pending.filter((pending) => !events.some((event) => event.date === pending.date));
     saveFragmentState();
     renderGarden({ resetAnimal: false });
+    if (!$("#archive-view").classList.contains("is-hidden")) renderArchive();
     await recoverTodaySoloFragment(events);
   } catch (error) {
     updateFragmentDebug({ fragmentRestoreResult: "error" });
@@ -443,10 +462,44 @@ async function syncPendingFragments() {
   })();
   return fragmentSyncPromise;
 }
+function playFragmentFeedMotion() {
+  const token = $(".fragment-token");
+  const pet = $("#hamster-asset") || $("#hamster");
+  if (!token || !pet || typeof token.getBoundingClientRect !== "function") return Promise.resolve();
+  const tokenRect = token.getBoundingClientRect();
+  const petRect = pet.getBoundingClientRect();
+  if (!tokenRect.width || !tokenRect.height || !petRect.width || !petRect.height) return Promise.resolve();
+  const flyingToken = token.cloneNode(true);
+  const startX = tokenRect.left + tokenRect.width / 2;
+  const startY = tokenRect.top + tokenRect.height / 2;
+  const endX = petRect.left + petRect.width / 2;
+  const endY = petRect.top + petRect.height * .42;
+  flyingToken.className = "fragment-token fragment-token-flying";
+  flyingToken.style.left = `${startX - 12}px`;
+  flyingToken.style.top = `${startY - 12}px`;
+  document.body.append(flyingToken);
+  const remove = () => flyingToken.remove();
+  try {
+    if (typeof flyingToken.animate !== "function") { remove(); return Promise.resolve(); }
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      flyingToken.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, easing: "ease-out", fill: "forwards" }).finished.then(remove, remove);
+      return new Promise((resolve) => window.setTimeout(resolve, 140));
+    }
+    const animation = flyingToken.animate([
+      { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
+      { transform: `translate3d(${endX - startX}px, ${endY - startY}px, 0) scale(.35)`, opacity: .12 },
+    ], { duration: 680, easing: "cubic-bezier(.22,.75,.32,1)", fill: "forwards" });
+    return animation.finished.then(remove, remove);
+  } catch {
+    remove();
+    return Promise.resolve();
+  }
+}
 async function consumeTodayFragment() {
   const fragment = fragmentForDate(syncToday());
   const button = $("#feed-fragment");
-  if (!fragment?.id || button.disabled || !canUseFragmentBackend) return;
+  if (!fragment?.id || button.disabled || !canUseFragmentBackend || feedInteraction !== "idle") return;
+  feedInteraction = "submitting";
   button.disabled = true;
   fragmentCtaError = "";
   button.textContent = "먹이고 있어요...";
@@ -498,9 +551,14 @@ async function consumeTodayFragment() {
       renderPetRecord();
       await loadRuntimePetState({ force: true });
     }
+    if (result.status === "consumed") {
+      feedInteraction = "animating";
+      await playFragmentFeedMotion();
+    }
     saveFragmentState();
     renderGarden({ resetAnimal: false });
     if (result.status === "consumed") startFragmentReaction(growthResult);
+    if (result.status === "consumed" && !$("#archive-view").classList.contains("is-hidden")) renderArchive();
   } catch (error) {
     updateFragmentDebug({
       consumeRpcResult: "error",
@@ -512,8 +570,11 @@ async function consumeTodayFragment() {
     });
     recordFragmentDebugError("consume_daily_fragment", error);
     fragmentCtaError = "조각을 먹이지 못했어요. 다시 시도해주세요.";
+    feedInteraction = "idle";
     renderFragmentCta();
+    return;
   }
+  feedInteraction = "idle";
 }
 function dailyQuestionSet(day = syncToday()) {
   const questionById = new Map(questions.map((question) => [question.id, question]));
@@ -657,6 +718,27 @@ function renderPetRecord() {
   fill.style.width = `${profile.progress * 100}%`;
   progress.append(fill);
   content.append(fields, next, progress);
+}
+function openPetRename() {
+  const form = $("#rename-pet-form");
+  const input = $("#rename-pet-input");
+  input.value = animalName();
+  $("#rename-pet-error").textContent = "";
+  form.classList.remove("is-hidden");
+  input.focus();
+}
+function closePetRename() { $("#rename-pet-form").classList.add("is-hidden"); }
+function savePetRename(value) {
+  const name = normalizePetName(value);
+  if (!name) return false;
+  if (name !== animalProfile.name) {
+    animalProfile = { ...animalProfile, name };
+    localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile));
+  }
+  renderPetRecord();
+  renderGarden({ resetAnimal: false });
+  renderFragmentCta();
+  return true;
 }
 function renderAnimal({ pose = currentBehavior, captionBehavior = pose, stateName = stateNameFor(captionBehavior), message } = {}) {
   const renderId = ++animalRenderId;
@@ -928,10 +1010,24 @@ function renderToday() {
 
 function openAnswer(question) {
   if (todayAnswer()) { renderToday(); return; }
+  editingAnswerDate = null;
   selectedQuestion = question; $("#answer-question").textContent = question.text; $("#answer-form button[type=submit]").textContent = `${animalName()}에게 들려주기`; const field = $("#answer-field"); field.replaceChildren();
   if (question.type === "choice") { const choices = document.createElement("div"); choices.className = "choice-list"; choices.innerHTML = question.options.map((option, index) => `<label><input required type="radio" name="answer" value="${option}" ${index === 0 ? "checked" : ""}/><span>${option}</span></label>`).join(""); field.append(choices); }
   else { const input = document.createElement("textarea"); input.name = "answer"; input.required = true; input.maxLength = 140; input.rows = 4; input.placeholder = "짧게 적어도 괜찮아요"; field.append(input); input.focus(); }
   $("#answer-sheet").classList.remove("is-hidden");
+}
+
+function openEditAnswer(answer) {
+  if (!answer) return;
+  if (!canEditDailyAnswer(answer.date)) { showArchiveAnswer(answer); return; }
+  editingAnswerDate = answer.date;
+  selectedQuestion = questions.find((question) => question.id === answer.questionId) || { id: answer.questionId, text: answer.question, type: "text" };
+  $("#answer-question").textContent = answer.question;
+  $("#answer-form button[type=submit]").textContent = "수정 저장";
+  const field = $("#answer-field"); field.replaceChildren();
+  const input = document.createElement("textarea"); input.name = "answer"; input.required = true; input.maxLength = 140; input.rows = 4; input.placeholder = "짧게 적어도 괜찮아요"; input.value = answerText(answer); field.append(input);
+  $("#answer-sheet").classList.remove("is-hidden");
+  input.focus();
 }
 
 function localDateKey(year, month, day) { return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`; }
@@ -954,6 +1050,10 @@ function showArchiveAnswer(answer) {
   $("#paper-date").textContent = createdLabel(answer);
   $("#paper-question").textContent = answer.question;
   $("#paper-answer").textContent = answerText(answer);
+  const editable = canEditDailyAnswer(answer.date);
+  $("#edit-answer").classList.toggle("is-hidden", !editable);
+  $("#paper-lock").classList.toggle("is-hidden", editable);
+  $("#edit-answer").onclick = () => openEditAnswer(answer);
   paper.classList.remove("is-hidden");
 }
 function renderArchive() {
@@ -1415,12 +1515,29 @@ async function joinRoom(inviteCode) {
   return joined;
 }
 
-function closeSheet() { $("#answer-sheet").classList.add("is-hidden"); }
+function closeSheet() { editingAnswerDate = null; $("#answer-sheet").classList.add("is-hidden"); }
 $("#answer-form").addEventListener("submit", (event) => {
   event.preventDefault();
   syncToday();
   const value = new FormData(event.currentTarget).get("answer")?.trim();
-  if (!value || !selectedQuestion || todayAnswer()) { closeSheet(); renderToday(); return; }
+  if (!value || !selectedQuestion) { closeSheet(); renderToday(); return; }
+  if (editingAnswerDate) {
+    const existing = state.answers.find((answer) => answer.date === editingAnswerDate);
+    if (existing) {
+      if (!canEditDailyAnswer(editingAnswerDate)) { editingAnswerDate = null; closeSheet(); renderArchive(); return; }
+      existing.answer = value;
+      existing.value = value;
+      existing.updatedAt = new Date().toISOString();
+      save();
+    }
+    editingAnswerDate = null;
+    closeSheet();
+    renderToday();
+    renderGarden({ resetAnimal: false });
+    if (!$("#archive-view").classList.contains("is-hidden")) renderArchive();
+    return;
+  }
+  if (todayAnswer()) { closeSheet(); renderToday(); return; }
   state.answers.push({ date: today, questionId: selectedQuestion.id, question: selectedQuestion.text, answer: value, value, createdAt: new Date().toISOString() });
   save();
   queueDailyFragment("solo", today);
@@ -1452,13 +1569,23 @@ $("#preferences-button").addEventListener("click", () => { renderPreferences(); 
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
 $("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });
 $("#adoption-refresh").addEventListener("click", () => { adoptionDraft = nextAdoptionDraft(animalManifest, currentAdoptionDraft()); localStorage.setItem(ADOPTION_DRAFT_KEY, JSON.stringify(adoptionDraft)); selectedAdoption = null; renderAdoption(); });
+$("#adoption-name").addEventListener("input", (event) => { adoptionNameDraft = event.currentTarget.value; renderAdoption(); });
 $("#adoption-confirm").addEventListener("click", () => {
-  if (!selectedAdoption) return;
-  const animal = saveActiveAnimalProfile(selectedAdoption.species, selectedAdoption.variant);
+  const displayName = normalizePetName(adoptionNameDraft);
+  if (!selectedAdoption || !displayName) { renderAdoption(); return; }
+  const animal = saveActiveAnimalProfile(selectedAdoption.species, selectedAdoption.variant, displayName);
+  adoptionNameDraft = "";
   localStorage.removeItem(ADOPTION_DRAFT_KEY);
   showAdoptionComplete(animal);
 });
 $("#adoption-enter-garden").addEventListener("click", beginNormalApp);
+$("#rename-pet").addEventListener("click", openPetRename);
+$("#rename-pet-cancel").addEventListener("click", closePetRename);
+$("#rename-pet-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (savePetRename($("#rename-pet-input").value)) closePetRename();
+  else $("#rename-pet-error").textContent = "이름은 1~10자로 적어주세요.";
+});
 $("#create-room").addEventListener("click", () => { void createRoom(); });
 $("#open-join-room").addEventListener("click", () => { void runWithNickname(async () => openJoinRoomSheet()); });
 $("#room-interior-back").addEventListener("click", () => { activeRoomId = null; showView("room"); });
