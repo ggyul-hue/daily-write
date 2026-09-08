@@ -149,6 +149,7 @@ let roomDailyRenderId = 0;
 let adoptionDraft = null;
 let selectedAdoption = null;
 let adoptionNameDraft = "";
+let renameEditorOpen = false;
 let normalAppBootstrapped = false;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
@@ -261,7 +262,12 @@ function canEditDailyAnswer(day) {
   return Boolean(answerForDate(day) && !fragmentState.claimed.some((fragment) => fragment.date === day && fragment.consumed_at));
 }
 function isNameFinalized() {
-  return Boolean(animalProfile?.nameFinalized || animalProfile?.name !== animalDefinition().displayName);
+  if (!animalProfile) return false;
+  if (animalProfile.nameFinalized === true) return true;
+  if (animalProfile.name === animalDefinition().displayName) return false;
+  animalProfile = { ...animalProfile, nameFinalized: true };
+  localStorage.setItem(ANIMAL_KEY, JSON.stringify(animalProfile));
+  return true;
 }
 function activePetIdentity() {
   const animal = animalDefinition();
@@ -683,6 +689,7 @@ function renderPetRecord() {
     const finalized = isNameFinalized();
     rename.classList.toggle("is-hidden", finalized);
     rename.textContent = "이름 정하기";
+    if (finalized) closePetRename();
   }
   titleName.textContent = name;
   subtitle.textContent = "우리 집에 온 작은 친구를 천천히 알아가고 있어요.";
@@ -729,14 +736,16 @@ function renderPetRecord() {
   content.append(fields, next, progress);
 }
 function openPetRename() {
+  if (isNameFinalized()) return;
   const form = $("#rename-pet-form");
   const input = $("#rename-pet-input");
   input.value = animalName();
   $("#rename-pet-error").textContent = "";
   form.classList.remove("is-hidden");
+  renameEditorOpen = true;
   input.focus();
 }
-function closePetRename() { $("#rename-pet-form").classList.add("is-hidden"); }
+function closePetRename() { renameEditorOpen = false; $("#rename-pet-form").classList.add("is-hidden"); }
 function savePetRename(value) {
   const name = normalizePetName(value);
   if (!name) return false;
