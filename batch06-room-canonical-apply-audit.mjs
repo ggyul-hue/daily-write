@@ -1,0 +1,13 @@
+import { batch06, questionBank } from './question-bank.js';
+import { entries as c1 } from './batch06-room-choices-chunk1.mjs';
+import { entries as c2 } from './batch06-room-choices-chunk2.mjs';
+import { entries as c3 } from './batch06-room-choices-chunk3.mjs';
+import { entries as c4 } from './batch06-room-choices-chunk4.mjs';
+import { entries as selection } from './batch06-room-candidate-selection.mjs';
+const approved=[...c1,...c2,...c3,...c4], ids=approved.map(e=>e.id), selected=selection.filter(e=>e.roomVerdict==='SELECT').map(e=>e.id), canonical=new Map(batch06.map(q=>[q.id,q]));
+const mismatch=approved.filter(e=>canonical.get(e.id)?.text!==e.question).map(e=>e.id);
+const choiceMismatch=approved.filter(e=>JSON.stringify(canonical.get(e.id)?.roomChoices)!==JSON.stringify(e.roomChoices)).map(e=>e.id);
+const enabled=batch06.filter(q=>q.roomEligible).map(q=>q.id);
+const nonSelected=batch06.filter(q=>!selected.includes(q.id)&&(q.roomEligible||q.roomChoices!=null)).map(q=>q.id);
+const result={verdict:enabled.length===40&&mismatch.length===0&&choiceMismatch.length===0&&nonSelected.length===0?'APPLIED_AND_VERIFIED':'APPLY_FAILED',target:ids.length,applied:enabled.filter(id=>ids.includes(id)).length,missing:ids.filter(id=>!enabled.includes(id)),unexpected:enabled.filter(id=>!ids.includes(id)),totalRoomEligible:questionBank.filter(q=>q.roomEligible).length,batch06RoomEligible:enabled.length,textMismatch:mismatch,choiceMismatch,nonSelected,'0632':canonical.get('dq-v1-0632'),'0696':canonical.get('dq-v1-0696'),choiceTotal:approved.reduce((n,e)=>n+e.roomChoices.length,0)};
+console.log(JSON.stringify(result,null,2));
