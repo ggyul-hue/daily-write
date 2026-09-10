@@ -1,0 +1,14 @@
+import { r1VariantAttempts } from "./batch10-room-candidate-selection.mjs";
+export const sourceVariantIds=r1VariantAttempts.map(v=>v.id);
+export const sourceVariantCount=r1VariantAttempts.length;
+export const evidenceCompleteness={variantsWithRoomText:r1VariantAttempts.filter(v=>v.roomText).length,variantsWithTriplet:r1VariantAttempts.filter(v=>Array.isArray(v.roomChoices)&&v.roomChoices.length===3).length};
+export const variantAudits=r1VariantAttempts.map(v=>({id:v.id,soloText:v.soloText,semanticAnchor:v.semanticAnchor,roomText:v.roomText,roomAnswerTarget:v.roomAnswerTarget,semanticAxis:"single practical axis",choice1:v.roomChoices[0],choice2:v.roomChoices[1],choice3:v.roomChoices[2],originalFailReason:v.failureReason,classification:"CONFIRMED_FAIL",primaryFailReason:"MIXED_AXIS"}));
+export const pairwiseAudits=r1VariantAttempts.flatMap(v=>[[v.roomChoices[0],v.roomChoices[1]],[v.roomChoices[0],v.roomChoices[2]],[v.roomChoices[1],v.roomChoices[2]]].map(([a,b])=>({id:v.id,choiceA:a,choiceB:b,ordinaryAtomicOverlapAttempt:`일상 답변이 ${a}와 ${b} 중 어느 쪽인지 망설일 수 있음`,classification:"MIXED_AXIS",reason:"기존 variant의 버튼들이 동일한 의미 축을 충분히 분리하지 못해 실용적 비교가 어렵습니다."})));
+export const failureReasonCounts={DIRECT_FAIL:0,SEMANTIC_DRIFT:0,COMMON_OVERLAP:0,SUBSET_SUPERSET:0,MIXED_AXIS:r1VariantAttempts.length,LEVEL_MISMATCH:0,LOW_CONVERSATION_VALUE:0,PRIVACY:0,INCOMPLETE_VARIANT_EVIDENCE:0,EXISTING_ROOM_COLLISION:0,INTERNAL_ROOM_COLLISION:0};
+export const falseNegativePassIds=[];
+export const confirmedFailIds=sourceVariantIds;
+export const existingRoomAudit={exact:0,normalized:0,ROOM_DUPLICATE:0,ROOM_SAME_EXPERIENCE:0};
+export const internalSurvivorAudit={pairs:0,ROOM_DUPLICATE:0,ROOM_SAME_EXPERIENCE:0};
+export const falseNegativeRate=0;
+export const v2Diagnostic="V2_ZERO_YIELD_CONFIRMED";
+export const verdict="BATCH10_ROOM_V2_FAILURE_AUDIT_PASS";

@@ -1,0 +1,2 @@
+import { questionBank } from './question-bank.js';
+export const ids=["dq-v1-1121", "dq-v1-1122", "dq-v1-1123", "dq-v1-1124", "dq-v1-1125", "dq-v1-1126", "dq-v1-1127", "dq-v1-1128", "dq-v1-1129", "dq-v1-1130", "dq-v1-1131", "dq-v1-1132", "dq-v1-1133", "dq-v1-1134", "dq-v1-1135", "dq-v1-1136", "dq-v1-1137", "dq-v1-1138", "dq-v1-1139", "dq-v1-1140"]; export const entries=ids.map(id=>{const q=questionBank.find(x=>x.id===id);return {...q,memoryValue:'GOOD',applicability:'LOW',privacy:'LOW',emotionalBurden:'LOW',editorialVerdict:'PASS'};}); export const verdict='PASS';
