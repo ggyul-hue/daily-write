@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+export const sqlSources=['supabase-schema.sql','supabase-phase3.sql','supabase-room-shared-question-v1.sql','supabase-room-question-registry-v1.sql'];
+export const functionDefinitionsFound=['public.ensure_room_daily_question(uuid,date,text)','public.shared_room_question_id(date)'];
+export const persistentIdContracts={room_daily_questions:'text',room_answers:'text',identity:'opaque question_id'};
+export const registryDDLReview={table:'room_question_registry',primaryKey:'question_id',sourceTypes:['legacy_shared_v1','solo_linked','room_only'],enabledDefault:false};
+export const legacySeedIds=['best-food','most-seen','comfortable','word','animal-day','weather-choice','inside-out','replay','smell'];
+export const legacyCompatibilityCases={registeredEnabled:'ACCEPT',unknown:'REJECT',dqUnregistered:'REJECT'};
+export const futureRqFixtureCases={registeredEnabled:'WOULD_ACCEPT',unregistered:'REJECT',disabled:'REJECT'};
+export const permissionReview={clientInsert:false,clientUpdate:false,clientDelete:false,publicSelect:false};
+export const rpcBehaviorReview={signaturePreserved:true,unknownRejected:true,legacyRotationPreserved:true};
+export const runtimeCallerInventory=[{file:'app.js',function:'roomQuestionById',identity:'question_id'},{file:'room-backend.js',function:'ensureRoomDailyQuestion/saveRoomAnswer',identity:'question_id'}];
+export const remoteApplyStatus={applied:false,sqlExecuted:false};
+export const verdict='ROOM_V3_DB_CONTRACT_LOCAL_PASS';

@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import { questionBank } from './question-bank.js';
+import { roomQuestionBank, validateRoomCatalog, getAllRoomQuestions, getRoomQuestionById } from './room-question-bank.js';
+const legacy = questionBank.filter(q=>q.roomEligible===true);
+assert.equal(legacy.length,315);
+assert.equal(roomQuestionBank.length,0);
+assert.equal(getAllRoomQuestions().length,315);
+const fixtureLegacy=[{id:'dq-v1-fixture',text:'기본',roomEligible:true,roomChoices:['A','B','C']}];
+const fixtureVariant=[{id:'dq-v1-variant',text:'Solo',roomText:'Room',roomEligible:true,roomChoices:['가','나','다']}];
+const fixtureNon=[{id:'dq-v1-no-room',text:'Solo',roomEligible:false}];
+const fixtureRq=[{id:'rq-v1-0001',text:'어느 쪽이 더 끌려?',roomChoices:['바다','산','도시']}];
+assert.equal(validateRoomCatalog(fixtureRq, [...fixtureLegacy,...fixtureVariant,...fixtureNon]).ok,true);
+assert.equal(getAllRoomQuestions([...fixtureLegacy,...fixtureVariant,...fixtureNon],fixtureRq)[1].text,'Room');
+assert.equal(getRoomQuestionById('rq-v1-0001',[],fixtureRq).source,'room-only');
+assert.equal(getRoomQuestionById('unknown',[],fixtureRq),null);
+assert.equal(validateRoomCatalog([{id:'dq-v1-fixture',text:'x',roomChoices:['a','b','c']}],fixtureLegacy).ok,false);
+assert.equal(validateRoomCatalog([{id:'rq-v1-bad',text:'x',roomChoices:['a','a','b']}],[]).ok,false);
+console.log('room v3 architecture checks passed');
