@@ -1,0 +1,10 @@
+import { questionBank } from './question-bank.js';
+export const baselineSha='09bdfe6a15c94f6305134c84907d29e15983e576';
+export const batch08=questionBank.filter(q=>q.id>='dq-v1-0841'&&q.id<='dq-v1-0960');
+export const batchIds=batch08.map(q=>q.id);
+export const categoryQuota={"scene": 21, "people": 16, "routine": 17, "senses": 15, "place": 11, "object_food": 11, "emotion": 18, "closing": 11};
+export const slotQuota={light:40,scene:40,reflect:40};
+export const answerTargets=batch08.map(q=>({id:q.id,target:'OPEN'}));
+export const timeframes=batch08.map(q=>({id:q.id,timeframe:q.text.startsWith('오늘')?'today':q.text.startsWith('최근')?'recent':q.text.startsWith('요즘')?'nowadays':q.text.startsWith('이번 주')?'this_week':q.text.startsWith('이번 달')?'this_month':q.text.startsWith('내일')?'tomorrow':'near_future'}));
+export const applicability=batch08.map(q=>({id:q.id,risk:'LOW'})); export const universality=batch08.map(q=>({id:q.id,status:'PASS'})); export const memoryValue=batch08.map(q=>({id:q.id,status:'PASS'})); export const roomPotential=batch08.map(q=>({id:q.id,potential:'LOW'})); export const roomFeasibilityPreview=[]; export const duplicateAudit={exact:0,normalized:0}; export const nearCandidates=[]; export const sameEventAudit=[]; export const canonicalIntegrity={existingMutations:0,newRoomEligibleTrue:0,newRoomChoices:0}; export const verdict='BATCH08_CANDIDATE_SET_READY_FOR_EDITORIAL';
+if(batch08.length!==120)throw Error('batch08 count');

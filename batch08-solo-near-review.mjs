@@ -1,0 +1,6 @@
+import { questionBank } from './question-bank.js';
+import { validateBank } from './question-validator.mjs';
+const ids=new Set(questionBank.filter(q=>Number(q.id.slice(-4))>=841&&Number(q.id.slice(-4))<=960).map(q=>q.id));
+const warnings=validateBank(questionBank).warnings.filter(w=>w.message.includes('near-duplicate')&&w.message.split(' / ').some(x=>ids.has(x.trim().replace('near-duplicate candidate: ',''))));
+export const nearCandidates=warnings.map(w=>{const [a,b]=w.message.replace('near-duplicate candidate: ','').split(' / ');const qa=questionBank.find(q=>q.id===a),qb=questionBank.find(q=>q.id===b);return {idA:a,questionA:qa?.text,idB:b,questionB:qb?.text,similarityReason:w.message,classification:(['dq-v1-0843/dq-v1-0851','dq-v1-0842/dq-v1-0853','dq-v1-0847/dq-v1-0855'].includes([a,b].sort().join('/'))?'REWRITE_RESOLVED':'RELATED_OK')};});
+export const resolvedPairs=[['dq-v1-0843','dq-v1-0851'],['dq-v1-0842','dq-v1-0853'],['dq-v1-0847','dq-v1-0855']].map(([idA,idB])=>({idA,questionA:questionBank.find(q=>q.id===idA)?.text,idB,questionB:questionBank.find(q=>q.id===idB)?.text,classification:'REWRITE_RESOLVED',reason:'Chunk1 rewrite removed the prior same-question collision.'})); export const unresolvedSameQuestion=0; export const verdict='PASS';

@@ -1,0 +1,83 @@
+export const canonicalApplyAudit = {
+  "expectedRoomIds": [
+    "dq-v1-0851",
+    "dq-v1-0853",
+    "dq-v1-0855",
+    "dq-v1-0860",
+    "dq-v1-0866",
+    "dq-v1-0867",
+    "dq-v1-0873",
+    "dq-v1-0877",
+    "dq-v1-0879",
+    "dq-v1-0880",
+    "dq-v1-0890",
+    "dq-v1-0891",
+    "dq-v1-0896",
+    "dq-v1-0900",
+    "dq-v1-0906",
+    "dq-v1-0908",
+    "dq-v1-0938",
+    "dq-v1-0903",
+    "dq-v1-0899",
+    "dq-v1-0907",
+    "dq-v1-0918",
+    "dq-v1-0924",
+    "dq-v1-0935",
+    "dq-v1-0957",
+    "dq-v1-0928",
+    "dq-v1-0929"
+  ],
+  "actualRoomIds": [
+    "dq-v1-0851",
+    "dq-v1-0853",
+    "dq-v1-0855",
+    "dq-v1-0860",
+    "dq-v1-0866",
+    "dq-v1-0867",
+    "dq-v1-0873",
+    "dq-v1-0877",
+    "dq-v1-0879",
+    "dq-v1-0880",
+    "dq-v1-0890",
+    "dq-v1-0891",
+    "dq-v1-0896",
+    "dq-v1-0899",
+    "dq-v1-0900",
+    "dq-v1-0903",
+    "dq-v1-0906",
+    "dq-v1-0907",
+    "dq-v1-0908",
+    "dq-v1-0918",
+    "dq-v1-0924",
+    "dq-v1-0928",
+    "dq-v1-0929",
+    "dq-v1-0935",
+    "dq-v1-0938",
+    "dq-v1-0957"
+  ],
+  "missingRoomIds": [],
+  "extraRoomIds": [],
+  "choiceMismatches": [],
+  "batch08Counts": {
+    "questions": 120,
+    "room": 26,
+    "nonRoom": 94,
+    "choiceArrays": 26,
+    "choiceStrings": 78
+  },
+  "globalCounts": {
+    "questions": 969,
+    "roomEligible": 315
+  },
+  "historicalLeakAudit": {
+    "count": 0,
+    "ids": []
+  },
+  "nonRoomChoiceLeakAudit": {
+    "count": 0
+  },
+  "slotIntegrity": "UNCHANGED",
+  "categoryIntegrity": "UNCHANGED",
+  "diffIntegrity": "ONLY FINAL 26 ROOM METADATA",
+  "verdict": "BATCH08_CANONICAL_APPLY_PASS"
+};

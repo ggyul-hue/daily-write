@@ -5,8 +5,8 @@ import { duplicateRoomTriplets, duplicateUnorderedRoomTriplets, normalizeQuestio
 const partial = validateBank(questionBank);
 assert.equal(partial.ok, true);
 assert.equal(partial.errors.length, 0);
-assert.equal(questionBank.length, 849);
-assert.equal(questionBank.filter((question) => question.roomEligible).length, 289);
+assert.equal(questionBank.length, 969);
+assert.equal(questionBank.filter((question) => question.roomEligible).length, 315);
 const batch04 = questionBank.filter((question) => { const id = Number(question.id.slice(-4)); return id >= 361 && id <= 480; });
 assert.equal(selectedBatch04RoomIds.size, 40);
 assert.equal(Object.keys(batch04RoomChoices).length, 40);
@@ -23,7 +23,7 @@ assert.deepEqual([...selectedBatch05RoomIds].sort(), Object.keys(batch05RoomChoi
 assert.equal(batch05.filter((question) => question.roomEligible).length, 40);
 assert.equal(duplicateRoomTriplets(batch05).length, 0);
 assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, batch04.filter((question) => question.dailySlot === slot).length])), { light: 40, scene: 40, reflect: 40 });
-assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, questionBank.filter((question) => question.dailySlot === slot).length])), { light: 283, scene: 283, reflect: 283 });
+assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, questionBank.filter((question) => question.dailySlot === slot).length])), { light: 323, scene: 323, reflect: 323 });
 assert.equal(batch06.length, 120);
 assert.deepEqual([batch06[0].id, batch06.at(-1).id], ["dq-v1-0601", "dq-v1-0720"]);
 assert.equal(batch06.filter((question) => question.roomEligible).length, 40);
@@ -34,8 +34,13 @@ assert.equal(batch07.length, 120);
 assert.deepEqual([batch07[0].id, batch07.at(-1).id], ["dq-v1-0721", "dq-v1-0840"]);
 assert.equal(batch07.filter((question) => question.roomEligible).length, 40);
 assert.equal(batch07.filter((question) => question.roomChoices != null).length, 40);
+const batch08 = questionBank.filter((question) => { const id = Number(question.id.slice(-4)); return id >= 841 && id <= 960; });
+assert.equal(batch08.length, 120);
+assert.equal(batch08.filter((question) => question.roomEligible).length, 26);
+assert.equal(batch08.filter((question) => question.roomChoices != null).length, 26);
+assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, batch08.filter((question) => question.dailySlot === slot).length])), { light: 40, scene: 40, reflect: 40 });
 assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, batch07.filter((question) => question.dailySlot === slot).length])), { light: 40, scene: 40, reflect: 40 });
-assert.equal(questionBank.filter((question) => question.roomEligible).length, 289);
+assert.equal(questionBank.filter((question) => question.roomEligible).length, 315);
 assert.equal(normalizeQuestion(" 오늘은 괜찮았나요?  "), "오늘은 괜찮았나요");
 
 const base = { id: "dq-v1-0001", text: "오늘의 질문", category: "scene", dailySlot: "scene", roomEligible: false };
