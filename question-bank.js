@@ -243,4 +243,847 @@ const batch06Text={scene:["현관을 나서며 돌아본 장면은?","길모퉁�
 ; Object.entries(batch06RoomChoicesFinal).forEach(([id, choices]) => { const q = batch06.find(item => item.id === id); if (q) { q.roomEligible = true; q.roomChoices = choices; } }); questionBank.push(...batch06);
 const batch07=[{"id":"dq-v1-0721","text":"오늘 새로 발견한 표시는 무엇이었나요?","category":"scene","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0722","text":"오늘 가까이서 본 손동작은?","category":"scene","dailySlot":"scene","roomEligible":true,"roomChoices":["손을 흔든 모습","무언가를 건네는 모습","손을 멈춘 모습"]},{"id":"dq-v1-0723","text":"오늘 잠시 멈춰 바라본 움직임은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0724","text":"오늘 낯설게 느껴진 익숙한 풍경은?","category":"scene","dailySlot":"light","roomEligible":true,"roomChoices":["자연이 중심인 풍경","건물이 중심인 풍경","사람이 중심인 풍경"]},{"id":"dq-v1-0725","text":"오늘 다시 눈이 간 장면은?","category":"scene","dailySlot":"scene","roomEligible":true,"roomChoices":["사람이 중심인 장면","자연이 중심인 장면","물건이 중심인 장면"]},{"id":"dq-v1-0726","text":"오늘 시선이 머문 창가의 모습은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0727","text":"오늘 길에서 스쳐 지나간 빛은?","category":"scene","dailySlot":"light","roomEligible":true,"roomChoices":["햇빛","전등빛","간판 불빛"]},{"id":"dq-v1-0728","text":"오늘 사람들 사이에서 벌어진 작은 장면은?","category":"scene","dailySlot":"scene","roomEligible":true,"roomChoices":["도움을 주고받은 장면","말을 나눈 장면","나란히 머문 장면"]},{"id":"dq-v1-0729","text":"오늘 잠깐 고개를 돌린 까닭은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0730","text":"오늘 처음 알아챈 작은 변화는?","category":"scene","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0731","text":"오늘 한 장면을 떠올리게 한 물건은?","category":"scene","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0732","text":"오늘 걸음을 늦추게 한 장면은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0733","text":"오늘 지나며 본 그림자는?","category":"scene","dailySlot":"light","roomEligible":true,"roomChoices":["사람 그림자","건물 그림자","나뭇가지 그림자"]},{"id":"dq-v1-0734","text":"오늘 가까이에서 본 표정은?","category":"scene","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0735","text":"오늘 움직임이 느리게 보인 순간은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0736","text":"오늘 예상과 다르게 보인 곳은?","category":"scene","dailySlot":"light","roomEligible":true,"roomChoices":["실내에 있는 곳","길가에 있는 곳","자연 속에 있는 곳"]},{"id":"dq-v1-0737","text":"오늘 물건이 놓인 모습이 기억에 남은 장면은?","category":"scene","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0738","text":"오늘 잠깐 올려다본 이유는?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0739","text":"오늘 지나가다 돌아본 것은?","category":"scene","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0740","text":"오늘 잠깐 열린 문틈으로 본 장면은?","category":"scene","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0741","text":"오늘 누군가와 시선이 마주친 장면은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0742","text":"오늘 짧게 안부를 나눈 사람은?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0743","text":"오늘 내 말에 고개를 끄덕인 사람은?","category":"people","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0744","text":"오늘 먼저 웃어 준 사람은?","category":"people","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0745","text":"오늘 같은 방향으로 걸은 사람은?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0746","text":"오늘 내 이름을 불러 준 사람은?","category":"people","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0747","text":"오늘 대화 중 기억에 남은 말을 한 사람은?","category":"people","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0748","text":"오늘 길을 비켜 준 사람은?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0749","text":"오늘 무언가를 함께 결정한 사람은?","category":"people","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0750","text":"오늘 내 말을 다시 물어본 사람은?","category":"people","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0751","text":"오늘 우연히 마주친 사람은?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0752","text":"오늘 작은 도움을 받은 상대는?","category":"people","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0753","text":"오늘 소식을 듣고 떠오른 사람은?","category":"people","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0754","text":"오늘 대화가 자연스럽게 이어진 상대는?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0755","text":"오늘 나란히 앉아 있던 사람은?","category":"people","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0756","text":"오늘 다시 연락하고 싶어진 사람은?","category":"people","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0757","text":"오늘 작별하며 손을 흔든 사람은?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0758","text":"오늘 시작하기 전에 확인한 것은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0759","text":"오늘 한 번에 끝내지 않고 나눠 한 일은?","category":"routine","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0760","text":"오늘 틈날 때 가볍게 한 일은?","category":"routine","dailySlot":"light","roomEligible":true,"roomChoices":["잠깐 쉬기","간단히 정리하기","가볍게 둘러보기"]},{"id":"dq-v1-0761","text":"오늘 잠깐 꺼내 놓고 사용한 것은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0762","text":"오늘 마치고 바로 치운 것은?","category":"routine","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0763","text":"오늘 미루지 않고 끝낸 것은?","category":"routine","dailySlot":"light","roomEligible":true,"roomChoices":["미뤄 둔 연락","밀린 정리","필요한 신청"]},{"id":"dq-v1-0764","text":"오늘 중간에 방법을 바꾼 일은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0765","text":"오늘 잠깐 내려놓았다 다시 든 것은?","category":"routine","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0766","text":"오늘 시간을 아끼려고 줄인 일은?","category":"routine","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0767","text":"오늘 한 번 더 생각하고 한 일은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0768","text":"오늘 예상보다 오래 걸린 일은?","category":"routine","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0769","text":"오늘 일을 시작하며 가장 먼저 한 행동은?","category":"routine","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0770","text":"오늘 잠시 맡겨 둔 것은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0771","text":"오늘 먼저 처리하고 마음이 놓인 일은?","category":"routine","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0772","text":"오늘 잠깐 멈춰 정리한 것은?","category":"routine","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0773","text":"오늘 다른 곳으로 옮겨 둔 것은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0774","text":"오늘 마지막에 점검한 것은?","category":"routine","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0775","text":"오늘 생각보다 빨리 끝난 일은?","category":"routine","dailySlot":"light","roomEligible":true,"roomChoices":["짧은 심부름","간단한 준비","잠깐의 확인"]},{"id":"dq-v1-0776","text":"오늘 가장 또렷했던 냄새는?","category":"senses","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0777","text":"오늘 유난히 높거나 낮게 들린 소리는?","category":"senses","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0778","text":"오늘 손끝에서 느껴진 온도 차는?","category":"senses","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0779","text":"오늘 눈을 감아도 떠오른 소리는?","category":"senses","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0780","text":"오늘 입안에 오래 남은 맛은?","category":"senses","dailySlot":"reflect","roomEligible":true,"roomChoices":["달콤한 맛","짭짤한 맛","고소한 맛"]},{"id":"dq-v1-0781","text":"오늘 피부에 닿은 바람은?","category":"senses","dailySlot":"light","roomEligible":true,"roomChoices":["선선한 바람","따뜻한 바람","차가운 바람"]},{"id":"dq-v1-0782","text":"오늘 유난히 흐릿했던 빛은?","category":"senses","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0783","text":"오늘 가까이서 느낀 향의 변화는?","category":"senses","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0784","text":"오늘 손에 닿아 매끈했던 표면은?","category":"senses","dailySlot":"light","roomEligible":true,"roomChoices":["유리 표면","금속 표면","나무 표면"]},{"id":"dq-v1-0785","text":"오늘 멀리서 들린 규칙적인 소리는?","category":"senses","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0786","text":"오늘 한순간 선명해진 색감은?","category":"senses","dailySlot":"reflect","roomEligible":true,"roomChoices":["붉은빛","푸른빛","노란빛"]},{"id":"dq-v1-0787","text":"오늘 코끝을 스친 익숙한 냄새는?","category":"senses","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0788","text":"오늘 손끝에 닿은 컵의 감촉은?","category":"senses","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0789","text":"오늘 주변 온도가 달라진 때는?","category":"senses","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0790","text":"오늘 코끝을 스친 낯선 냄새는?","category":"senses","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0791","text":"오늘 잠시 머문 구석은?","category":"place","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0792","text":"오늘 지나면서 방향을 바꾼 곳은?","category":"place","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0793","text":"오늘 앉아 있기 편했던 자리는?","category":"place","dailySlot":"light","roomEligible":true,"roomChoices":["창가 자리","구석 자리","가운데 자리"]},{"id":"dq-v1-0794","text":"오늘 유난히 넓어 보인 곳은?","category":"place","dailySlot":"scene","roomEligible":true,"roomChoices":["건물 안의 공간","길이 이어진 공간","자연 속의 공간"]},{"id":"dq-v1-0795","text":"오늘 문을 열고 들어선 공간은?","category":"place","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0796","text":"오늘 길 끝에서 마주한 곳은?","category":"place","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0797","text":"오늘 조명이 인상적이었던 곳은?","category":"place","dailySlot":"scene","roomEligible":true,"roomChoices":["창가","복도","입구"]},{"id":"dq-v1-0798","text":"오늘 소리가 멀게 느껴진 자리는?","category":"place","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0799","text":"오늘 잠시 비켜 서 있던 곳은?","category":"place","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0800","text":"오늘 다시 지나게 된 길목은?","category":"place","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0801","text":"오늘 마음이 놓였던 곳은?","category":"place","dailySlot":"reflect","roomEligible":true,"roomChoices":["익숙한 동네","처음 가 본 곳","다시 찾은 곳"]},{"id":"dq-v1-0802","text":"오늘 마음에 든 물건은?","category":"object_food","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0803","text":"이번 주 기억에 남은 물건은?","category":"object_food","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0804","text":"최근 먹은 것 중 기억에 남는 음식은?","category":"object_food","dailySlot":"reflect","roomEligible":true,"roomChoices":["밥 요리","면 요리","빵·디저트"]},{"id":"dq-v1-0805","text":"오늘 나를 편하게 해 준 물건은?","category":"object_food","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0806","text":"요즘 새롭게 좋아진 물건은?","category":"object_food","dailySlot":"scene","roomEligible":true,"roomChoices":["전자기기","생활용품","취미용품"]},{"id":"dq-v1-0807","text":"최근 기대 이상이었던 음식은?","category":"object_food","dailySlot":"reflect","roomEligible":true,"roomChoices":["바삭한 음식","부드러운 음식","쫄깃한 음식"]},{"id":"dq-v1-0808","text":"요즘 가장 자주 쓰는 물건은?","category":"object_food","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0809","text":"최근 관심이 가는 물건은?","category":"object_food","dailySlot":"scene","roomEligible":true,"roomChoices":["종이로 된 물건","금속으로 된 물건","천으로 된 물건"]},{"id":"dq-v1-0810","text":"요즘 하나 갖고 싶은 물건은?","category":"object_food","dailySlot":"reflect","roomEligible":true,"roomChoices":["입는 물건","읽는 물건","기록하는 물건"]},{"id":"dq-v1-0811","text":"오늘 손에 익어 편했던 물건은?","category":"object_food","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0812","text":"오늘 먹은 것 중 다시 먹고 싶은 것은?","category":"object_food","dailySlot":"scene","roomEligible":true,"roomChoices":["따뜻하게 나온 음식","차갑게 나온 음식","상온으로 먹은 음식"]},{"id":"dq-v1-0813","text":"오늘 살짝 안도한 계기는?","category":"emotion","dailySlot":"reflect","roomEligible":true,"roomChoices":["기다림이 끝난 순간","실수를 바로잡은 순간","막혔던 일이 풀린 순간"]},{"id":"dq-v1-0814","text":"오늘 호기심이 생긴 순간은?","category":"emotion","dailySlot":"light","roomEligible":true,"roomChoices":["눈으로 본 순간","귀로 들은 순간","몸으로 느낀 순간"]},{"id":"dq-v1-0815","text":"오늘 웃음이 번진 장면은?","category":"emotion","dailySlot":"scene","roomEligible":true,"roomChoices":["말에서 시작된 웃음","행동에서 시작된 웃음","상상에서 시작된 웃음"]},{"id":"dq-v1-0816","text":"오늘 마음이 차분해진 소리는?","category":"emotion","dailySlot":"reflect","roomEligible":true,"roomChoices":["빗소리","잔잔한 음악","사람 목소리"]},{"id":"dq-v1-0817","text":"오늘 작은 용기가 필요했던 때는?","category":"emotion","dailySlot":"light","roomEligible":true,"roomChoices":["내 의견을 말한 때","낯선 곳에 들어간 때","거절을 감수한 때"]},{"id":"dq-v1-0818","text":"오늘 뜻밖에 반가웠던 순간은?","category":"emotion","dailySlot":"scene","roomEligible":true,"roomChoices":["반가운 연락을 받은 순간","우연히 다시 만난 순간","기대하지 않은 선물을 받은 순간"]},{"id":"dq-v1-0819","text":"오늘 아쉬움이 남은 선택은?","category":"emotion","dailySlot":"reflect","roomEligible":true,"roomChoices":["미룬 선택","포기한 선택","바꾼 선택"]},{"id":"dq-v1-0820","text":"오늘 마음이 따뜻해진 행동은?","category":"emotion","dailySlot":"light","roomEligible":true,"roomChoices":["먼저 도운 행동","칭찬을 건넨 행동","순서를 양보한 행동"]},{"id":"dq-v1-0821","text":"최근 기분이 달라졌던 순간은?","category":"emotion","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0822","text":"오늘 새삼 고마웠던 것은?","category":"emotion","dailySlot":"reflect","roomEligible":true,"roomChoices":["편안히 쉰 순간","좋은 말을 들은 순간","기분 좋은 우연을 만난 순간"]},{"id":"dq-v1-0823","text":"요즘 은근히 만족스러운 것은?","category":"emotion","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0824","text":"최근 기분이 좋아진 계기는?","category":"emotion","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0825","text":"요즘 기분 전환이 되는 것은?","category":"emotion","dailySlot":"reflect","roomEligible":true,"roomChoices":["몸을 움직인 것","새로운 소리를 들은 것","누군가와 이야기한 것"]},{"id":"dq-v1-0826","text":"오늘 스스로 잘했다고 느낀 선택은?","category":"emotion","dailySlot":"light","roomEligible":true,"roomChoices":["아침에 한 선택","낮에 한 선택","저녁에 한 선택"]},{"id":"dq-v1-0827","text":"오늘 작은 만족을 느낀 것은?","category":"emotion","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0828","text":"요즘 은근히 기대되는 것은?","category":"emotion","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0829","text":"오늘 생각보다 재미있었던 것은?","category":"emotion","dailySlot":"light","roomEligible":true,"roomChoices":["직접 해 본 경험","우연히 본 장면","뜻밖에 들은 이야기"]},{"id":"dq-v1-0830","text":"이번 주 다시 떠올리고 싶은 장면은?","category":"closing","dailySlot":"scene","roomEligible":true,"roomChoices":["사람이 중심인 장면","풍경이 중심인 장면","물건이 중심인 장면"]},{"id":"dq-v1-0831","text":"오늘 하루에서 오래 기억하고 싶은 것은?","category":"closing","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0832","text":"내일도 이어가고 싶은 것은?","category":"closing","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0833","text":"최근 저녁 중 기억에 남는 장면은?","category":"closing","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0834","text":"오늘 하루의 속도를 보여 준 장면은?","category":"closing","dailySlot":"reflect","roomEligible":true,"roomChoices":["분주한 장면","느긋한 장면","멈춘 장면"]},{"id":"dq-v1-0835","text":"가까운 시일에 하나 해보고 싶은 것은?","category":"closing","dailySlot":"light","roomEligible":true,"roomChoices":["가보기","배워보기","만들어보기"]},{"id":"dq-v1-0836","text":"오늘 마지막으로 정리한 생각은?","category":"closing","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0837","text":"오늘 하루를 접으며 떠오른 사람은?","category":"closing","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0838","text":"내일 아침 기대되는 것은?","category":"closing","dailySlot":"light","roomEligible":true,"roomChoices":["아침 햇빛","선선한 공기","조용한 소리"]},{"id":"dq-v1-0839","text":"오늘의 기분을 닮은 색은?","category":"closing","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0840","text":"오늘 하루를 한곳에 담는다면 어디인가요?","category":"closing","dailySlot":"reflect","roomEligible":false}]; questionBank.push(...batch07);
 const batch08=[{"id":"dq-v1-0841","text":"최근 다시 떠올린 장면은?","category":"scene","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0842","text":"오늘 마음에 남은 풍경은?","category":"scene","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0843","text":"이번 주 기억에 남은 순간은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0844","text":"오늘 분위기가 달라진 장면은?","category":"scene","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0845","text":"최근 웃음이 난 장면은?","category":"scene","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0846","text":"오늘 뜻밖에 마주친 장면은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0847","text":"이번 달 오래 기억할 장면은?","category":"scene","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0848","text":"오늘 조용히 바라본 풍경은?","category":"scene","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0849","text":"최근 다시 보고 싶은 모습은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0850","text":"오늘 하루를 닮은 장면은?","category":"scene","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0851","text":"이번 주 예상 밖으로 즐거웠던 일은?","category":"scene","dailySlot":"scene","roomEligible":true,"roomChoices":["혼자 즐긴 일","한 사람과 함께한 일","여럿이 함께한 일"]},{"id":"dq-v1-0852","text":"오늘 사람들 사이의 인상적인 장면은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0853","text":"최근 분위기가 달라 보인 장소는?","category":"scene","dailySlot":"light","roomEligible":true,"roomChoices":["가게·카페","거리·동네","공원·자연"]},{"id":"dq-v1-0854","text":"오늘 생각보다 따뜻했던 장면은?","category":"scene","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0855","text":"이번 달 새로 시작된 변화는?","category":"scene","dailySlot":"reflect","roomEligible":true,"roomChoices":["새로 생긴 습관","새로 열린 기회","새롭게 달라진 환경"]},{"id":"dq-v1-0856","text":"오늘 시간이 느리게 흐른 순간은?","category":"scene","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0857","text":"최근 새롭게 보인 풍경은?","category":"scene","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0858","text":"오늘 장면의 분위기를 바꾼 것은?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0859","text":"이번 주 힘을 빼고 보낸 때는?","category":"scene","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0860","text":"오늘 누군가와 나눈 인상적인 말은?","category":"scene","dailySlot":"scene","roomEligible":true,"roomChoices":["칭찬","소식 알림","부탁"]},{"id":"dq-v1-0861","text":"이번 주 가장 뜻밖이었던 변화는?","category":"scene","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0862","text":"오늘 고마움이 남은 사람은?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0863","text":"최근 다시 만나 반가웠던 사람은?","category":"people","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0864","text":"오늘 대화가 편했던 사람은?","category":"people","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0865","text":"이번 주 기억에 남은 인사는?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0866","text":"오늘 누군가와 함께 웃은 순간은?","category":"people","dailySlot":"scene","roomEligible":true,"roomChoices":["누군가의 한마디","같이 본 콘텐츠","실제로 생긴 해프닝"]},{"id":"dq-v1-0867","text":"최근 누군가와 주고받은 도움은?","category":"people","dailySlot":"reflect","roomEligible":true,"roomChoices":["정보를 나눈 도움","일을 거든 도움","물건을 빌려준 도움"]},{"id":"dq-v1-0868","text":"오늘 말없이 배려를 느낀 순간은?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0869","text":"이번 달 문득 떠오른 사람은?","category":"people","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0870","text":"오늘 이야기를 더 듣고 싶었던 사람은?","category":"people","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0871","text":"최근 닮고 싶다고 느낀 사람은?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0872","text":"오늘 누군가에게 건넨 작은 친절은?","category":"people","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0873","text":"이번 주 안부를 나눈 짧은 대화는?","category":"people","dailySlot":"reflect","roomEligible":true,"roomChoices":["메시지로 나눈 대화","전화로 나눈 대화","직접 만나 나눈 대화"]},{"id":"dq-v1-0874","text":"오늘 처음 알게 된 면이 있는 사람은?","category":"people","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0875","text":"최근 함께 있어 편안했던 사람은?","category":"people","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0876","text":"오늘 생각이 달랐지만 흥미로웠던 사람은?","category":"people","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0877","text":"이번 달 오래 기억할 대화는?","category":"people","dailySlot":"light","roomEligible":true,"roomChoices":["처음 나눈 대화","오랜만에 다시 나눈 대화","평소 자주 이어온 대화"]},{"id":"dq-v1-0878","text":"오늘 리듬을 바꾼 작은 선택은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0879","text":"최근 자주 반복한 좋은 습관은?","category":"routine","dailySlot":"reflect","roomEligible":true,"roomChoices":["물 챙겨 마시기","가볍게 움직이기","짧게 기록하기"]},{"id":"dq-v1-0880","text":"오늘 나에게 맞았던 하루의 속도는?","category":"routine","dailySlot":"light","roomEligible":true,"roomChoices":["천천히","보통 속도로","빠르게"]},{"id":"dq-v1-0881","text":"이번 주 자연스럽게 계속하게 된 일은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0882","text":"오늘 잠깐 멈춰 얻은 것은?","category":"routine","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0883","text":"최근 시간을 쓰는 방식이 달라진 점은?","category":"routine","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0884","text":"오늘 먼저 하고 마음이 편해진 일은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0885","text":"이번 달 새로 익숙해진 일과는?","category":"routine","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0886","text":"오늘 하루를 편하게 만든 방법은?","category":"routine","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0887","text":"최근 하루를 시작하는 방식은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0888","text":"이번 주 쉬어 가는 나만의 방식은?","category":"routine","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0889","text":"오늘 예상보다 수월했던 일은?","category":"routine","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0890","text":"최근 자주 기다려진 일상의 시간은?","category":"routine","dailySlot":"scene","roomEligible":true,"roomChoices":["하루를 시작할 때","잠깐 쉬는 때","하루를 마칠 때"]},{"id":"dq-v1-0891","text":"오늘 가장 편하게 느껴진 시간대는?","category":"routine","dailySlot":"reflect","roomEligible":true,"roomChoices":["아침","낮","저녁"]},{"id":"dq-v1-0892","text":"이번 달 계속하고 싶은 생활 방식은?","category":"routine","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0893","text":"오늘 잘했다고 느낀 작은 결정은?","category":"routine","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0894","text":"최근 일상에서 덜어 낸 것은?","category":"routine","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0895","text":"오늘 유난히 오래 남은 소리는?","category":"senses","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0896","text":"최근 기억에 남은 냄새는?","category":"senses","dailySlot":"scene","roomEligible":true,"roomChoices":["음식·음료 향","풀·비·흙 향","향수·세제 향"]},{"id":"dq-v1-0897","text":"오늘 입안에 남은 맛은?","category":"senses","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0898","text":"이번 주 손끝에 남은 감촉은?","category":"senses","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0899","text":"오늘 공기에서 느낀 계절감은?","category":"senses","dailySlot":"scene","roomEligible":true,"roomChoices":["봄 같은 느낌","여름 같은 느낌","가을 같은 느낌"]},{"id":"dq-v1-0900","text":"최근 귀 기울이고 싶었던 소리는?","category":"senses","dailySlot":"reflect","roomEligible":true,"roomChoices":["자연의 소리","사람의 목소리","악기 소리"]},{"id":"dq-v1-0901","text":"오늘 마음에 들었던 향은?","category":"senses","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0902","text":"이번 달 자주 떠오른 맛은?","category":"senses","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0903","text":"오늘 피부에 닿은 햇빛은?","category":"senses","dailySlot":"reflect","roomEligible":true,"roomChoices":["아침 햇빛","한낮 햇빛","해 질 녘 햇빛"]},{"id":"dq-v1-0904","text":"최근 마음을 편하게 한 소리는?","category":"senses","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0905","text":"오늘 예상보다 진했던 냄새는?","category":"senses","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0906","text":"이번 주 다시 느끼고 싶은 감각은?","category":"senses","dailySlot":"reflect","roomEligible":true,"roomChoices":["좋았던 소리","마음에 든 향","편안한 촉감"]},{"id":"dq-v1-0907","text":"요즘 촉감이 마음에 드는 것은?","category":"senses","dailySlot":"light","roomEligible":true,"roomChoices":["미끄러운 촉감","끈적한 촉감","까슬한 촉감"]},{"id":"dq-v1-0908","text":"최근 계절을 떠올리게 한 색은?","category":"senses","dailySlot":"scene","roomEligible":true,"roomChoices":["연두색","하늘색","주황색"]},{"id":"dq-v1-0909","text":"오늘 주변의 소리 분위기는?","category":"senses","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0910","text":"최근 다시 가고 싶은 곳은?","category":"place","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0911","text":"오늘 마음이 편했던 장소는?","category":"place","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0912","text":"이번 주 새롭게 알게 된 곳은?","category":"place","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0913","text":"요즘 자주 생각나는 장소는?","category":"place","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0914","text":"오늘 오래 머물고 싶었던 곳은?","category":"place","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0915","text":"최근 분위기가 좋았던 공간은?","category":"place","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0916","text":"이번 달 기억에 남은 동네는?","category":"place","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0917","text":"오늘 누군가와 함께 있고 싶었던 곳은?","category":"place","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0918","text":"가까운 시일에 가보고 싶은 곳은?","category":"place","dailySlot":"reflect","roomEligible":true,"roomChoices":["동네 안의 곳","가까운 근교의 곳","멀리 떠나는 곳"]},{"id":"dq-v1-0919","text":"최근 뜻밖에 좋아진 장소는?","category":"place","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0920","text":"이번 주 산책하고 싶은 곳은?","category":"place","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0921","text":"최근 다시 먹고 싶은 음식은?","category":"object_food","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0922","text":"요즘 손이 자주 가는 음식은?","category":"object_food","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0923","text":"오늘 유난히 소중하게 느껴진 물건은?","category":"object_food","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0924","text":"이번 주 기억에 남은 한 끼는?","category":"object_food","dailySlot":"reflect","roomEligible":true,"roomChoices":["아침 한 끼","점심 한 끼","저녁 한 끼"]},{"id":"dq-v1-0925","text":"최근 생각보다 유용했던 물건은?","category":"object_food","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0926","text":"요즘 바꾸고 싶은 물건은?","category":"object_food","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0927","text":"최근 특별한 기억이 얽힌 물건은?","category":"object_food","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0928","text":"이번 달 누군가와 나눈 음식은?","category":"object_food","dailySlot":"light","roomEligible":true,"roomChoices":["과일","빵","음료"]},{"id":"dq-v1-0929","text":"최근 선물하고 싶은 것은?","category":"object_food","dailySlot":"scene","roomEligible":true,"roomChoices":["꽃다발","책","간식 꾸러미"]},{"id":"dq-v1-0930","text":"오늘 오래 쓰고 싶은 물건은?","category":"object_food","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0931","text":"요즘 집에 두고 싶은 것은?","category":"object_food","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0932","text":"오늘 마음이 가벼워진 까닭은?","category":"emotion","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0933","text":"오늘 긴장이 풀린 순간은?","category":"emotion","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0934","text":"오늘 의외로 만족스러웠던 것은?","category":"emotion","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0935","text":"최근 새로 알게 되어 반가웠던 것은?","category":"emotion","dailySlot":"scene","roomEligible":true,"roomChoices":["새로 알게 된 사람","새로 알게 된 장소","새로 알게 된 사실"]},{"id":"dq-v1-0936","text":"요즘 자주 느끼는 작은 기쁨은?","category":"emotion","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0937","text":"오늘 스스로 괜찮다고 느낀 순간은?","category":"emotion","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0938","text":"최근 생각이 달라진 계기는?","category":"emotion","dailySlot":"scene","roomEligible":true,"roomChoices":["내가 직접 본 장면","누군가에게 들은 이야기","글로 읽은 내용"]},{"id":"dq-v1-0939","text":"오늘 더 생각해 보고 싶은 질문은?","category":"emotion","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0940","text":"이번 달 기대가 생긴 까닭은?","category":"emotion","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0941","text":"요즘 나를 웃게 하는 것은?","category":"emotion","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0942","text":"오늘 안심이 된 한마디는?","category":"emotion","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0943","text":"최근 고마움을 느낀 일은?","category":"emotion","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0944","text":"이번 주 마음에 남은 감정은?","category":"emotion","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0945","text":"오늘 용기가 난 순간은?","category":"emotion","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0946","text":"요즘 점점 더 좋아하게 된 것은?","category":"emotion","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0947","text":"최근 다시 시작하고 싶은 것은?","category":"emotion","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0948","text":"오늘 나를 놀라게 한 좋은 일은?","category":"emotion","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0949","text":"이번 달 가장 기대되는 변화는?","category":"emotion","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0950","text":"오늘 하루를 한 문장으로 남긴다면?","category":"closing","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0951","text":"최근 다시 꺼내 보고 싶은 기억은?","category":"closing","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0952","text":"이번 주 계속 이어가고 싶은 기분은?","category":"closing","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0953","text":"이번 달 끝나기 전에 해보고 싶은 것은?","category":"closing","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0954","text":"내일 조금 기대되는 일은?","category":"closing","dailySlot":"reflect","roomEligible":false},{"id":"dq-v1-0955","text":"가까운 시일에 만나고 싶은 풍경은?","category":"closing","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0956","text":"요즘 오래 간직하고 싶은 말은?","category":"closing","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0957","text":"이번 계절에 기억하고 싶은 것은?","category":"closing","dailySlot":"reflect","roomEligible":true,"roomChoices":["계절의 풍경","계절의 냄새","계절에 만난 사람"]},{"id":"dq-v1-0958","text":"오늘의 나에게 건네고 싶은 말은?","category":"closing","dailySlot":"light","roomEligible":false},{"id":"dq-v1-0959","text":"다음 주의 나에게 바라는 것은?","category":"closing","dailySlot":"scene","roomEligible":false},{"id":"dq-v1-0960","text":"최근 하루 중 다시 돌아가 보고 싶은 시간은?","category":"closing","dailySlot":"reflect","roomEligible":false}]; questionBank.push(...batch08);
+const batch09 = [
+  {
+    "id": "dq-v1-0961",
+    "text": "오늘 유난히 오래 바라본 장면은?",
+    "category": "scene",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0962",
+    "text": "오늘 고마운 말을 건넨 사람은?",
+    "category": "people",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0963",
+    "text": "오늘 하루를 가볍게 만든 습관은?",
+    "category": "routine",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0964",
+    "text": "오늘 가장 부드럽게 느껴진 감각은?",
+    "category": "senses",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0965",
+    "text": "오늘 마음이 머문 장소는?",
+    "category": "place",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0966",
+    "text": "오늘 유난히 마음에 든 물건은?",
+    "category": "object_food",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0967",
+    "text": "오늘 작게 기뻤던 일은?",
+    "category": "emotion",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0968",
+    "text": "오늘의 작은 수확은?",
+    "category": "closing",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0969",
+    "text": "최근 사진첩에서 가장 오래 본 사진은?",
+    "category": "scene",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0970",
+    "text": "최근 웃음을 나눈 사람은?",
+    "category": "people",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0971",
+    "text": "최근 생활에서 자리를 잡은 방식은?",
+    "category": "routine",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0972",
+    "text": "최근 기억에 남은 빛은?",
+    "category": "senses",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0973",
+    "text": "최근 다시 걷고 싶은 길은?",
+    "category": "place",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0974",
+    "text": "이번 달 맛으로 기억할 음식은?",
+    "category": "object_food",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0975",
+    "text": "최근 마음이 놓였던 순간은?",
+    "category": "emotion",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0976",
+    "text": "이번 계절 마음에 남길 장면은?",
+    "category": "closing",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0977",
+    "text": "이번 주 가장 따뜻했던 장면은?",
+    "category": "scene",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0978",
+    "text": "이번 주 문득 생각난 사람은?",
+    "category": "people",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0979",
+    "text": "이번 주 시간을 아껴 준 방법은?",
+    "category": "routine",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0980",
+    "text": "이번 주 마음을 편하게 한 소리는?",
+    "category": "senses",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0981",
+    "text": "이번 주 편안함을 느낀 공간은?",
+    "category": "place",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0982",
+    "text": "이번 주 오래 쓰고 싶은 물건은?",
+    "category": "object_food",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0983",
+    "text": "이번 주 의외로 고마웠던 일은?",
+    "category": "emotion",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0984",
+    "text": "이번 주 이어 가고 싶은 좋은 흐름은?",
+    "category": "closing",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0985",
+    "text": "오늘 뜻밖에 반가웠던 소식은?",
+    "category": "scene",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0986",
+    "text": "오늘 마음을 나누고 싶었던 사람은?",
+    "category": "people",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0987",
+    "text": "오늘 나도 모르게 반복한 일은?",
+    "category": "routine",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0988",
+    "text": "오늘 공기에서 느낀 특별한 기운은?",
+    "category": "senses",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0989",
+    "text": "오늘 오래 기억하고 싶은 동네 풍경은?",
+    "category": "place",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0990",
+    "text": "오늘 기억에 남은 한 끼는?",
+    "category": "object_food",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0991",
+    "text": "오늘 나를 웃게 한 것은?",
+    "category": "emotion",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0992",
+    "text": "이번 달 마음에 남길 한 가지는?",
+    "category": "closing",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0993",
+    "text": "최근 사진으로 남기고 싶었던 순간은?",
+    "category": "scene",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0994",
+    "text": "최근 다정함을 느낀 순간의 사람은?",
+    "category": "people",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0995",
+    "text": "최근 시작하길 잘했다고 느낀 일과는?",
+    "category": "routine",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0996",
+    "text": "최근 다시 느끼고 싶은 향은?",
+    "category": "senses",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0997",
+    "text": "최근 새롭게 좋아하게 된 장소는?",
+    "category": "place",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0998",
+    "text": "최근 생활을 편하게 한 물건은?",
+    "category": "object_food",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-0999",
+    "text": "최근 기대가 생긴 까닭은?",
+    "category": "emotion",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1000",
+    "text": "내일 기대되는 작은 일은?",
+    "category": "closing",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1001",
+    "text": "오늘 예상보다 오래 머문 장면은?",
+    "category": "scene",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1002",
+    "text": "오늘 내 편처럼 느껴진 사람은?",
+    "category": "people",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1003",
+    "text": "이번 달 꾸준히 이어 온 작은 습관은?",
+    "category": "routine",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1004",
+    "text": "이번 달 오래 남은 색감은?",
+    "category": "senses",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1005",
+    "text": "이번 달 가장 인상적인 공간은?",
+    "category": "place",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1006",
+    "text": "이번 달 새롭게 좋아한 음식은?",
+    "category": "object_food",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1007",
+    "text": "이번 달 만족스러웠던 변화는?",
+    "category": "emotion",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1008",
+    "text": "가까운 시일에 배우고 싶은 것은?",
+    "category": "closing",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1009",
+    "text": "이번 달 기억에 남은 저녁 풍경은?",
+    "category": "scene",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1010",
+    "text": "이번 달 오랜만에 연락한 사람은?",
+    "category": "people",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1011",
+    "text": "오늘 잠깐 쉬어 간 나만의 방법은?",
+    "category": "routine",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1012",
+    "text": "오늘 피부에 닿아 반가웠던 감촉은?",
+    "category": "senses",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1013",
+    "text": "오늘 짧게 쉬어 간 시간은?",
+    "category": "place",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1014",
+    "text": "오늘 의미 있게 느껴진 물건은?",
+    "category": "object_food",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1015",
+    "text": "오늘 마음이 가벼워진 계기는?",
+    "category": "emotion",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1016",
+    "text": "이번 계절에 만나고 싶은 풍경은?",
+    "category": "closing",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1017",
+    "text": "오늘 문득 미소 지은 장면은?",
+    "category": "scene",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1018",
+    "text": "오늘 대화에서 새로운 면을 본 사람은?",
+    "category": "people",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1019",
+    "text": "최근 하루의 리듬을 바꾼 것은?",
+    "category": "routine",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1020",
+    "text": "최근 귀 기울이게 된 소리는?",
+    "category": "senses",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1021",
+    "text": "최근 누군가에게 소개하고 싶은 장소는?",
+    "category": "place",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1022",
+    "text": "최근 누군가와 나눈 음식은?",
+    "category": "object_food",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1023",
+    "text": "최근 반갑게 놀란 일은?",
+    "category": "emotion",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1024",
+    "text": "오늘 하루에 붙이고 싶은 제목은?",
+    "category": "closing",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1025",
+    "text": "최근 마음에 남은 하늘은?",
+    "category": "scene",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1026",
+    "text": "최근 마음에 남은 목소리의 주인공은?",
+    "category": "people",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1027",
+    "text": "이번 주 덜어 내서 편해진 일은?",
+    "category": "routine",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1028",
+    "text": "이번 주 선명하게 떠오르는 냄새는?",
+    "category": "senses",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1029",
+    "text": "이번 주 뜻밖에 반가웠던 곳은?",
+    "category": "place",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1030",
+    "text": "이번 주 사고 싶은 간식은?",
+    "category": "object_food",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1031",
+    "text": "이번 주 스스로 다정했다고 느낀 순간은?",
+    "category": "emotion",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1032",
+    "text": "최근 오래 간직하고 싶은 장면은?",
+    "category": "closing",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1033",
+    "text": "오늘 평소와 다르게 보인 곳은?",
+    "category": "scene",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1034",
+    "text": "오늘 반갑게 소식을 전한 사람은?",
+    "category": "people",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1035",
+    "text": "오늘 다음 순서를 생각하게 한 일은?",
+    "category": "routine",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1036",
+    "text": "오늘 햇빛이 만든 분위기는?",
+    "category": "senses",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1037",
+    "text": "오늘 창밖으로 마음이 간 곳은?",
+    "category": "place",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1038",
+    "text": "오늘 가장 든든했던 음식은?",
+    "category": "object_food",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1039",
+    "text": "오늘 다시 힘을 낸 이유는?",
+    "category": "emotion",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1040",
+    "text": "이번 주 나를 기다리게 한 것은?",
+    "category": "closing",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1041",
+    "text": "이번 주 우연히 마주친 반가운 모습은?",
+    "category": "scene",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1042",
+    "text": "이번 주 함께 기뻐한 사람은?",
+    "category": "people",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1043",
+    "text": "최근 자연스럽게 손이 가는 일은?",
+    "category": "routine",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1044",
+    "text": "최근 입안에 남은 인상적인 맛은?",
+    "category": "senses",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1045",
+    "text": "최근 천천히 둘러보고 싶은 장소는?",
+    "category": "place",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1046",
+    "text": "최근 추억을 떠올리게 한 물건은?",
+    "category": "object_food",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1047",
+    "text": "이번 주 기대를 키운 소식은?",
+    "category": "emotion",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1048",
+    "text": "가까운 시일에 만나고 싶은 순간은?",
+    "category": "closing",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1049",
+    "text": "오늘 한 장면만 고른다면 무엇을 남길까요?",
+    "category": "scene",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1050",
+    "text": "오늘 나를 편하게 해 준 사람은?",
+    "category": "people",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1051",
+    "text": "이번 달 생활을 편하게 한 변화는?",
+    "category": "routine",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1052",
+    "text": "이번 달 계절을 느끼게 한 감각은?",
+    "category": "senses",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1053",
+    "text": "이번 달 다시 찾고 싶은 공간은?",
+    "category": "place",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1054",
+    "text": "이번 달 오래 간직하고 싶은 기분은?",
+    "category": "emotion",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1055",
+    "text": "최근 시간이 느리게 흐른 듯한 순간은?",
+    "category": "scene",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1056",
+    "text": "최근 고마움을 표현하고 싶은 사람은?",
+    "category": "people",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1057",
+    "text": "오늘 여유를 만들어 준 선택은?",
+    "category": "routine",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1058",
+    "text": "오늘 조용함이 좋았던 순간은?",
+    "category": "senses",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1059",
+    "text": "오늘 안심을 준 것은?",
+    "category": "emotion",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1060",
+    "text": "이번 달 가장 선명하게 떠오르는 장면은?",
+    "category": "scene",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1061",
+    "text": "오늘 짧은 인사를 기억하게 한 사람은?",
+    "category": "people",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1062",
+    "text": "최근 하루를 시작하며 기대한 것은?",
+    "category": "routine",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1063",
+    "text": "최근 손끝으로 기억하는 장면은?",
+    "category": "senses",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1064",
+    "text": "최근 마음에 작은 용기가 생긴 때는?",
+    "category": "emotion",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1065",
+    "text": "오늘 조용히 기억해 두고 싶은 모습은?",
+    "category": "scene",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1066",
+    "text": "이번 달 다시 만나고 싶은 사람은?",
+    "category": "people",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1067",
+    "text": "이번 주 마무리를 도운 습관은?",
+    "category": "routine",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1068",
+    "text": "이번 주 눈길을 끈 색의 느낌은?",
+    "category": "senses",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1069",
+    "text": "이번 주 기분을 환기한 것은?",
+    "category": "emotion",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1070",
+    "text": "최근 예상 밖으로 아름다웠던 순간은?",
+    "category": "scene",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1071",
+    "text": "오늘 이야기가 자연스럽게 이어진 사람은?",
+    "category": "people",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1072",
+    "text": "오늘 평소보다 수월하게 풀린 일은?",
+    "category": "routine",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1073",
+    "text": "오늘 감사함을 느낀 장면은?",
+    "category": "emotion",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1074",
+    "text": "오늘 하루를 닮은 풍경은?",
+    "category": "scene",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1075",
+    "text": "최근 시간을 쓰는 데 만족한 순간은?",
+    "category": "routine",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1076",
+    "text": "최근 천천히 좋아하게 된 것은?",
+    "category": "emotion",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1077",
+    "text": "이번 주 다시 보고 싶은 저녁은?",
+    "category": "scene",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1078",
+    "text": "오늘 시선이 오래 머문 장면은?",
+    "category": "scene",
+    "dailySlot": "light",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1079",
+    "text": "최근 마음을 환하게 한 풍경은?",
+    "category": "scene",
+    "dailySlot": "scene",
+    "roomEligible": false
+  },
+  {
+    "id": "dq-v1-1080",
+    "text": "오늘 작은 영화처럼 남은 순간은?",
+    "category": "scene",
+    "dailySlot": "reflect",
+    "roomEligible": false
+  }
+];
+questionBank.push(...batch09);
 export { selectedBatch04RoomIds, batch04RoomChoices, batch05, selectedBatch05RoomIds, batch05RoomChoices, batch06, batch07 };

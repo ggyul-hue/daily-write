@@ -1,0 +1,13 @@
+export const selectedIds=['dq-v1-1038'];
+export const question='오늘 가장 든든했던 음식은?';
+export const literalAnswerTarget='FOOD';
+export const semanticAxis='FOOD TYPE';
+export const provisionalTriplet=['밥 요리','면 요리','빵·디저트'];
+export const finalTriplet=provisionalTriplet;
+export const directAnswerAudit='PASS';
+export const sameAxisAudit='PASS';
+export const sameLevelAudit='FAIL';
+export const pairwiseAudit=[['밥 요리','면 요리','라밥 같은 혼합 메뉴','LEVEL_MISMATCH','밥과 면의 경계가 섞인 답이 생긴다.'],['밥 요리','빵·디저트','쌀빵·떡 디저트','LEVEL_MISMATCH','빵·디저트가 복합 범주라 밥·면과 분류 수준이 다르다.'],['면 요리','빵·디저트','면을 활용한 디저트','LEVEL_MISMATCH','일반적인 음식 유형 분류가 일관되지 않는다.']].map(([choiceA,choiceB,ordinaryAtomicOverlapAttempt,classification,reason])=>({choiceA,choiceB,ordinaryAtomicOverlapAttempt,classification,reason}));
+export const existingRoomCrossAudit=[{id:'dq-v1-0928',verdict:'ROOM_RELATED_OK',reason:'둘 다 음식 유형 선택 경험이어서 별도 Room 상호작용으로 충분히 분리되지 않는다.'}];
+export const special0928Audit={id:'dq-v1-0928',verdict:'ROOM_SAME_EXPERIENCE',reason:'과일·빵·음료와 밥·면·빵·디저트는 모두 임의 음식 범주 선택으로 작동한다.'};
+export const choiceDesignBlocked=true; export const finalDisposition='DROP'; export const finalBatch09RoomCount=0; export const targetMath={projectedGlobalRoom:315,remainingRoom:185,remainingQuestions:411,futureRatio:185/411}; export const verdict='BATCH09_ROOM_FINAL_QUALITY_DROP';

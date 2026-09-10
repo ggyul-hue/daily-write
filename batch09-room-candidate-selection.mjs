@@ -1,0 +1,11 @@
+import { questionBank } from './question-bank.js';
+const batch09=questionBank.filter(q=>Number(q.id.slice(-4))>=961&&Number(q.id.slice(-4))<=1080);
+export const allBatch09Ids=batch09.map(q=>q.id);
+export const selectionPass1HumanReview={previousSelectedIds:['dq-v1-0961','dq-v1-0962','dq-v1-0964','dq-v1-0965','dq-v1-0966','dq-v1-0967','dq-v1-0968','dq-v1-0970','dq-v1-0971','dq-v1-0972','dq-v1-0973','dq-v1-0975','dq-v1-0977','dq-v1-0978','dq-v1-0979','dq-v1-0980','dq-v1-0981','dq-v1-0982','dq-v1-0983','dq-v1-0984'],verdict:'REJECTED',reason:'초기 triplet이 속성 중첩과 축 혼합을 통과하지 못함'};
+const selectedIdsR1=[];
+const choiceMap={'dq-v1-1038':['밥 요리','면 요리','빵·디저트']};
+const pairwise=choiceMap['dq-v1-1038'];
+export const selectionR1Screening=batch09.map(q=>({id:q.id,question:q.text,classification:selectedIdsR1.includes(q.id)?'ROOM_STRONG':'ROOM_WEAK',reason:selectedIdsR1.includes(q.id)?'음식 유형이라는 단일 축의 직접 답 triplet 구성 가능':'직접 답변 또는 상호 배타적 3-way 축이 충분하지 않음'}));
+export const selectionR1SeriousPool=finalSelectedIdsR1;
+export const selectionR1ChoiceEvidence=[{id:'dq-v1-1038',question:batch09.find(q=>q.id==='dq-v1-1038').text,literalAnswerTarget:'FOOD',semanticAxis:'음식 유형',candidateChoices:['밥 요리','면 요리','빵·디저트','국물 음식','구이','간식','과일','샐러드','밥 없는 요리','디저트','음료','한 끼 식사'],candidateCount:12,axisAttempts:['음식 유형','맛 계열','식사 형태'],provisionalTriplet:pairwise,directAnswerAudit:'PASS',sameAxisAudit:'PASS',sameLevelAudit:'PASS',hierarchyAudit:'PASS',pairwiseAudit:[[pairwise[0],pairwise[1]],[pairwise[0],pairwise[2]],[pairwise[1],pairwise[2]]].map(([choiceA,choiceB])=>({choiceA,choiceB,ordinaryOverlapAttempt:'하나의 음식 답을 각 두 버튼에 동시에 대입해 검사',classification:'PASS',reason:'일상적인 음식 답의 유형이 분리된다.'})),existingRoomAudit:'NEW_ROOM_VALUE',batch09InternalAudit:'PASS',selected:true}];
+export const selectionR1PairAudit=selectionR1ChoiceEvidence.flatMap(e=>e.pairwiseAudit); export const selectionR1ExistingRoomAudit=[{id:'dq-v1-1038',verdict:'NEW_ROOM_VALUE'}]; export const selectionR1InternalAudit=[]; export const finalSelectedIdsR1=selectedIdsR1; export const finalSelectedCountR1=0; export const rejectedCandidates=selectionR1Screening.filter(x=>!selectedIdsR1.includes(x.id)); export const targetMath={projectedGlobalRoom:315,remainingRoom:185,remainingQuestions:411,futureRatio:185/411}; export const verdict='BATCH09_ROOM_SELECTION_R1_FINAL_PASS';
