@@ -5,6 +5,10 @@ export function normalizeQuestion(value) {
   return String(value ?? "").normalize("NFC").trim().replace(/\s+/g, " ").replace(/[?？。.!！]+$/u, "");
 }
 
+export function getEffectiveRoomText(question) {
+  return question?.roomText === undefined ? question?.text : question.roomText;
+}
+
 export const CATEGORY_QUOTA = {
   scene: 260, people: 200, routine: 220, senses: 180,
   place: 140, object_food: 140, emotion: 220, closing: 140,
@@ -47,6 +51,7 @@ export function validateBank(bank, { final = false } = {}) {
   const warnings = [];
   const ids = new Map();
   const texts = new Map();
+  const effectiveRoomTexts = new Map();
   bank.forEach((question, index) => {
     const label = `index ${index}`;
     if (!question || typeof question !== "object" || Array.isArray(question)) { errors.push(fail(`${label}: invalid data type`)); return; }
@@ -63,7 +68,19 @@ export function validateBank(bank, { final = false } = {}) {
     if (typeof question.category !== "string" || !QUESTION_CATEGORIES.includes(question.category)) errors.push(fail(`${label}: invalid category`));
     if (typeof question.dailySlot !== "string" || !DAILY_SLOTS.includes(question.dailySlot)) errors.push(fail(`${label}: invalid dailySlot`));
     if (typeof question.roomEligible !== "boolean") errors.push(fail(`${label}: missing roomEligible`));
+    if (question.roomText !== undefined) {
+      if (typeof question.roomText !== "string") errors.push(fail(`${question.id}: INVALID_ROOM_TEXT_TYPE`));
+      else if (!question.roomText.trim()) errors.push(fail(`${question.id}: EMPTY_ROOM_TEXT`));
+      if (question.roomEligible !== true) errors.push(fail(`${question.id}: ROOM_TEXT_ON_NON_ROOM`));
+    }
     if (question.roomEligible) {
+      const effective = getEffectiveRoomText(question);
+      if (typeof effective !== "string" || !effective.trim()) errors.push(fail(`${question.id}: MISSING_EFFECTIVE_ROOM_TEXT`));
+      else {
+        const normalizedEffective = normalizeQuestion(effective);
+        if (effectiveRoomTexts.has(normalizedEffective)) errors.push(fail(`${question.id}: duplicate effective room text with ${effectiveRoomTexts.get(normalizedEffective)}`));
+        else effectiveRoomTexts.set(normalizedEffective, question.id);
+      }
       if (!Array.isArray(question.roomChoices) || question.roomChoices.length !== 3) errors.push(fail(`${question.id}: roomChoices length !== 3`));
       else {
         const choices = new Set();

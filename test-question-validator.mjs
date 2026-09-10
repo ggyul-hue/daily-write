@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { questionBank, batch04RoomChoices, selectedBatch04RoomIds, batch05, selectedBatch05RoomIds, batch05RoomChoices, batch06, batch07 } from "./question-bank.js";
-import { duplicateRoomTriplets, duplicateUnorderedRoomTriplets, normalizeQuestion, validateBank } from "./question-validator.mjs";
+import { duplicateRoomTriplets, duplicateUnorderedRoomTriplets, getEffectiveRoomText, normalizeQuestion, validateBank } from "./question-validator.mjs";
 
 const partial = validateBank(questionBank);
 assert.equal(partial.ok, true);
@@ -58,6 +58,13 @@ const duplicateTripletBank = [{ ...base, roomEligible: true, roomChoices: ["친�
 assert.equal(duplicateRoomTriplets(duplicateTripletBank).length, 1);
 assert.equal(duplicateUnorderedRoomTriplets([{ ...base, roomEligible: true, roomChoices: ["친구", "가족", "동료"] }, { ...base, id: "dq-v1-0002", roomEligible: true, roomChoices: ["가족", "동료", "친구"] }]).length, 1);
 assert.equal(validateBank(duplicateTripletBank).warnings.some(({ message }) => message.includes("duplicate room choice triplet")), true);
+assert.equal(getEffectiveRoomText({ text: "Solo question" }), "Solo question");
+assert.equal(getEffectiveRoomText({ text: "Solo question", roomText: "Room question" }), "Room question");
+assert.equal(validateBank([{ ...base, roomEligible: true, roomChoices: ["하나", "둘", "셋"], roomText: "Room question" }]).ok, true);
+assert.equal(validateBank([{ ...base, roomEligible: true, roomChoices: ["하나", "둘", "셋"], roomText: "" }]).errors.some(({ message }) => message.includes("EMPTY_ROOM_TEXT")), true);
+assert.equal(validateBank([{ ...base, roomEligible: true, roomChoices: ["하나", "둘", "셋"], roomText: 42 }]).errors.some(({ message }) => message.includes("INVALID_ROOM_TEXT_TYPE")), true);
+assert.equal(validateBank([{ ...base, roomText: "Room question" }]).errors.some(({ message }) => message.includes("ROOM_TEXT_ON_NON_ROOM")), true);
+assert.equal(validateBank([{ ...base, id: "dq-v1-0002", roomEligible: true, roomChoices: ["가", "나", "다"] }, { ...base, id: "dq-v1-0003", roomEligible: true, roomChoices: ["라", "마", "바"], roomText: "오늘의 질문" }]).errors.some(({ message }) => message.includes("duplicate effective room text")), true);
 assert.equal(validateBank([base], { final: true }).ok, false);
 assert.equal(validateBank(Array.from({ length: 1500 }, (_, index) => ({ ...base, id: `dq-v1-${String(index).padStart(4, "0")}` })), { final: true }).errors.some(({ message }) => message.includes("scene quota")), true);
 console.log("question validator tests passed");
