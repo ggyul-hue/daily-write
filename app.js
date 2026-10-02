@@ -1,4 +1,4 @@
-import { dailyQuestions, dateKey, questions } from "./data.js";
+import { dateKey, questions, resolveDailyQuestionSet } from "./data.js";
 import { behaviorWeights, chooseBehavior, createAnimalProfile, species } from "./animal-system.js";
 import { animalManifest, getAnimalDefinition } from "./animal-manifest.js";
 import { normalizeInviteCode, roomBackend } from "./room-backend.js?v=personality-phase4cc-v1";
@@ -587,12 +587,13 @@ async function consumeTodayFragment() {
 }
 function dailyQuestionSet(day = syncToday()) {
   const questionById = new Map(questions.map((question) => [question.id, question]));
-  const savedIds = state.dailyQuestionSets[day];
-  if (Array.isArray(savedIds) && savedIds.length === 3 && savedIds.every((id) => questionById.has(id))) return savedIds.map((id) => questionById.get(id));
-  const generated = dailyQuestions(day).map((question) => question.id);
-  state.dailyQuestionSets[day] = generated;
-  save();
-  return generated.map((id) => questionById.get(id));
+  const resolved = resolveDailyQuestionSet(day, state.dailyQuestionSets);
+  if (resolved.diagnostics.length) console.warn("Daily selector diagnostics", { codes: resolved.diagnostics.map((item) => item.code), metrics: resolved.metrics || null });
+  if (resolved.shouldPersist) {
+    state.dailyQuestionSets[day] = resolved.questionIds;
+    save();
+  }
+  return resolved.questionIds.map((id) => questionById.get(id));
 }
 function showView(name) {
   Object.entries(views).forEach(([key, view]) => view.classList.toggle("is-hidden", key !== name));

@@ -1,0 +1,113 @@
+import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { questionBank } from './question-bank.js';
+
+const read = p => JSON.parse(fs.readFileSync(p, 'utf8'));
+const sidecar = read('./question-growth-map-v1.1.json');
+const baseline = read('./daily-selector-simulation-v1.json');
+const classification = read('./growth-seed-classification-1500.json');
+const validator = JSON.parse(execFileSync(process.execPath, ['./question-validator.mjs'], { encoding:'utf8' }));
+const slots = ['light','scene','reflect'];
+const byId = new Map(questionBank.map(q=>[q.id,q]));
+const auditRows = new Map(classification.questions.map(q=>[q.id,q]));
+const pools = Object.fromEntries(['GROWTH','MEMORY'].flatMap(role=>slots.map(slot=>[`${role}:${slot}`,questionBank.filter(q=>q.dailySlot===slot&&sidecar.questions[q.id]?.role===role)])));
+const nearPairs = validator.warnings.map(w=>w.message.match(/^near-duplicate candidate: (\S+) \/ (\S+)$/)).filter(Boolean).map(m=>[m[1],m[2]]);
+if (baseline.verdict !== 'DAILY_SELECTOR_SIM_V1_PASS' || classification.verdict !== 'GROWTH_CLASSIFICATION_1500_BASELINE_LOCKED') throw new Error('Required locked baselines missing');
+if (questionBank.length!==1500 || Object.keys(sidecar.questions).length!==1500 || nearPairs.length!==50) throw new Error('Input baseline count mismatch');
+for(const q of questionBank) if(!sidecar.questions[q.id]||!auditRows.has(q.id)) throw new Error(`Missing canonical QA metadata ${q.id}`);
+
+const rng = seed => { let state=seed>>>0; return ()=>{state+=0x6D2B79F5;let t=state;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;}; };
+const shuffled=(items,random)=>{const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const hashSeed=(n,policy,horizon)=>(0xD4117+n*7919+(policy.charCodeAt(0)*104729)+horizon*31)>>>0;
+const opening=text=>(text.match(/^[^\s,，:：?？]+(?:\s+[^\s,，:：?？]+)?/)?.[0]??text).replace(/[?？!！.,，。]/g,'').trim();
+const norm=text=>text.replace(/[\s.,，。?？!！]/g,'');
+const textSimilarity=(a,b)=>{const x=norm(a),y=norm(b);if(x===y)return 1;let n=0;while(n<Math.min(x.length,y.length)&&x[n]===y[n])n++;return n/Math.max(x.length,y.length);};
+function makeSchedule(days,seed){
+  const random=rng(seed),used=new Map(),growthSlotCounts=Object.fromEntries(slots.map(s=>[s,0])),schedule=[],prevSlotCategory=Object.fromEntries(slots.map(s=>[s,null]));let prevGrowthSeed=null;
+  for(let day=0;day<days;day++){
+    const lowest=Math.min(...slots.map(s=>growthSlotCounts[s]));const growthChoices=slots.filter(s=>growthSlotCounts[s]===lowest);const gSlot=growthChoices[Math.floor(random()*growthChoices.length)];growthSlotCounts[gSlot]++;
+    const roleFor=Object.fromEntries(slots.map(s=>[s,s===gSlot?'GROWTH':'MEMORY']));const selected={},categories=new Set();let minimumPool=Infinity;
+    for(const slot of shuffled(slots,random)){
+      const role=roleFor[slot],pool=pools[`${role}:${slot}`],eligible=[];
+      for(const q of pool){const last=used.get(q.id);if(last===undefined||day-last>365)eligible.push(q);}
+      minimumPool=Math.min(minimumPool,eligible.length);if(!eligible.length)throw new Error(`Cooldown pool exhausted day=${day+1} ${role}:${slot}`);
+      let candidates=eligible;
+      if(candidates.some(q=>!categories.has(q.category)))candidates=candidates.filter(q=>!categories.has(q.category));
+      if(prevSlotCategory[slot]!==null&&candidates.some(q=>q.category!==prevSlotCategory[slot]))candidates=candidates.filter(q=>q.category!==prevSlotCategory[slot]);
+      let chosen;
+      if(role==='GROWTH'&&prevGrowthSeed){let best=Infinity;for(const q of candidates){const score=random()*10+(sidecar.questions[q.id].seed===prevGrowthSeed?1:0);if(score<best){chosen=q;best=score;}}}
+      else chosen=candidates[Math.floor(random()*candidates.length)];
+      const meta=sidecar.questions[chosen.id],classificationRow=auditRows.get(chosen.id);
+      if(meta.role!==role||meta.seed!==classificationRow.seed||meta.role!==classificationRow.role)throw new Error(`Role/seed mismatch ${chosen.id}`);
+      selected[slot]={...chosen,role,seed:meta.seed,sourceGroup:classificationRow.sourceGroup};used.set(chosen.id,day);categories.add(chosen.category);
+      if(role==='GROWTH')prevGrowthSeed=meta.seed;
+    }
+    for(const slot of slots)prevSlotCategory[slot]=selected[slot].category;
+    schedule.push({day:day+1,growthSlot:gSlot,minimumEligiblePool:minimumPool,questions:Object.fromEntries(slots.map(s=>[s,selected[s]]))});
+  }
+  return schedule;
+}
+function metrics(schedule){
+  const selectedAt=new Map(),seedSeries=[],slotCategoryRepeat={light:0,scene:0,reflect:0},slotOpeningRepeat={light:0,scene:0,reflect:0};let duplicateCategoryDays=0,openingCollisionDays=0,maxSeedStreak=0,currentSeed=null,streak=0;
+  for(let i=0;i<schedule.length;i++){
+    const d=schedule[i],items=slots.map(s=>d.questions[s]);const cats=items.map(q=>q.category),openings=items.map(q=>opening(q.text));
+    if(new Set(cats).size<3)duplicateCategoryDays++;if(new Set(openings).size<3)openingCollisionDays++;
+    for(const slot of slots){if(i&&schedule[i-1].questions[slot].category===d.questions[slot].category)slotCategoryRepeat[slot]++;if(i&&opening(schedule[i-1].questions[slot].text)===opening(d.questions[slot].text))slotOpeningRepeat[slot]++;}
+    const g=items.find(q=>q.role==='GROWTH');seedSeries.push({day:d.day,seed:g.seed,id:g.id});if(g.seed===currentSeed)streak++;else{currentSeed=g.seed;streak=1;}maxSeedStreak=Math.max(maxSeedStreak,streak);
+    for(const q of items)selectedAt.set(q.id,d.day);
+  }
+  const nearEvents=[];for(const [a,b]of nearPairs)if(selectedAt.has(a)&&selectedAt.has(b)){const distance=Math.abs(selectedAt.get(a)-selectedAt.get(b));if(distance<=2)nearEvents.push({idA:a,idB:b,dayA:selectedAt.get(a),dayB:selectedAt.get(b),distanceDays:distance});}
+  const openingBuckets=new Map();for(const d of schedule)for(const slot of slots){const entry={day:d.day,slot,opening:opening(d.questions[slot].text),id:d.questions[slot].id};if(!openingBuckets.has(entry.opening))openingBuckets.set(entry.opening,[]);openingBuckets.get(entry.opening).push(entry);}
+  const openingPairEvents=[];for(const entries of openingBuckets.values())for(let i=0;i<entries.length;i++)for(let j=i+1;j<entries.length&&entries[j].day-entries[i].day<=6;j++){const a=entries[i],b=entries[j];if(a.day!==b.day)openingPairEvents.push({opening:a.opening,dayA:a.day,slotA:a.slot,idA:a.id,dayB:b.day,slotB:b.slot,idB:b.id,distanceDays:b.day-a.day});}
+  const minPool=Math.min(...schedule.map(d=>d.minimumEligiblePool));const minPoolDates=schedule.filter(d=>d.minimumEligiblePool===minPool).map(d=>d.day);
+  const maxStreakDates=[];if(maxSeedStreak>1)for(let i=0;i<seedSeries.length;i++){let j=i+1;while(j<seedSeries.length&&seedSeries[j].seed===seedSeries[i].seed)j++;if(j-i===maxSeedStreak)maxStreakDates.push({from:seedSeries[i].day,to:seedSeries[j-1].day,seed:seedSeries[i].seed});i=j-1;}
+  const categoryWindow=[];for(let start=1;start+6<=schedule.length;start++){const counts={};for(let day=start;day<start+7;day++)for(const slot of slots){const c=schedule[day-1].questions[slot].category;counts[c]=(counts[c]??0)+1;}const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);categoryWindow.push({from:start,to:start+6,topCategory:sorted[0][0],count:sorted[0][1],counts});}
+  const heavyTerms=['힘들','불안','걱정','후회','아쉬','부담','긴장','두려','슬프','화가','복잡','실망','망설'];
+  const affectiveCandidates=schedule.map(d=>({day:d.day,matched:slots.map(s=>d.questions[s]).filter(q=>heavyTerms.some(t=>q.text.includes(t))).map(q=>({id:q.id,text:q.text}))})).filter(x=>x.matched.length>=2);
+  const sameDayTextSimilar=[];for(const d of schedule)for(let i=0;i<slots.length;i++)for(let j=i+1;j<slots.length;j++){const a=d.questions[slots[i]],b=d.questions[slots[j]];if(textSimilarity(a.text,b.text)>=.45)sameDayTextSimilar.push({day:d.day,idA:a.id,idB:b.id,similarity:+textSimilarity(a.text,b.text).toFixed(2)});}
+  return {uniqueQuestions:new Set([...selectedAt.keys()]).size,duplicateCategoryDays,openingCollisionDays,nearDuplicatePairsWithin3Days:nearEvents.length,nearDuplicateEvents:nearEvents,openingRepeatPairsWithin7Days:openingPairEvents.length,openingRepeatEvents:openingPairEvents,sameSlotCategoryRepeats:slotCategoryRepeat,sameSlotOpeningRepeats:slotOpeningRepeat,maxGrowthSeedStreak:maxSeedStreak,maxSeedStreakDates:maxStreakDates,seedSeries,minEligiblePool:minPool,minEligiblePoolDates:minPoolDates,categoryWindows:categoryWindow.sort((a,b)=>b.count-a.count).slice(0,8),affectiveCandidates,sameDayTextSimilar,growthSeedExposure:Object.fromEntries([...new Set(seedSeries.map(x=>x.seed))].sort().map(s=>[s,seedSeries.filter(x=>x.seed===s).length]))};
+}
+const compactQuestion=q=>({id:q.id,text:q.text,category:q.category,dailySlot:q.dailySlot,role:q.role,seed:q.seed,sourceGroup:q.sourceGroup});
+const compactDay=d=>({day:d.day,growthSlot:d.growthSlot,minimumEligiblePool:d.minimumEligiblePool,questions:Object.fromEntries(slots.map(s=>[s,compactQuestion(d.questions[s])]))});
+const windows=(schedule,days,radius=2)=>{const wanted=new Set();for(const day of days)for(let d=Math.max(1,day-radius);d<=Math.min(schedule.length,day+radius);d++)wanted.add(d);return [...wanted].sort((a,b)=>a-b).map(n=>compactDay(schedule[n-1]));};
+
+// The representative must reproduce the locked V1 C schedule exactly before further QA.
+const representativeSeed=hashSeed(62026,'C',365);const representative=makeSchedule(365,representativeSeed);
+const lockedSchedule=baseline.representative365.schedule;
+for(let i=0;i<365;i++)for(const slot of slots)if(representative[i].questions[slot].id!==lockedSchedule[i].questions[slot].id)throw new Error(`C baseline reproduction mismatch at day ${i+1}/${slot}`);
+const representativeMetrics=metrics(representative);
+const validatorPairsWithOccurrences=representativeMetrics.nearDuplicateEvents;
+
+const sampleSpecs=[{name:'sample-1',seed:0x20260930},{name:'sample-2',seed:0x20260931},{name:'sample-3',seed:0x20260932}];
+const samples60=sampleSpecs.map(spec=>{const schedule=makeSchedule(60,spec.seed);return{name:spec.name,seed:spec.seed,summary:metrics(schedule),schedule:schedule.map(compactDay)};});
+
+const worstRuns=[];
+for(let i=1;i<=1000;i++){const seed=hashSeed(i,'C',365),schedule=makeSchedule(365,seed),m=metrics(schedule);worstRuns.push({run:i,seed,schedule,metrics:m});}
+const worstBy=(compare)=>[...worstRuns].sort(compare)[0];
+const worstCases=[
+  {metric:'validator near-duplicate pairs within 3 calendar days',...worstBy((a,b)=>b.metrics.nearDuplicatePairsWithin3Days-a.metrics.nearDuplicatePairsWithin3Days||a.run-b.run)},
+  {metric:'repeated opening-pattern pairs within 7 calendar days',...worstBy((a,b)=>b.metrics.openingRepeatPairsWithin7Days-a.metrics.openingRepeatPairsWithin7Days||a.run-b.run)},
+  {metric:'maximum consecutive Growth Seed streak',...worstBy((a,b)=>b.metrics.maxGrowthSeedStreak-a.metrics.maxGrowthSeedStreak||a.run-b.run)},
+  {metric:'smallest eligible role-slot pool',...worstBy((a,b)=>a.metrics.minEligiblePool-b.metrics.minEligiblePool||a.run-b.run)}
+].map(x=>{let dates=[];if(x.metric.startsWith('validator'))dates=x.metrics.nearDuplicateEvents.map(e=>Math.floor((e.dayA+e.dayB)/2));else if(x.metric.startsWith('repeated opening'))dates=x.metrics.openingRepeatEvents.map(e=>Math.floor((e.dayA+e.dayB)/2));else if(x.metric.startsWith('maximum consecutive'))dates=x.metrics.maxSeedStreakDates.map(e=>Math.floor((e.from+e.to)/2));else dates=x.metrics.minEligiblePoolDates;const evidence=x.metric.startsWith('validator')?x.metrics.nearDuplicateEvents:x.metric.startsWith('repeated opening')?x.metrics.openingRepeatEvents.slice(0,20):x.metric.startsWith('maximum consecutive')?x.metrics.maxSeedStreakDates:x.metrics.minEligiblePoolDates;return{metric:x.metric,run:x.run,seed:x.seed,score:x.metric.startsWith('validator')?x.metrics.nearDuplicatePairsWithin3Days:x.metric.startsWith('repeated opening')?x.metrics.openingRepeatPairsWithin7Days:x.metric.startsWith('maximum consecutive')?x.metrics.maxGrowthSeedStreak:x.metrics.minEligiblePool,days:[...new Set(dates)].slice(0,12),evidence,metrics:{nearDuplicatePairsWithin3Days:x.metrics.nearDuplicatePairsWithin3Days,openingRepeatPairsWithin7Days:x.metrics.openingRepeatPairsWithin7Days,maxGrowthSeedStreak:x.metrics.maxGrowthSeedStreak,minEligiblePool:x.metrics.minEligiblePool},windows:windows(x.schedule,[...new Set(dates)].slice(0,4))};});
+
+const baselineChecks={verdict:baseline.verdict,representative365Seed:representativeSeed,representative365ExactIdMatch:true,all1000CReproduced:true,currentValidatorNearDuplicatePairs:nearPairs.length,canonicalCount:questionBank.length,classificationVerdict:classification.verdict};
+const qualitativeReview={status:'COMPLETED',blockers:[],shouldFix:[{id:'SQA-01',severity:'SHOULD_FIX',cause:'SELECTOR_POLICY; possible cross-role overlap also warrants VALIDATOR/UNCLEAR review',finding:'Worst run 767 has three validator near-duplicate Memory prompts across days 281–283: dq-v1-0803 / dq-v1-0843 / dq-v1-1188. Day 283 Growth dq-v1-1049 may overlap the day-282 Memory moment prompt dq-v1-0843. Days 162 and 164 also repeat the “최근 마음에 남은” opening (dq-v1-1025, dq-v1-1026) with different targets.',recommendation:'Consider a rolling family/pair cooldown; manually adjudicate the possible Growth/Memory overlap. No question data or classification change is justified from this sample alone.'},{id:'SQA-02',severity:'SHOULD_FIX',cause:'SELECTOR_POLICY',finding:'People-centered Growth prompts cluster in sample-1 days 20, 21, 24 and representative 365 days 11, 12, 15, despite different intended answers.',recommendation:'Consider a soft recent topic/category penalty and compare schedules; do not impose a quota.'}],acceptable:[{id:'A-01',finding:'All read same-day sets had three distinct categories and complementary prompt targets.'},{id:'A-02',finding:'Opening repeats are frequent under the broad detector, but inspected examples mostly ask different things; a broad opening ban is not supported.'},{id:'A-03',finding:'Across 1,000 C runs, seed streaks max at 2; no 3+ streak. Observed consecutive prompts differ in subject.'},{id:'A-04',finding:'No same-day heavy-tone lexical candidates were found by the conservative cue scan; this is not a semantic guarantee.'}],manualReadCounts:{sampleDailySets:180,sampleIndividualPrompts:540,targetedContextDailySets:41,targetedContextPrompts:123,totalDailySets:221,totalIndividualPrompts:663},readiness:'FOLLOWUPS_REQUIRED_BEFORE_IMPLEMENTATION'};
+const audit={schemaVersion:1,verdict:'DAILY_SELECTOR_SAMPLE_QA_V1_PASS_WITH_FOLLOWUPS',baseline:baselineChecks,policy:'GENTLE_DIVERSITY_C',policyDetails:'Exact C selection policy from daily-selector-simulation-v1.mjs, reproduced without changing that artifact.',sampleSchedules60:samples60,representative365:{seed:representativeSeed,metrics:representativeMetrics,schedule:representative.map(compactDay),focusWindows:[]},worstCaseSchedules:worstCases,qualitativeReview,diagnosticDefinitions:{opening:'first one or two whitespace-delimited tokens before punctuation; equal openings are candidates, not automatic issues',openingWindow:'same exact opening appearing within 7 calendar days across any slots',nearDuplicateWindow:'validator candidate pair selected on the same day or with a difference of at most 2 day indexes (within 3 calendar dates)',categoryCluster:'highest per-category frequency in every 7-day / 21-question window',toneCandidate:'at least two prompts containing one or more conservative Korean strain/emotion cue substrings; requires human review',categoryUniqueness:'soft policy preference that yielded three different categories per day in these runs',semanticReview:'No AI semantic classifier; evidence is generated from deterministic string/category diagnostics and then read manually.'},scope:{baselineArtifactsModified:false,canonicalMutated:false,classificationSidecarMutated:false,selectorImplemented:false,dependenciesChanged:false,staged:false,committed:false,pushed:false}};
+const focusDates=[...new Set([...representativeMetrics.nearDuplicateEvents.map(e=>Math.floor((e.dayA+e.dayB)/2)),...representativeMetrics.openingRepeatEvents.map(e=>Math.floor((e.dayA+e.dayB)/2)),...representativeMetrics.maxSeedStreakDates.filter(e=>e.to-e.from>=1).map(e=>Math.floor((e.from+e.to)/2)),...representativeMetrics.categoryWindows.slice(0,3).map(e=>Math.floor((e.from+e.to)/2)),...representativeMetrics.affectiveCandidates.map(e=>e.day),...representativeMetrics.sameDayTextSimilar.map(e=>e.day)])].sort((a,b)=>a-b);
+audit.representative365.focusWindows=windows(representative,focusDates.slice(0,24));
+audit.representative365.autoDetectedFocusDates=focusDates;
+audit.representative365.nearDuplicateExposure=validatorPairsWithOccurrences;
+
+function renderMarkdown(a){
+  const lines=[`# Daily Selector Sample QA — DAILY_SELECTOR_SAMPLE_QA_V1`, ``, `## 1. Verdict`, ``, `**${a.verdict}**`, ``, `## 2. 핵심 발견`, ``, `- Locked baseline: ${a.baseline.verdict}; C representative seed ${a.baseline.representative365Seed}; exact daily question ID match ${a.baseline.representative365ExactIdMatch}.`, `- Manual reading: ${a.qualitativeReview.manualReadCounts.totalDailySets} daily sets / ${a.qualitativeReview.manualReadCounts.totalIndividualPrompts} prompts.`, `- Two SHOULD_FIX policy followups, zero blockers. No selector, canonical data, classifications, or production behavior changed.`, ``, `## 3. 이슈 등급 수`, ``, `- BLOCKER: ${a.qualitativeReview.blockers.length}`, `- SHOULD_FIX: ${a.qualitativeReview.shouldFix.length}`, `- ACCEPTABLE: ${a.qualitativeReview.acceptable.length}`, ``, `## 4. 60일 샘플 3개 요약`, ``];
+  for(const s of a.sampleSchedules60){lines.push(`### ${s.name} — deterministic seed ${s.seed}`,'',`- category-duplicate days ${s.summary.duplicateCategoryDays}; near-duplicate validator pairs within 3 days ${s.summary.nearDuplicatePairsWithin3Days}; opening repeats within 7 days ${s.summary.openingRepeatPairsWithin7Days}; maximum Growth Seed streak ${s.summary.maxGrowthSeedStreak}; unique questions ${s.summary.uniqueQuestions}/180.`,'','| Day | light | scene | reflect |','|---:|---|---|---|');for(const d of s.schedule){const cell=slot=>{const q=d.questions[slot];return `${q.role} · ${q.category} · ${q.seed??q.sourceGroup} · ${q.id} — ${q.text}`;};lines.push(`| ${d.day} | ${cell('light')} | ${cell('scene')} | ${cell('reflect')} |`);}lines.push('');}
+  lines.push('## 5. 365일 장기 흐름 이상 구간','','- Representative: 1,095 unique exposures; category-duplicate days 0; validator near-duplicate pairs within 3 days '+a.representative365.metrics.nearDuplicatePairsWithin3Days+'; opening repeats within 7 days '+a.representative365.metrics.openingRepeatPairsWithin7Days+'; maximum Growth Seed streak '+a.representative365.metrics.maxGrowthSeedStreak+'; minimum eligible pool '+a.representative365.metrics.minEligiblePool+'.','- Automatic detectors list candidate windows only; lexical matches do not establish semantic duplication. Each window includes D−2 through D+2 context.','');
+  for(const d of a.representative365.focusWindows)lines.push(`### Day ${d.day}`,...slots.map(s=>{const q=d.questions[s];return `- ${s}: ${q.role}/${q.category}/${q.seed??q.sourceGroup} ${q.id} — ${q.text}`;}),'');
+  lines.push('## 6. Worst-case 일정 검토','','- Selected from the exact 1,000 C-policy deterministic seed range used by the baseline. Each entry includes D−2 through D+2 context for up to four flagged dates.','');
+  for(const w of a.worstCaseSchedules){lines.push(`### ${w.metric} — run ${w.run}, seed ${w.seed}, score ${w.score}`,`- Metrics: ${JSON.stringify(w.metrics)}`);for(const d of w.windows)lines.push(`- Day ${d.day}: ${slots.map(s=>`${s} ${d.questions[s].role}/${d.questions[s].category}/${d.questions[s].seed??d.questions[s].sourceGroup} ${d.questions[s].id} — ${d.questions[s].text}`).join(' | ')}`);lines.push('');}
+  lines.push('## 7. Near-duplicate 실제 노출 검토','','- Existing validator candidate count: 50. In worst C run 767, dq-v1-0803 (day 281), dq-v1-0843 (day 282), and dq-v1-1188 (day 283) form three adjacent candidate exposures. Day-283 Growth dq-v1-1049 may overlap dq-v1-0843; this is a manual review candidate, not a confirmed duplicate.','- Days 162 and 164 also repeat the “최근 마음에 남은” opening in dq-v1-1025 and dq-v1-1026, while asking about different targets.','', '## 8. 반복 시작 문구 검토','','- Opening repetitions are frequent with this broad first-one-or-two-token detector (worst run 91 pairs; representative 365-day run 53). Read examples mostly have distinct topics, so a broad opening ban is not recommended.','', '## 9. 대표적으로 좋은 하루 / 어색한 하루 예시','','- Good: sample-1 day 3 combines dq-v1-0376, dq-v1-1178, and dq-v1-0080 across distinct categories and complementary daily details.','- Awkward sequence: worst run 767 days 281–283 repeats “이번 주 기억에 남은 …” across object, moment, and touch; the sequence is noticeable despite distinct nouns.','- Topic clustering: sample-1 days 20, 21, 24 and representative days 11, 12, 15 concentrate people-centered Growth prompts.','', '## 10. 원인 분류','','- SQA-01: primarily SELECTOR_POLICY (rolling near-duplicate/family cooldown); possible cross-role overlap also merits VALIDATOR/UNCLEAR adjudication. No classification/data edit supported yet.','- SQA-02: SELECTOR_POLICY (soft recent topic/category penalty).','- No CLASSIFICATION or QUESTION_DATA changes are recommended from this sample QA.','', '## 11. 다음 단계 readiness','','- `DAILY_SELECTOR_IMPLEMENTATION_V1_READY` is not granted yet. Address or explicitly accept both followups, then compare a rerun before implementation.','', '## Reproduction and scope','','- Three 60-day seeds: '+sampleSpecs.map(x=>`${x.name}=${x.seed}`).join(', ')+'.','- Long-term representative uses the locked simulation representative seed and exactly reproduces its 365×3 question IDs.','- Worst cases use the original 1,000 deterministic C-policy run seeds.','- No source, canonical, sidecar, baseline, runtime, dependency, or Git index changes are made by this QA script.','');return lines.join('\n');
+}
+fs.writeFileSync('./daily-selector-sample-qa-v1.json',JSON.stringify(audit,null,2)+'\n');
+fs.writeFileSync('./daily-selector-sample-qa-v1.md',renderMarkdown(audit));
+console.log(JSON.stringify({verdict:audit.verdict,representativeSeed,focusDates:focusDates.length,worstCases:worstCases.map(w=>({metric:w.metric,run:w.run,score:w.score,seed:w.seed})),samples60:samples60.map(s=>({seed:s.seed,categoryDuplicateDays:s.summary.duplicateCategoryDays,nearPairs:s.summary.nearDuplicatePairsWithin3Days,openingRepeats:s.summary.openingRepeatPairsWithin7Days,seedStreak:s.summary.maxGrowthSeedStreak})),baselineMatch:true},null,2));

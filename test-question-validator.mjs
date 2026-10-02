@@ -5,7 +5,7 @@ import { duplicateRoomTriplets, duplicateUnorderedRoomTriplets, getEffectiveRoom
 const partial = validateBank(questionBank);
 assert.equal(partial.ok, true);
 assert.equal(partial.errors.length, 0);
-assert.equal(questionBank.length, 1209);
+assert.equal(questionBank.length, 1500);
 assert.equal(questionBank.filter((question) => question.roomEligible).length, 315);
 const batch04 = questionBank.filter((question) => { const id = Number(question.id.slice(-4)); return id >= 361 && id <= 480; });
 assert.equal(selectedBatch04RoomIds.size, 40);
@@ -23,7 +23,16 @@ assert.deepEqual([...selectedBatch05RoomIds].sort(), Object.keys(batch05RoomChoi
 assert.equal(batch05.filter((question) => question.roomEligible).length, 40);
 assert.equal(duplicateRoomTriplets(batch05).length, 0);
 assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, batch04.filter((question) => question.dailySlot === slot).length])), { light: 40, scene: 40, reflect: 40 });
-assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, questionBank.filter((question) => question.dailySlot === slot).length])), { light: 403, scene: 403, reflect: 403 });
+assert.deepEqual(Object.fromEntries(["scene", "people", "routine", "senses", "place", "object_food", "emotion", "closing"].map((category) => [category, questionBank.filter((question) => question.category === category).length])), { scene: 260, people: 200, routine: 220, senses: 180, place: 140, object_food: 140, emotion: 220, closing: 140 });
+assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, questionBank.filter((question) => question.dailySlot === slot).length])), { light: 500, scene: 500, reflect: 500 });
+const batch11 = questionBank.filter((question) => { const id = Number(question.id.slice(-4)); return id >= 1201 && id <= 1491; });
+assert.equal(batch11.length, 291);
+assert.deepEqual([batch11[0].id, batch11.at(-1).id], ["dq-v1-1201", "dq-v1-1491"]);
+assert.equal(batch11.filter((question) => question.roomEligible).length, 0);
+assert.equal(batch11.filter((question) => question.roomChoices != null).length, 0);
+assert.equal(batch11.filter((question) => "growthSeed" in question || "traitSeed" in question || "role" in question).length, 0);
+assert.deepEqual(Object.fromEntries(["light", "scene", "reflect"].map((slot) => [slot, batch11.filter((question) => question.dailySlot === slot).length])), { light: 97, scene: 97, reflect: 97 });
+assert.deepEqual(Object.fromEntries(["scene", "people", "routine", "senses", "place", "object_food", "emotion", "closing"].map((category) => [category, batch11.filter((question) => question.category === category).length])), { scene: 49, people: 40, routine: 42, senses: 35, place: 28, object_food: 28, emotion: 41, closing: 28 });
 assert.equal(batch06.length, 120);
 assert.deepEqual([batch06[0].id, batch06.at(-1).id], ["dq-v1-0601", "dq-v1-0720"]);
 assert.equal(batch06.filter((question) => question.roomEligible).length, 40);

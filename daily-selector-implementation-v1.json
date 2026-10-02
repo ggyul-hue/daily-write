@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "verdict": "DAILY_SELECTOR_IMPLEMENTATION_V1_PASS_WITH_FOLLOWUPS",
+  "readiness": "DAILY_SELECTOR_RUNTIME_QA_V1_READY_WITHHELD",
+  "runtimeTrace": {
+    "questionBank": "question-bank.js exports 1,500 questions; data.js now imports it and exposes the app question list.",
+    "classification": "question-growth-map-runtime-v1.js is generated as a direct projection of question-growth-map-v1.1.json.",
+    "selectorEntry": "app.js dailyQuestionSet(day) calls dailyQuestions(day) from data.js when no valid saved set exists.",
+    "roleAndSlotAssignment": "daily-selector-runtime-v1.js uses locked role metadata, one Growth slot balanced across light/scene/reflect, and two Memory slots.",
+    "persistedSet": "app.js returns state.dailyQuestionSets[day] when it already contains three valid IDs; generated IDs are saved through the existing state save path.",
+    "legacyBehavior": "The previous runtime selected from nine data.js questions using a date hash/modulo picker; it did not have the follow-up simulator's continuous seeded PRNG or C3 history model."
+  },
+  "changedFiles": [
+    "data.js",
+    "daily-selector-runtime-v1.js",
+    "daily-selector-policy-v1.js",
+    "question-growth-map-runtime-v1.js",
+    "test-daily-selector-implementation-v1.mjs",
+    "test-room-shared-question.mjs",
+    "package.json",
+    "daily-selector-implementation-v1.json",
+    "daily-selector-implementation-v1.md"
+  ],
+  "policy": {
+    "id": "C3_COMBINED_7D_5D_RECENCY_MINIMAL",
+    "basePolicy": "GENTLE_DIVERSITY_C",
+    "nearDuplicateCooldownDays": 7,
+    "validatorPairCount": 50,
+    "manualPair": {
+      "a": "dq-v1-0843",
+      "b": "dq-v1-1049",
+      "source": "SAMPLE_QA_MANUAL",
+      "disposition": "EXPLICITLY_APPROVED_AFTER_REVIEW"
+    },
+    "growthCategoryPenalty": {
+      "enabled": true,
+      "windowDays": 5,
+      "mode": "RECENCY_WEIGHTED",
+      "maxPenalty": 0.5,
+      "aggregation": "sum matching recent categories exactly as policy follow-up simulator"
+    },
+    "hardRules": {
+      "growthPerDay": 1,
+      "memoryPerDay": 2,
+      "slotCoverage": ["light", "scene", "reflect"],
+      "sameDayCategoryDuplicates": 0,
+      "questionCooldown": "same ID blocked through day difference 365; eligible at 366",
+      "growthSeedQuota": false,
+      "openingPatternCooldown": false
+    }
+  },
+  "parity": {
+    "reference": "Independent contract oracle transcribed from daily-selector-policy-followup-v1.mjs makeSchedule; locked policy source itself was not modified.",
+    "fixedRegressionSeeds": [13970662, 8340253, 7904708, 7920546, 8451119, 499080683],
+    "fixedRegressionComparisons": 6570,
+    "pairedSchedules365d": 1000,
+    "questionComparisons365d": 1095000,
+    "questionIdMismatches": 0,
+    "roleMismatches": 0,
+    "categoryMismatches": 0,
+    "growthSeedMismatches": 0,
+    "determinismFailures": 0,
+    "stress": {
+      "730": {
+        "schedules": 30,
+        "comparisons": 65700,
+        "hardFailures": 0,
+        "reuseViolations": 0,
+        "candidateExhaustions": 0,
+        "fallbacks": 0,
+        "simulatorRuntimeMismatches": 0
+      },
+      "1095": {
+        "schedules": 30,
+        "comparisons": 98550,
+        "hardFailures": 0,
+        "reuseViolations": 0,
+        "candidateExhaustions": 0,
+        "fallbacks": 0,
+        "simulatorRuntimeMismatches": 0
+      }
+    }
+  },
+  "run767Day281To283": [
+    {
+      "day": 281,
+      "light": "dq-v1-1207",
+      "scene": "dq-v1-0878",
+      "reflect": "dq-v1-0308"
+    },
+    {
+      "day": 282,
+      "light": "dq-v1-0943",
+      "scene": "dq-v1-1025",
+      "reflect": "dq-v1-1401"
+    },
+    {
+      "day": 283,
+      "light": "dq-v1-0540",
+      "scene": "dq-v1-0875",
+      "reflect": "dq-v1-0381"
+    }
+  ],
+  "productionRuntime": {
+    "epoch": "2026-01-01",
+    "seed": 7904708,
+    "seedDerivation": "hashSeed(run=1, policy='C', horizon=365) from policy follow-up",
+    "sameDayPersistedSet": "existing app storage path remains in place",
+    "historyIntegration": "Existing saved prior-day question IDs are not currently injected as initial selector state. The C3 production stream starts at the fixed runtime epoch, so history predating that epoch is not yet covered by candidate cooldowns.",
+    "seedMapping": "The repository's previous production selector used a date hash and modulo pick, while the simulation uses a continuous RNG stream. Production epoch/seed mapping is explicit but remains an integration assumption pending history-aware lifecycle QA."
+  },
+  "validation": {
+    "npmTest": "PASS",
+    "questionValidator": {
+      "total": 1500,
+      "errors": 0,
+      "warnings": 155,
+      "validatorNearDuplicatePairs": 50
+    },
+    "gitDiffCheck": "PASS",
+    "newDependencies": 0,
+    "questionBankChanged": false,
+    "classificationSidecarChanged": false,
+    "validatorSourceChanged": false,
+    "lockedSimulationAndQAArtifactsChanged": false,
+    "staged": false,
+    "committed": false,
+    "pushed": false,
+    "deployed": false
+  },
+  "baselineSha256": {
+    "question-bank.js": "e60e054b51ab5eaf51aa44680b2d2ed80fb85efd7708bde578ce30a39c3b2073",
+    "question-growth-map-v1.1.json": "305293ad3a5890a7b9bbe3b8c1675de9242e6810571802456d51078e30d95ce4",
+    "question-validator.mjs": "7667130f5c80b303f69ea7227de921e3c9b0283630014ebf91da6327b4f52eac",
+    "daily-selector-simulation-v1.mjs": "6879d2dd98718b71eb9cb6698799ade989c11b268a775affded8b9fd462a2665",
+    "daily-selector-simulation-v1.json": "b46307f9f53ae96be28ab642cee9070dbde8deff874e0d86d3f7e36078ef33bc",
+    "daily-selector-sample-qa-v1.mjs": "df66b1722899363b2c247983e5d92e1c4519bdee9f47ba5673f644f0f7239a85",
+    "daily-selector-sample-qa-v1.json": "1693c0ac69fbe6c04e91ea76c06bde8498d84cbb12b1b6319bb9b758302bd832",
+    "daily-selector-policy-followup-v1.mjs": "e89f2b0c87ce4552edc90aed58d63a1ef6094de06aff1a4e225c7d498ac3a472",
+    "daily-selector-policy-followup-v1.json": "6a538bd05ecb8750299614c1d1e697611aa1a5808ae6ce03debda86a1a869a27"
+  },
+  "unresolved": [
+    "Before production readiness, load and validate the existing dailyQuestionSets date-to-ID history as selector initial state so the first C3 set cannot repeat or pair with legacy exposures in the rolling windows.",
+    "Confirm the production epoch and RNG seed lifecycle against real app restart/history state; the old runtime used per-date hashing rather than the simulator's continuous stream."
+  ]
+}

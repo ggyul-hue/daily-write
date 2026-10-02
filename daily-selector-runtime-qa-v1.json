@@ -1,0 +1,304 @@
+{
+  "verdict": "DAILY_SELECTOR_RUNTIME_QA_V1_PASS_WITH_FOLLOWUPS",
+  "releaseReadiness": "DAILY_SELECTOR_RELEASE_CANDIDATE_V1_READY_WITHHELD",
+  "activationContract": {
+    "policyVersion": "C3_V1",
+    "activationDateSemantics": "FIRST_DATE_GOVERNED_BY_C3",
+    "activationDate": null,
+    "activationDateStatus": "UNSET; set explicitly in release config",
+    "productionSeed": 7904708,
+    "seedLifecycle": "FROZEN_LITERAL; independent from QA hashSeed(run, 'C', horizon)",
+    "legacyHistoryWindowDays": 365,
+    "legacyHistorySource": "state.dailyQuestionSets",
+    "postActivationHistory": "GENERATED_DAILY_C3_SCHEDULE",
+    "qaFixtureActivationDate": "2030-01-01"
+  },
+  "legacyHistory": {
+    "targetedEvidenceDaysLoaded": 3,
+    "targetedEvidenceQuestionExposuresLoaded": 9,
+    "malformedHistoryEntries": 3,
+    "expiredHistoryDays": 1,
+    "sparseCases": [
+      0,
+      1,
+      7,
+      30,
+      180,
+      365
+    ],
+    "irregularSparseDays": 47,
+    "questionCooldownWarmStartFailures": 0,
+    "validatorPairWarmStartFailures": 0,
+    "manualPairWarmStartFailures": 0,
+    "growthPenaltyWarmStartFailures": 0,
+    "expiredGrowthPenaltyApplications": 0,
+    "activationEvidence": [
+      {
+        "date": "2029-12-29",
+        "phase": "LEGACY_HISTORY",
+        "questionIds": [
+          "best-food",
+          "most-seen",
+          "comfortable"
+        ],
+        "questions": [
+          {
+            "id": "best-food",
+            "role": "GROWTH",
+            "category": "object_food",
+            "seed": "interest"
+          },
+          {
+            "id": "most-seen",
+            "role": "MEMORY",
+            "category": "routine",
+            "seed": null
+          },
+          {
+            "id": "comfortable",
+            "role": "MEMORY",
+            "category": "emotion",
+            "seed": null
+          }
+        ],
+        "effect": "Growth object_food history informs first C3 Growth scoring (date age 3)."
+      },
+      {
+        "date": "2029-12-30",
+        "phase": "LEGACY_HISTORY",
+        "questionIds": [
+          "dq-v1-0843",
+          "most-seen",
+          "comfortable"
+        ],
+        "questions": [
+          {
+            "id": "dq-v1-0843",
+            "role": "MEMORY",
+            "category": "scene",
+            "seed": null
+          },
+          {
+            "id": "most-seen",
+            "role": "MEMORY",
+            "category": "routine",
+            "seed": null
+          },
+          {
+            "id": "comfortable",
+            "role": "MEMORY",
+            "category": "emotion",
+            "seed": null
+          }
+        ],
+        "effect": "dq-v1-0843 is a manual pair exposure; dq-v1-1049 is blocked during its pair window."
+      },
+      {
+        "date": "2029-12-31",
+        "phase": "LEGACY_HISTORY",
+        "questionIds": [
+          "dq-v1-0011",
+          "most-seen",
+          "comfortable"
+        ],
+        "questions": [
+          {
+            "id": "dq-v1-0011",
+            "role": "MEMORY",
+            "category": "scene",
+            "seed": null
+          },
+          {
+            "id": "most-seen",
+            "role": "MEMORY",
+            "category": "routine",
+            "seed": null
+          },
+          {
+            "id": "comfortable",
+            "role": "MEMORY",
+            "category": "emotion",
+            "seed": null
+          }
+        ],
+        "effect": "dq-v1-0011 is a validator-pair exposure; dq-v1-0751 is blocked during its pair window."
+      },
+      {
+        "date": "2030-01-01",
+        "phase": "C3",
+        "questionIds": [
+          "dq-v1-0536",
+          "dq-v1-0833",
+          "dq-v1-1206"
+        ],
+        "questions": [
+          {
+            "id": "dq-v1-0536",
+            "role": "MEMORY",
+            "category": "senses",
+            "seed": null
+          },
+          {
+            "id": "dq-v1-0833",
+            "role": "MEMORY",
+            "category": "closing",
+            "seed": null
+          },
+          {
+            "id": "dq-v1-1206",
+            "role": "GROWTH",
+            "category": "scene",
+            "seed": "playful"
+          }
+        ],
+        "effect": "Activation date begins the seeded C3 stream; D-365..D-1 saved sets are initial state only."
+      },
+      {
+        "date": "2030-01-02",
+        "phase": "C3",
+        "questionIds": [
+          "dq-v1-0552",
+          "dq-v1-1265",
+          "dq-v1-0189"
+        ],
+        "questions": [
+          {
+            "id": "dq-v1-0552",
+            "role": "MEMORY",
+            "category": "place",
+            "seed": null
+          },
+          {
+            "id": "dq-v1-1265",
+            "role": "GROWTH",
+            "category": "people",
+            "seed": "sentimental"
+          },
+          {
+            "id": "dq-v1-0189",
+            "role": "MEMORY",
+            "category": "senses",
+            "seed": null
+          }
+        ],
+        "effect": "Generated as a C3 calendar day even without an app visit."
+      },
+      {
+        "date": "2030-01-03",
+        "phase": "C3",
+        "questionIds": [
+          "dq-v1-1351",
+          "dq-v1-0250",
+          "dq-v1-0078"
+        ],
+        "questions": [
+          {
+            "id": "dq-v1-1351",
+            "role": "GROWTH",
+            "category": "senses",
+            "seed": "warmth"
+          },
+          {
+            "id": "dq-v1-0250",
+            "role": "MEMORY",
+            "category": "scene",
+            "seed": null
+          },
+          {
+            "id": "dq-v1-0078",
+            "role": "MEMORY",
+            "category": "place",
+            "seed": null
+          }
+        ],
+        "effect": "Generated as a C3 calendar day even without an app visit."
+      }
+    ]
+  },
+  "persistence": {
+    "sameDaySavedSetChanges": 0,
+    "deterministicReplayMismatches": 0,
+    "insertionOrderMismatches": 0,
+    "postActivationConflictCountInTargetedFixture": 1,
+    "conflictSetRewritten": false,
+    "preActivationHistoryRewritten": false,
+    "originalPersistedStateMutation": 0
+  },
+  "coreRegression": {
+    "implementationBaselineVerdict": "DAILY_SELECTOR_IMPLEMENTATION_V1_PASS_WITH_FOLLOWUPS",
+    "fixedRegressionSeeds": [
+      13970662,
+      8340253,
+      7904708,
+      7920546,
+      8451119,
+      499080683
+    ],
+    "fixedRegressionFailures": 0,
+    "schedules365d": 1000,
+    "comparisons365d": 1095000,
+    "mismatches365d": 0,
+    "stress730": {
+      "schedules": 30,
+      "comparisons": 65700,
+      "mismatches": 0,
+      "hardFailures": 0,
+      "reuseViolations": 0,
+      "exhaustion": 0,
+      "fallback": 0
+    },
+    "stress1095": {
+      "schedules": 30,
+      "comparisons": 98550,
+      "mismatches": 0,
+      "hardFailures": 0,
+      "reuseViolations": 0,
+      "exhaustion": 0,
+      "fallback": 0
+    }
+  },
+  "roomRegression": {
+    "failures": 0,
+    "bankQuestionCount": 1500,
+    "localHistoryPassedToRoomSelector": false
+  },
+  "actualStateSnapshot": {
+    "status": "UNAVAILABLE_NO_ACTIVE_BROWSER_TABS",
+    "validDays": null,
+    "malformedCount": null,
+    "latestDate": null
+  },
+  "rollbackCompatibility": {
+    "verdict": "UNSAFE",
+    "evidence": "C3 fixture selected 3 question(s) absent from the prior nine-question build; that build would fail its saved-ID validity lookup and regenerate a legacy set."
+  },
+  "baselineIntegrity": {
+    "changes": {
+      "canonicalQuestionBank": false,
+      "classificationSidecar": false,
+      "validatorSource": false,
+      "lockedSimulationAndQABaselines": false
+    },
+    "sha256": {
+      "questionBank": "e60e054b51ab5eaf51aa44680b2d2ed80fb85efd7708bde578ce30a39c3b2073",
+      "classificationSidecar": "305293ad3a5890a7b9bbe3b8c1675de9242e6810571802456d51078e30d95ce4",
+      "validatorSource": "7667130f5c80b303f69ea7227de921e3c9b0283630014ebf91da6327b4f52eac",
+      "simulationSource": "6879d2dd98718b71eb9cb6698799ade989c11b268a775affded8b9fd462a2665",
+      "simulationBaseline": "b46307f9f53ae96be28ab642cee9070dbde8deff874e0d86d3f7e36078ef33bc",
+      "sampleQASource": "df66b1722899363b2c247983e5d92e1c4519bdee9f47ba5673f644f0f7239a85",
+      "sampleQABaseline": "1693c0ac69fbe6c04e91ea76c06bde8498d84cbb12b1b6319bb9b758302bd832",
+      "policyFollowupSource": "e89f2b0c87ce4552edc90aed58d63a1ef6094de06aff1a4e225c7d498ac3a472",
+      "policyFollowupBaseline": "6a538bd05ecb8750299614c1d1e697611aa1a5808ae6ce03debda86a1a869a27"
+    }
+  },
+  "syntheticFixtureHashes": {
+    "rollout": "21ed62b14d32fa81545d066d78e68f4e62af33af4d5fa4e56aeead3174a3563b",
+    "malformed": "8df660203894784fd1562caf4ba1c8c1e2946862a3a8c230b3e69996b649c00c",
+    "conflict": "90d0f2252f1959a9d837d5d39145eb6b3b67c920f70f59904c991c0b168f2ea7"
+  },
+  "unresolved": [
+    "Production activation date must be set as a release-step local calendar date. It remains null in this branch, so production continues using the legacy selector until explicitly configured.",
+    "No active browser tabs were available, so the actual localStorage state could not be read. Synthetic sparse, malformed, collision, and 365-day fixtures passed.",
+    "Rollback to the old nine-question build is unsafe after C3 IDs are persisted."
+  ]
+}

@@ -1,0 +1,6016 @@
+{
+  "schemaVersion": 1,
+  "taxonomyVersion": "growth-v1.1",
+  "seedLabels": {
+    "warmth": "다정함",
+    "aspiration": "꿈꾸기",
+    "sentimental": "간직함",
+    "steady": "꾸준함",
+    "curiosity": "호기심",
+    "playful": "장난기",
+    "calm": "느긋함",
+    "interest": "취향"
+  },
+  "questions": {
+    "best-food": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "most-seen": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "comfortable": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "word": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "animal-day": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "weather-choice": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "inside-out": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "replay": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "smell": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0001": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0002": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0003": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0004": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0005": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0006": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0007": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0008": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0009": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0010": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0011": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0012": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0013": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0014": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0015": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0016": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0017": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0018": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0019": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0020": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0021": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0022": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0023": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0024": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0025": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0026": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0027": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0028": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0029": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0030": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0031": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0032": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0033": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0034": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0035": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0036": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0037": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0038": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0039": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0040": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0041": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0042": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0043": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0044": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0045": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0046": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0047": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0048": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0049": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0050": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0051": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0052": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0053": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0054": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0055": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-0056": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0057": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0058": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0059": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0060": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0061": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0062": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0063": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0064": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0065": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0066": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0067": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0068": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0069": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0070": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0071": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0072": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0073": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0074": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0075": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0076": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0077": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0078": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0079": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0080": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0081": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0082": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0083": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0084": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0085": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0086": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0087": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0088": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0089": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0090": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0091": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0092": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0093": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0094": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0095": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0096": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0097": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0098": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0099": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0100": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0101": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0102": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0103": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0104": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0105": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0106": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0107": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0108": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0109": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0110": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0111": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0112": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0113": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0114": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0115": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0116": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0117": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0118": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0119": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0120": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0121": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0122": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0123": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0124": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0125": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0126": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0127": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0128": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0129": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0130": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0131": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0132": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0133": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0134": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0135": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0136": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0137": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0138": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0139": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0140": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0141": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0142": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0143": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0144": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0145": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0146": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0147": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0148": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0149": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0150": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0151": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0152": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0153": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0154": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0155": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0156": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0157": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0158": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0159": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0160": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0161": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0162": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0163": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0164": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0165": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0166": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0167": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0168": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0169": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-0170": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0171": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0172": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0173": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0174": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0175": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0176": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0177": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0178": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0179": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0180": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0181": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0182": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0183": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0184": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0185": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0186": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0187": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0188": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0189": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0190": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0191": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0192": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0193": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0194": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0195": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0196": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0197": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0198": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0199": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0200": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0201": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0202": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0203": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0204": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0205": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0206": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0207": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0208": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0209": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0210": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0211": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0212": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0213": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0214": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0215": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0216": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0217": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0218": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0219": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0220": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0221": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0222": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0223": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0224": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0225": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0226": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0227": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0228": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0229": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0230": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0231": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0232": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0233": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0234": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0235": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0236": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0237": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0238": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0239": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0240": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0241": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0242": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0243": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0244": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0245": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0246": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0247": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0248": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0249": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0250": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0251": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0252": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0253": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0254": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0255": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0256": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0257": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0258": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0259": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0260": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0261": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0262": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0263": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0264": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0265": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0266": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0267": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0268": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0269": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0270": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0271": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0272": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0273": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0274": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0275": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0276": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0277": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0278": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0279": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0280": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0281": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0282": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0283": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0284": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0285": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0286": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0287": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0288": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0289": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0290": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0291": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0292": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0293": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0294": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0295": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0296": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0297": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0298": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0299": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0300": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0301": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0302": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0303": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0304": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0305": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0306": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0307": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0308": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0309": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0310": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0311": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0312": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0313": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0314": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0315": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0316": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0317": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0318": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0319": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0320": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0321": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0322": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0323": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0324": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0325": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0326": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0327": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0328": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0329": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0330": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0331": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0332": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0333": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0334": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0335": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0336": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0337": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0338": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0339": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0340": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0341": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0342": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0343": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0344": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0345": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0346": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0347": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0348": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0349": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0350": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0351": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0352": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0353": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-0354": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0355": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0356": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0357": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0358": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0359": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0360": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0361": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0362": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0363": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0364": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0365": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0366": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0367": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0368": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0369": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0370": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0371": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0372": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0373": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0374": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0375": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0376": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0377": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0378": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0379": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0380": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0381": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0382": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0383": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0384": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0385": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0386": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0387": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0388": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0389": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0390": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0391": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0392": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0393": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0394": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0395": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0396": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0397": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0398": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0399": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0400": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0401": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0402": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0403": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0404": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0405": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0406": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0407": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0408": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0409": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0410": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0411": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0412": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0413": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0414": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0415": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0416": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0417": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0418": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0419": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0420": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0421": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0422": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0423": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0424": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0425": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0426": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0427": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0428": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0429": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0430": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0431": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0432": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0433": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0434": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0435": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0436": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0437": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0438": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0439": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0440": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0441": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0442": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0443": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0444": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0445": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0446": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0447": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0448": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0449": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0450": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0451": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0452": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0453": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0454": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0455": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0456": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0457": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0458": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0459": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0460": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0461": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0462": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0463": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0464": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0465": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0466": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0467": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0468": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0469": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0470": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0471": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0472": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0473": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0474": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0475": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0476": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0477": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0478": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0479": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0480": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0481": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0482": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0483": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0484": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0485": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0486": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0487": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0488": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0489": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0490": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0491": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0492": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0493": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0494": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0495": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0496": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0497": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0498": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0499": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0500": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0501": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0502": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0503": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0504": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0505": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0506": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0507": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0508": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0509": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0510": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0511": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0512": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0513": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0514": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0515": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0516": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0517": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0518": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0519": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0520": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0521": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0522": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0523": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0524": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0525": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0526": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0527": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0528": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0529": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0530": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0531": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0532": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0533": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0534": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0535": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0536": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0537": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0538": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0539": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0540": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0541": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0542": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0543": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0544": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0545": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0546": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0547": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0548": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0549": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0550": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0551": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0552": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0553": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0554": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0555": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0556": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0557": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0558": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0559": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0560": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0561": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0562": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0563": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0564": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0565": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0566": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0567": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0568": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0569": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0570": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0571": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0572": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0573": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0574": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0575": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0576": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0577": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0578": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0579": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0580": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0581": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0582": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0583": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0584": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0585": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0586": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0587": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0588": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0589": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0590": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0591": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0592": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0593": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0594": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0595": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0596": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0597": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0598": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0599": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0600": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0601": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0602": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0603": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0604": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0605": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0606": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0607": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0608": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0609": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0610": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0611": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0612": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0613": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0614": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0615": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0616": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0617": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0618": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0619": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0620": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0621": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0622": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0623": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0624": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0625": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0626": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0627": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0628": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0629": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0630": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0631": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0632": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0633": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0634": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0635": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0636": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0637": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0638": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0639": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0640": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0641": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0642": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0643": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0644": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0645": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0646": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0647": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0648": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0649": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0650": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0651": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0652": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0653": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0654": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-0655": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0656": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0657": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0658": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0659": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0660": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0661": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0662": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0663": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0664": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0665": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0666": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0667": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0668": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0669": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0670": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0671": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0672": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0673": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0674": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0675": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0676": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0677": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0678": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0679": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0680": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0681": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0682": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0683": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0684": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0685": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0686": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0687": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0688": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0689": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0690": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0691": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0692": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0693": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0694": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0695": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0696": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0697": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0698": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0699": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0700": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0701": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0702": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0703": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0704": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0705": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0706": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0707": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0708": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0709": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0710": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0711": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0712": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0713": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0714": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0715": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0716": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0717": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0718": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0719": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0720": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0721": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0722": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0723": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0724": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0725": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0726": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0727": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0728": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0729": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0730": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0731": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0732": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0733": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0734": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0735": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0736": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0737": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0738": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0739": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0740": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0741": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0742": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0743": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0744": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0745": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0746": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0747": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0748": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0749": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0750": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0751": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0752": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0753": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0754": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0755": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0756": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0757": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0758": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0759": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0760": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0761": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0762": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0763": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0764": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0765": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0766": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0767": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0768": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0769": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0770": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0771": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0772": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0773": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0774": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0775": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0776": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0777": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0778": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0779": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0780": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0781": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0782": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0783": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0784": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0785": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0786": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0787": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0788": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0789": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0790": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0791": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0792": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0793": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0794": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0795": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0796": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0797": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0798": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0799": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0800": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0801": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0802": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0803": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0804": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0805": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0806": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0807": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0808": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0809": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0810": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0811": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0812": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0813": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0814": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0815": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0816": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0817": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0818": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0819": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0820": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0821": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0822": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0823": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0824": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0825": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0826": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0827": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0828": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0829": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0830": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0831": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0832": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0833": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0834": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0835": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0836": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0837": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0838": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0839": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0840": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0841": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0842": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0843": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0844": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0845": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0846": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0847": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0848": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0849": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0850": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0851": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0852": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0853": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0854": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0855": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0856": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0857": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0858": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0859": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0860": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0861": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0862": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0863": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0864": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0865": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0866": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0867": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0868": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0869": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0870": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0871": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0872": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0873": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0874": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0875": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0876": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0877": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0878": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0879": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-0880": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0881": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-0882": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0883": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0884": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0885": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-0886": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0887": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0888": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0889": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0890": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0891": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0892": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-0893": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0894": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0895": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0896": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0897": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0898": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0899": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0900": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0901": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0902": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0903": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0904": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0905": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0906": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0907": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0908": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0909": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0910": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0911": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0912": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0913": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0914": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0915": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0916": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0917": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0918": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0919": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0920": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0921": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0922": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0923": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0924": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0925": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0926": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0927": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0928": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0929": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0930": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0931": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0932": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0933": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0934": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0935": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0936": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0937": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0938": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0939": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-0940": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0941": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0942": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0943": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0944": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0945": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0946": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0947": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0948": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0949": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0950": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0951": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0952": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-0953": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0954": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0955": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0956": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0957": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0958": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0959": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-0960": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0961": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0962": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0963": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0964": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0965": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0966": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0967": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0968": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0969": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0970": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-0971": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0972": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0973": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0974": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0975": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0976": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0977": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0978": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0979": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0980": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0981": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-0982": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0983": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0984": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-0985": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0986": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0987": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0988": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0989": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0990": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0991": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0992": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0993": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-0994": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-0995": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0996": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0997": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-0998": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-0999": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1000": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1001": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1002": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1003": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1004": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1005": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1006": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1007": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1008": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1009": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1010": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1011": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1012": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1013": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1014": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1015": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1016": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1017": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1018": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1019": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1020": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1021": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1022": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1023": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1024": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1025": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1026": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1027": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1028": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1029": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1030": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1031": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1032": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1033": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1034": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1035": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1036": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1037": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1038": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1039": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1040": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1041": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1042": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1043": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1044": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1045": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1046": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1047": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1048": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1049": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1050": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1051": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1052": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1053": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1054": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1055": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1056": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1057": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1058": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1059": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1060": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1061": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1062": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1063": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1064": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1065": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1066": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1067": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1068": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1069": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1070": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1071": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1072": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1073": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1074": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1075": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1076": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1077": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1078": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1079": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1080": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1081": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1082": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1083": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1084": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1085": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1086": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1087": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1088": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1089": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1090": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1091": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1092": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1093": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1094": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1095": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1096": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1097": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1098": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1099": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1100": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1101": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1102": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1103": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1104": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1105": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1106": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1107": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1108": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1109": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1110": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1111": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1112": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1113": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1114": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1115": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1116": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1117": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1118": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1119": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1120": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1121": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1122": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1123": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1124": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1125": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1126": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1127": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1128": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1129": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1130": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1131": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1132": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1133": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1134": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1135": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1136": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1137": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1138": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1139": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1140": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1141": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1142": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1143": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1144": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1145": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1146": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1147": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1148": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1149": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1150": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1151": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1152": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1153": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1154": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1155": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1156": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1157": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1158": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1159": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1160": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1161": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1162": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1163": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1164": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1165": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1166": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1167": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1168": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1169": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1170": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1171": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1172": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1173": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1174": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1175": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1176": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1177": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1178": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1179": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1180": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1181": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1182": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1183": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1184": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1185": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1186": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1187": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1188": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1189": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1190": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1191": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1192": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1193": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1194": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1195": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1196": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1197": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1198": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1199": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1200": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1201": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1202": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1203": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1204": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1205": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1206": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1207": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1208": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1209": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1210": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1211": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1212": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1213": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1214": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1215": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1216": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1217": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1218": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1219": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1220": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1221": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1222": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1223": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1224": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1225": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1226": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1227": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1228": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1229": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1230": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1231": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1232": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1233": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1234": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1235": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1236": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1237": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1238": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1239": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1240": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1241": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1242": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1243": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1244": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1245": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1246": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1247": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1248": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1249": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1250": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1251": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1252": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1253": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1254": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1255": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1256": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1257": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1258": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1259": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1260": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1261": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1262": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1263": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1264": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1265": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1266": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1267": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1268": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1269": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1270": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1271": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1272": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1273": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1274": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1275": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1276": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1277": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1278": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1279": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1280": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1281": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1282": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1283": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1284": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1285": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1286": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1287": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1288": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1289": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1290": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1291": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1292": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1293": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1294": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1295": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1296": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1297": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1298": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1299": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1300": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1301": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1302": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1303": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1304": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1305": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1306": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1307": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1308": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1309": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1310": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1311": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1312": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1313": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1314": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1315": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1316": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1317": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1318": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1319": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1320": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1321": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1322": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1323": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1324": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1325": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1326": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1327": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1328": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1329": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1330": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1331": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1332": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1333": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1334": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1335": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1336": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1337": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1338": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1339": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1340": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1341": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1342": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1343": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1344": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1345": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1346": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1347": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1348": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1349": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1350": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1351": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1352": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1353": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1354": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1355": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1356": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1357": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1358": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1359": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1360": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1361": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1362": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1363": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1364": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1365": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1366": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1367": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1368": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1369": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1370": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1371": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1372": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1373": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1374": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1375": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1376": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1377": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1378": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1379": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1380": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1381": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1382": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1383": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1384": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1385": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1386": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1387": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1388": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1389": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1390": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1391": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1392": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1393": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1394": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1395": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1396": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1397": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1398": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1399": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1400": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1401": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1402": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1403": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1404": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1405": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1406": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1407": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1408": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1409": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1410": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1411": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1412": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1413": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1414": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1415": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1416": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1417": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1418": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1419": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1420": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1421": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1422": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1423": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1424": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1425": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1426": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1427": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1428": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1429": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1430": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1431": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1432": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1433": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1434": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1435": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1436": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1437": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1438": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1439": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1440": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1441": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1442": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1443": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1444": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1445": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1446": {
+      "role": "GROWTH",
+      "seed": "interest"
+    },
+    "dq-v1-1447": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1448": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1449": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1450": {
+      "role": "GROWTH",
+      "seed": "calm"
+    },
+    "dq-v1-1451": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1452": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1453": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1454": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1455": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1456": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1457": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1458": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1459": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1460": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1461": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1462": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1463": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1464": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1465": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1466": {
+      "role": "GROWTH",
+      "seed": "playful"
+    },
+    "dq-v1-1467": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1468": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1469": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1470": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1471": {
+      "role": "GROWTH",
+      "seed": "steady"
+    },
+    "dq-v1-1472": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1473": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1474": {
+      "role": "GROWTH",
+      "seed": "warmth"
+    },
+    "dq-v1-1475": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1476": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1477": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1478": {
+      "role": "GROWTH",
+      "seed": "aspiration"
+    },
+    "dq-v1-1479": {
+      "role": "GROWTH",
+      "seed": "curiosity"
+    },
+    "dq-v1-1480": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1481": {
+      "role": "GROWTH",
+      "seed": "sentimental"
+    },
+    "dq-v1-1482": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1483": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1484": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1485": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1486": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1487": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1488": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1489": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1490": {
+      "role": "MEMORY",
+      "seed": null
+    },
+    "dq-v1-1491": {
+      "role": "MEMORY",
+      "seed": null
+    }
+  }
+}
