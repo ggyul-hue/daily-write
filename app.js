@@ -6,6 +6,7 @@ import { createRuntimePetState, effectiveGrowthScale, petIdentity, runtimeBehavi
 import { growthProfile, speciesLabel } from "./pet-profile-ui.js";
 import { isCompletedMonth, selectMonthlyMemories, monthlySummary } from "./monthly-memory.js";
 import { createAdoptionDraft, nextAdoptionDraft } from "./onboarding.js";
+import { deriveSoloFlowState, resolveConsumeOutcome } from "./solo-flow-recovery.js";
 
 const query = new URLSearchParams(location.search);
 const isFragmentDebug = query.get("debug") === "fragment4b";
@@ -69,6 +70,8 @@ let fragmentRecoveryPromise = null;
 let activePet = null;
 let activePetPromise = null;
 let activePetPromiseIdentity = null;
+let petLoadStatus = roomBackend.isConfigured ? "idle" : "unavailable";
+let runtimePetLoadPromise = null;
 let runtimePetState = createRuntimePetState("");
 let runtimePetLoadId = 0;
 let fragmentCtaError = "";
@@ -294,35 +297,51 @@ function renderGardenRewards(growthPoints = runtimePetState.growthPoints) {
 }
 async function loadRuntimePetState({ force = false } = {}) {
   const identity = runtimePetIdentity();
-  if (!force && runtimePetState.identity === identity && runtimePetState.loaded) return;
-  const loadId = ++runtimePetLoadId;
-  const previousState = runtimePetState;
-  if (!force) {
+  if (!canUseFragmentBackend || !roomBackend.isConfigured) {
+    petLoadStatus = "unavailable";
     runtimePetState = createRuntimePetState(identity);
     applyRuntimePetScale();
     renderPetRecord();
+    renderFragmentCta();
+    return false;
   }
-  if (!canUseFragmentBackend || !roomBackend.isConfigured) {
-    runtimePetState = { ...createRuntimePetState(identity), loaded: true };
-    renderPetRecord();
-    return;
-  }
-  try {
-    const pet = await roomBackend.getPetStateFromExistingSession(activePetIdentity());
-    if (loadId !== runtimePetLoadId || runtimePetIdentity() !== identity) return;
-    runtimePetState = pet ? createRuntimePetState(identity, pet) : { ...createRuntimePetState(identity), loaded: true };
-    applyRuntimePetScale();
-    renderPetRecord();
-  } catch {
-    if (loadId !== runtimePetLoadId || runtimePetIdentity() !== identity) return;
-    runtimePetState = force && previousState.identity === identity && previousState.loaded
-      ? previousState
-      : { ...createRuntimePetState(identity), loaded: true };
-    applyRuntimePetScale();
-    renderPetRecord();
-  }
+  if (!force && petLoadStatus === "ready" && runtimePetState.identity === identity && runtimePetState.loaded) return true;
+  // A failed bootstrap load stays failed until the user explicitly retries. Lifecycle re-renders
+  // can arrive after the original promise settles, so the in-flight promise alone is not enough.
+  if (!force && petLoadStatus === "error" && runtimePetState.identity === identity) return false;
+  if (runtimePetLoadPromise) return runtimePetLoadPromise;
+  const loadId = ++runtimePetLoadId;
+  petLoadStatus = "loading";
+  runtimePetState = createRuntimePetState(identity);
+  applyRuntimePetScale();
+  renderPetRecord();
+  runtimePetLoadPromise = (async () => {
+    try {
+      const pet = await roomBackend.getPetStateFromExistingSession(activePetIdentity());
+      if (loadId !== runtimePetLoadId || runtimePetIdentity() !== identity) return false;
+      activePet = pet || null;
+      runtimePetState = { ...createRuntimePetState(identity, pet || undefined), loaded: true };
+      petLoadStatus = "ready";
+      applyRuntimePetScale();
+      renderPetRecord();
+      renderFragmentCta();
+      return true;
+    } catch {
+      if (loadId !== runtimePetLoadId || runtimePetIdentity() !== identity) return false;
+      activePet = null;
+      petLoadStatus = "error";
+      runtimePetState = createRuntimePetState(identity);
+      applyRuntimePetScale();
+      renderPetRecord();
+      renderFragmentCta();
+      return false;
+    } finally {
+      if (loadId === runtimePetLoadId) runtimePetLoadPromise = null;
+    }
+  })();
+  return runtimePetLoadPromise;
 }
-async function ensureActivePet() {
+async function ensureActivePet({ explicitRetry = false } = {}) {
   if (!canUseFragmentBackend || !roomBackend.isConfigured) return null;
   const identity = activePetIdentity();
   updateFragmentDebug({
@@ -332,16 +351,24 @@ async function ensureActivePet() {
     animalDisplayName: animalName(),
   });
   if (activePet?.species === identity.species && activePet?.variant === identity.variant) return activePet;
+  if (petLoadStatus === "error" && !explicitRetry) return null;
   if (activePetPromise) {
     if (activePetPromiseIdentity?.species === identity.species && activePetPromiseIdentity?.variant === identity.variant) return activePetPromise;
     await activePetPromise;
     return ensureActivePet();
   }
+  petLoadStatus = "loading";
+  renderPetRecord();
+  renderFragmentCta();
   activePetPromiseIdentity = identity;
   activePetPromise = roomBackend.ensureActivePet(identity)
     .then((pet) => {
+      if (!pet?.id) throw new Error("pet unavailable");
       activePet = pet;
-      void loadRuntimePetState({ force: true });
+      runtimePetState = { ...createRuntimePetState(runtimePetIdentity(), pet), loaded: true };
+      petLoadStatus = "ready";
+      applyRuntimePetScale();
+      renderPetRecord();
       updateFragmentDebug({
         supabaseSessionExists: "true",
         backendInitialized: "true",
@@ -352,12 +379,30 @@ async function ensureActivePet() {
       return pet;
     })
     .catch((error) => {
+      petLoadStatus = "error";
+      activePet = null;
+      runtimePetState = createRuntimePetState(runtimePetIdentity());
       updateFragmentDebug({ ensurePetResult: "error", petId: "", petGrowthPoints: "" });
       recordFragmentDebugError("ensure_active_pet", error);
+      renderPetRecord();
       throw error;
     })
-    .finally(() => { activePetPromise = null; activePetPromiseIdentity = null; });
+    .finally(() => { activePetPromise = null; activePetPromiseIdentity = null; renderFragmentCta(); });
   return activePetPromise;
+}
+async function retryPetLoad() {
+  fragmentCtaError = "";
+  if (fragmentForDate(syncToday())) {
+    try {
+      await ensureActivePet({ explicitRetry: true });
+    } catch {
+      fragmentCtaError = "아이의 상태를 불러오지 못했어요.";
+    }
+  } else {
+    await loadRuntimePetState({ force: true });
+  }
+  renderPetRecord();
+  renderFragmentCta();
 }
 async function restoreFragmentEvents() {
   if (!canUseFragmentBackend || !roomBackend.isConfigured) return;
@@ -410,11 +455,21 @@ async function recoverTodaySoloFragment(events) {
 }
 function renderFragmentCta() {
   const day = syncToday();
+  const answer = answerForDate(day);
   const consumedFragment = fragmentState.claimed.find((entry) => entry.date === day && entry.consumed_at);
   const fragment = fragmentState.claimed.find((entry) => entry.date === day && !entry.consumed_at);
+  const pending = fragmentState.pending.find((entry) => entry.date === day);
   const cta = $("#fragment-cta");
   const button = $("#feed-fragment");
   const detail = $("#fragment-detail");
+  const stateName = deriveSoloFlowState({
+    answerSaved: Boolean(answer),
+    pending: Boolean(pending),
+    fragment: fragment || consumedFragment,
+    feedInteraction,
+    petLoadStatus,
+    growthUpdated: Boolean(consumedFragment && petLoadStatus === "ready"),
+  });
   updateFragmentDebug({
     ctaRenderStarted: "true",
     animalSpecies: activePetIdentity().species,
@@ -424,28 +479,65 @@ function renderFragmentCta() {
     fragmentId: (fragment || consumedFragment)?.id ? "present" : "missing",
     fragmentConsumedAt: consumedFragment ? "present" : "null",
   });
-  cta.classList.toggle("is-hidden", !fragment);
-  if (!fragment) {
+  cta.classList.toggle("is-hidden", !answer || stateName === "FEED_COMMITTED" || stateName === "GROWTH_UPDATED");
+  if (!answer || stateName === "FEED_COMMITTED" || stateName === "GROWTH_UPDATED") {
     $("#fragment-message").textContent = "";
     detail.textContent = "";
+    button.classList.add("is-hidden");
     button.textContent = "";
     button.disabled = true;
-    updateFragmentDebug({ ctaState: consumedFragment ? "hidden:consumed" : "hidden:no-fragment", ctaLabel: "" });
+    updateFragmentDebug({ ctaState: consumedFragment ? "hidden:consumed" : "hidden:no-answer", ctaLabel: "" });
+    return;
+  }
+  button.classList.remove("is-hidden");
+  if (stateName === "FRAGMENT_PENDING" || stateName === "ANSWER_SAVED") {
+    $("#fragment-message").textContent = pending
+      ? "오늘의 조각을 준비하고 있어요. 연결되면 이어서 준비할게요."
+      : "오늘의 기록은 저장됐어요. 조각 상태를 확인하고 있어요.";
+    detail.textContent = "기록은 정원에 간직되어 있어요.";
+    button.classList.add("is-hidden");
+    button.disabled = true;
+    updateFragmentDebug({ ctaState: pending ? "fragment-pending" : "answer-saved", ctaLabel: "" });
     return;
   }
   const identity = activePetIdentity();
   const hasActivePet = activePet?.species === identity.species && activePet?.variant === identity.variant;
-  $("#fragment-message").textContent = fragmentCtaError || "오늘의 조각이 생겼어요.";
+  if (petLoadStatus === "unavailable") {
+    $("#fragment-message").textContent = "연결되면 아이의 상태를 확인할게요.";
+    detail.textContent = "오늘의 기록은 정원에 간직되어 있어요.";
+    button.classList.add("is-hidden");
+    button.disabled = true;
+    return;
+  }
+  if (petLoadStatus === "loading") {
+    $("#fragment-message").textContent = "아이의 상태를 불러오고 있어요.";
+    detail.textContent = "잠시만 기다려주세요.";
+    button.classList.remove("is-hidden");
+    button.textContent = "불러오는 중...";
+    button.disabled = true;
+    return;
+  }
+  $("#fragment-message").textContent = stateName === "PET_LOAD_ERROR"
+    ? "아이의 상태를 불러오지 못했어요."
+    : fragmentCtaError || "오늘의 조각이 생겼어요.";
   detail.textContent = `${animalName()}에게 줄 수 있어요.`;
-  button.textContent = `${animalName()}에게 주기`;
-  button.disabled = !canUseFragmentBackend || !fragment.id || !hasActivePet || Boolean(activePetPromise);
+  if (feedInteraction === "submitting" || feedInteraction === "animating") {
+    button.textContent = feedInteraction === "animating" ? "건네고 있어요..." : "먹이고 있어요...";
+    button.disabled = true;
+  } else if (stateName === "PET_LOAD_ERROR") {
+    button.textContent = "다시 불러오기";
+    button.disabled = false;
+  } else {
+    button.textContent = fragmentCtaError ? "다시 주기" : `${animalName()}에게 주기`;
+    button.disabled = !canUseFragmentBackend || !fragment?.id || !hasActivePet || Boolean(activePetPromise) || petLoadStatus === "loading";
+  }
   updateFragmentDebug({
-    ctaState: button.disabled ? (!fragment.id ? "disabled:no-fragment-id" : !hasActivePet ? "disabled:no-active-pet" : "disabled:qa") : "enabled",
+    ctaState: button.disabled ? (!fragment?.id ? "disabled:no-fragment-id" : !hasActivePet ? "disabled:no-active-pet" : "disabled:qa") : "enabled",
     ctaLabel: button.textContent,
   });
-  if (canUseFragmentBackend && !hasActivePet && !activePetPromise) {
-    void ensureActivePet().then(() => renderFragmentCta()).catch(() => {
-      fragmentCtaError = "조각을 준비하지 못했어요. 잠시 후 다시 시도해주세요.";
+  if (canUseFragmentBackend && roomBackend.isConfigured && fragment?.id && !hasActivePet && !activePetPromise && ["idle", "ready"].includes(petLoadStatus)) {
+    void ensureActivePet().catch(() => {
+      fragmentCtaError = "아이의 상태를 불러오지 못했어요.";
       renderFragmentCta();
     });
   }
@@ -454,7 +546,11 @@ function queueDailyFragment(source, day = syncToday()) {
   if (fragmentForDate(day)) return;
   fragmentCtaError = "";
   fragmentState.pending.push({ date: day, source });
-  saveFragmentState();
+  try {
+    saveFragmentState();
+  } catch (error) {
+    recordFragmentDebugError("save_pending_fragment", error);
+  }
   renderGarden({ resetAnimal: false });
   void startFragmentLifecycle();
 }
@@ -522,7 +618,7 @@ function playFragmentFeedMotion() {
 async function consumeTodayFragment() {
   const fragment = fragmentForDate(syncToday());
   const button = $("#feed-fragment");
-  if (!fragment?.id || button.disabled || !canUseFragmentBackend || feedInteraction !== "idle") return;
+  if (!fragment?.id || button.disabled || !canUseFragmentBackend || !["idle", "retry"].includes(feedInteraction)) return;
   feedInteraction = "submitting";
   button.disabled = true;
   fragmentCtaError = "";
@@ -540,52 +636,23 @@ async function consumeTodayFragment() {
     consumeReturnedStatus: "",
     consumeReturnedGrowthPoints: "",
   });
+  let pet;
+  let outcome;
+  let consumeAttempted = false;
   try {
-    const pet = await ensureActivePet();
+    pet = await ensureActivePet();
     if (!pet) throw new Error("pet unavailable");
     updateFragmentDebug({ consumePetIdPresent: pet.id ? "true" : "false", consumeRpcStatus: "calling" });
-    const result = await roomBackend.consumeDailyFragment({ fragmentId: fragment.id, petId: pet.id });
-    updateFragmentDebug({
-      consumeRpcResult: "success",
-      consumeRpcStatus: "returned",
-      consumeReturnedStatus: result?.status || "missing",
-      consumeReturnedGrowthPoints: Number.isFinite(result?.growth_points) ? String(result.growth_points) : "missing",
+    consumeAttempted = true;
+    outcome = await resolveConsumeOutcome({
+      consume: () => roomBackend.consumeDailyFragment({ fragmentId: fragment.id, petId: pet.id }),
+      readFragment: () => roomBackend.getFragmentEvent(fragment.id),
+      readPet: () => roomBackend.getPetStateFromExistingSession(activePetIdentity()),
     });
-    if (!result || !["consumed", "already_consumed"].includes(result.status)) throw new Error("consume failed");
-    if (result.status === "consumed") activePet = { ...pet, id: result.pet_id || pet.id, growth_points: result.growth_points };
-    fragmentState.pending = fragmentState.pending.filter((entry) => entry.date !== fragment.date);
-    let growthResult = null;
-    try {
-      const updatedFragment = await roomBackend.getFragmentEvent(fragment.id);
-      growthResult = updatedFragment?.growth_result || null;
-      if (updatedFragment) {
-        fragmentState.claimed = fragmentState.claimed.map((entry) => entry.id === fragment.id ? updatedFragment : entry);
-      }
-    } catch (error) {
-      // Consumption has already committed; a reaction read failure must not turn it into a UI failure.
-      recordFragmentDebugError("fragment_growth_result", error);
+    if (outcome.status !== "committed") {
+      if (outcome.error && outcome.error.message === "pet unavailable") throw outcome.error;
+      throw outcome.error || new Error("consume outcome not confirmed");
     }
-    fragmentState.claimed = fragmentState.claimed.map((entry) => entry.id === fragment.id
-      ? { ...entry, pet_id: result.pet_id, consumed_at: result.consumed_at }
-      : entry);
-    if (result.status === "consumed") {
-      const identity = runtimePetIdentity();
-      runtimePetState = createRuntimePetState(identity, { ...pet, growth_points: result.growth_points });
-      applyRuntimePetScale();
-      renderPetRecord();
-      await loadRuntimePetState({ force: true });
-    }
-    if (result.status === "consumed") {
-      feedInteraction = "animating";
-      await playFragmentFeedMotion();
-    }
-    saveFragmentState();
-    renderGarden({ resetAnimal: false });
-    if (result.status === "consumed") {
-      const pointMilestone = [3, 7, 14, 30].includes(result.growth_points) ? result.growth_points : null;
-      startFragmentReaction(growthResult || (pointMilestone ? { type: "milestone", milestone: pointMilestone } : null));
-    }
-    if (result.status === "consumed" && !$("#archive-view").classList.contains("is-hidden")) renderArchive();
   } catch (error) {
     updateFragmentDebug({
       consumeRpcResult: "error",
@@ -596,11 +663,57 @@ async function consumeTodayFragment() {
       consumeErrorHint: safeDebugMessage(error?.hint),
     });
     recordFragmentDebugError("consume_daily_fragment", error);
-    fragmentCtaError = "조각을 먹이지 못했어요. 다시 시도해주세요.";
-    feedInteraction = "idle";
+    if (consumeAttempted) {
+      fragmentCtaError = "결과를 확인하지 못했어요. 다시 누르면 안전하게 상태를 확인할게요.";
+      feedInteraction = "retry";
+    } else {
+      petLoadStatus = "error";
+      fragmentCtaError = "아이의 상태를 불러오지 못했어요.";
+      feedInteraction = "idle";
+    }
     renderFragmentCta();
     return;
   }
+
+  const result = outcome.result;
+  const canonicalEvent = {
+    ...(outcome.event || fragment),
+    id: fragment.id,
+    pet_id: result.pet_id || pet?.id || fragment.pet_id || null,
+    consumed_at: outcome.event?.consumed_at || result.consumed_at || new Date().toISOString(),
+    growth_result: outcome.event?.growth_result || null,
+  };
+  fragmentState.pending = fragmentState.pending.filter((entry) => entry.date !== fragment.date);
+  fragmentState.claimed = fragmentState.claimed.map((entry) => entry.id === fragment.id ? canonicalEvent : entry);
+  try { saveFragmentState(); } catch (error) { recordFragmentDebugError("save_consumed_fragment_cache", error); }
+  if (outcome.pet) activePet = outcome.pet;
+  else if (pet && Number.isFinite(outcome.growthPoints)) activePet = { ...pet, growth_points: outcome.growthPoints };
+  const identity = runtimePetIdentity();
+  if (Number.isFinite(outcome.growthPoints)) {
+    runtimePetState = createRuntimePetState(identity, { ...(outcome.pet || activePet || pet || {}), growth_points: outcome.growthPoints });
+    runtimePetState.loaded = true;
+    petLoadStatus = "ready";
+  } else {
+    petLoadStatus = "error";
+    runtimePetState = createRuntimePetState(identity);
+  }
+  updateFragmentDebug({
+    consumeRpcResult: outcome.recoveredFromResponseLoss ? "recovered-from-server-event" : "success",
+    consumeRpcStatus: "committed",
+    consumeReturnedStatus: result.status,
+    consumeReturnedGrowthPoints: Number.isFinite(outcome.growthPoints) ? String(outcome.growthPoints) : "unavailable",
+  });
+  applyRuntimePetScale();
+  renderPetRecord();
+  feedInteraction = "animating";
+  button.classList.remove("is-hidden");
+  button.textContent = "건네고 있어요...";
+  button.disabled = true;
+  await playFragmentFeedMotion();
+  renderGarden({ resetAnimal: false });
+  const pointMilestone = [3, 7, 14, 30].includes(outcome.growthPoints) ? outcome.growthPoints : null;
+  startFragmentReaction(canonicalEvent.growth_result || (pointMilestone ? { type: "milestone", milestone: pointMilestone } : null));
+  if (!$("#archive-view").classList.contains("is-hidden")) renderArchive();
   feedInteraction = "idle";
 }
 function dailyQuestionSet(day = syncToday()) {
@@ -718,10 +831,28 @@ function renderPetRecord() {
   photo.alt = `${name}의 증명사진`;
   const profile = growthProfile(runtimePetState);
   content.replaceChildren();
+  let retryPet = $("#retry-pet-load");
+  if (!retryPet) {
+    retryPet = document.createElement("button");
+    retryPet.id = "retry-pet-load";
+    retryPet.type = "button";
+    retryPet.className = "pet-load-retry is-hidden";
+    retryPet.textContent = "다시 불러오기";
+    retryPet.addEventListener("click", () => { void retryPetLoad(); });
+    content.insertAdjacentElement("afterend", retryPet);
+  }
+  retryPet.classList.toggle("is-hidden", petLoadStatus !== "error" || Boolean(fragmentForDate(syncToday())));
+  if (petLoadStatus === "error" || petLoadStatus === "unavailable") {
+    const note = document.createElement("p");
+    note.className = "pet-record-note";
+    note.textContent = petLoadStatus === "error" ? "아이의 상태를 불러오지 못했어요." : "연결되면 아이의 성장 기록을 불러올게요.";
+    content.append(note);
+    return;
+  }
   if (profile.kind !== "ready") {
     const note = document.createElement("p");
     note.className = "pet-record-note";
-    note.textContent = profile.kind === "loading" ? `${animalNameWithParticle("과", "와", name)} 함께한 기록을 불러오고 있어요.` : "아직 조각을 먹이지 않았어요.";
+    note.textContent = petLoadStatus === "loading" || profile.kind === "loading" ? `${animalNameWithParticle("과", "와", name)} 함께한 기록을 불러오고 있어요.` : "아직 조각을 먹이지 않았어요.";
     content.append(note);
     return;
   }
@@ -1008,7 +1139,7 @@ function startFragmentReaction(growthResult) {
   };
   const message = growthResult?.type === "milestone" && milestoneMessages[growthResult.milestone]
     ? milestoneMessages[growthResult.milestone]
-    : `${animalNameWithParticle("이", "가")} 오늘의 조각을 맛있게 먹었어요.`;
+    : "오늘의 조각이 아이의 성장에 더해졌어요.";
   const milestone = Number(growthResult?.milestone);
   const traitPose = runtimePetState.primaryTrait === "walker"
     ? (isMochi() ? "walk-side-01" : "walk-a")
@@ -1043,10 +1174,10 @@ function renderGarden({ resetAnimal = true } = {}) {
     $("#garden-edit-answer").classList.add("is-hidden");
     $("#garden-record-lock").classList.add("is-hidden");
   }
+  void loadRuntimePetState();
   renderFragmentCta();
   renderPetRecord();
   renderFragmentDebug();
-  void loadRuntimePetState();
   if (resetAnimal) chooseAnimalBehavior();
 }
 function renderPreferences() { ["disliked", "liked"].forEach((kind) => { const container = $(`#${kind}-options`); container.replaceChildren(); species.forEach((name) => { const label = document.createElement("label"); label.innerHTML = `<input type="checkbox" value="${name}" ${preferences[`${kind}_species`].includes(name) ? "checked" : ""}/><span>${{ hamster: "햄스터", cat: "고양이", capybara: "카피바라", rabbit: "토끼" }[name]}</span>`; container.append(label); }); }); $("#no-dislike").checked = !preferences.disliked_species.length; }
@@ -1713,5 +1844,8 @@ if (isNewUser) {
 } else {
   beginNormalApp();
 }
-$("#feed-fragment").addEventListener("click", () => { void consumeTodayFragment(); });
+$("#feed-fragment").addEventListener("click", () => {
+  if (petLoadStatus === "error") void retryPetLoad();
+  else void consumeTodayFragment();
+});
 $("#invite-code-input").addEventListener("input", (event) => { event.currentTarget.value = normalizeInviteCode(event.currentTarget.value); });
