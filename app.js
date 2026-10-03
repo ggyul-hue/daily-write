@@ -106,6 +106,13 @@ const fragmentDebug = {
   lastErrorStage: "",
   lastErrorMessage: "",
 };
+const gardenRewardThresholds = [
+  ["potted-flower", 21],
+  ["flower-bed", 30],
+  ["stepping-stones", 45],
+  ["garden-bench", 60],
+  ["sapling", 90],
+];
 let currentBehavior = "idle";
 let currentCaptionBehavior = "idle";
 let animalState = { state: "REST", pose: "idle", message: "모찌는 잠깐 쉬어가기로 했어요." };
@@ -276,6 +283,14 @@ function activePetIdentity() {
 function runtimePetIdentity() { return petIdentity(activePetIdentity()); }
 function applyRuntimePetScale() {
   $("#hamster-motion")?.style.setProperty("--growth-scale", effectiveGrowthScale(runtimePetState).toFixed(3));
+  renderGardenRewards(runtimePetState.growthPoints);
+}
+function renderGardenRewards(growthPoints = runtimePetState.growthPoints) {
+  const points = Number(growthPoints);
+  gardenRewardThresholds.forEach(([id, threshold]) => {
+    const image = $(`#garden-reward-${id}`);
+    if (image) image.hidden = !Number.isFinite(points) || points < threshold;
+  });
 }
 async function loadRuntimePetState({ force = false } = {}) {
   const identity = runtimePetIdentity();
@@ -566,7 +581,10 @@ async function consumeTodayFragment() {
     }
     saveFragmentState();
     renderGarden({ resetAnimal: false });
-    if (result.status === "consumed") startFragmentReaction(growthResult);
+    if (result.status === "consumed") {
+      const pointMilestone = [3, 7, 14, 30].includes(result.growth_points) ? result.growth_points : null;
+      startFragmentReaction(growthResult || (pointMilestone ? { type: "milestone", milestone: pointMilestone } : null));
+    }
     if (result.status === "consumed" && !$("#archive-view").classList.contains("is-hidden")) renderArchive();
   } catch (error) {
     updateFragmentDebug({
@@ -991,9 +1009,14 @@ function startFragmentReaction(growthResult) {
   const message = growthResult?.type === "milestone" && milestoneMessages[growthResult.milestone]
     ? milestoneMessages[growthResult.milestone]
     : `${animalNameWithParticle("이", "가")} 오늘의 조각을 맛있게 먹었어요.`;
+  const milestone = Number(growthResult?.milestone);
+  const traitPose = runtimePetState.primaryTrait === "walker"
+    ? (isMochi() ? "walk-side-01" : "walk-a")
+    : ({ sleepy: "sleep", collector: "carry", reader: "read" }[runtimePetState.primaryTrait] || "carry");
+  const pose = milestone === 3 ? traitPose : milestone === 7 ? "carry" : milestone === 14 ? "sit" : "carry";
   currentLandmark = "open-lawn";
-  currentBehavior = "carry";
-  renderAnimal({ pose: "carry", captionBehavior: "carry", stateName: "FRAGMENT_REACTION", message });
+  currentBehavior = pose;
+  renderAnimal({ pose, captionBehavior: pose, stateName: "FRAGMENT_REACTION", message });
   behaviorTimer = window.setTimeout(() => {
     if (runId !== walkRunId) return;
     currentBehavior = "idle";
@@ -1005,6 +1028,7 @@ function chooseAnimalBehavior() { clearBehaviorTimers(); currentBehavior = previ
 function renderGarden({ resetAnimal = true } = {}) {
   syncToday();
   $("#page-date").textContent = formatDate(today);
+  renderGardenRewards(runtimePetState.growthPoints);
   const answer = todayAnswer();
   const record = $("#garden-record");
   record.classList.toggle("is-hidden", !answer);
