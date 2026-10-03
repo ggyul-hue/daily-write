@@ -5,6 +5,7 @@ const backendMock = `
 let fragment = null;
 let pet = null;
 const growthStage = (points) => points >= 14 ? "GROWN" : points >= 7 ? "GROWING" : points >= 3 ? "SMALL" : "BABY";
+globalThis.__soloSmokeState = () => ({ fragment: fragment ? { ...fragment } : null, pet: pet ? { ...pet } : null });
 export function normalizeInviteCode(value) { return String(value || "").toUpperCase().replace(/[^A-HJ-NP-Z2-9]/g, ""); }
 export const roomBackend = {
   isConfigured: true,
@@ -85,17 +86,32 @@ test("first-use Solo flow works in an isolated browser context", async ({ page, 
   await expect(page.locator("#today-view")).toBeVisible();
   await page.locator("#question-cards .question-card").first().click();
   const answerText = page.locator('#answer-field textarea[name="answer"]');
+  let submittedAnswer;
   if (await answerText.count()) {
-    await answerText.fill("오늘은 천천히 마음을 살펴봤어요.");
+    submittedAnswer = "isolated smoke answer";
+    await answerText.fill(submittedAnswer);
   } else {
     const radio = page.locator('#answer-field input[type="radio"]').first();
     await radio.check();
+    submittedAnswer = await radio.inputValue();
   }
   await page.locator('#answer-form button[type="submit"]').click();
   await expect(page.locator("#garden-view")).toBeVisible();
+  const savedAnswer = await page.evaluate(() => {
+    const state = JSON.parse(window.localStorage.getItem("daily-write-solo-v1") || "null");
+    return state?.answers?.at(-1) || null;
+  });
+  expect(savedAnswer).toMatchObject({ answer: submittedAnswer, value: submittedAnswer });
+  expect(savedAnswer.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+
   const feedButton = page.locator("#feed-fragment");
   await expect(feedButton).toBeVisible();
   await expect(feedButton).toBeEnabled({ timeout: 10_000 });
+  const readyState = await page.evaluate(() => window.__soloSmokeState());
+  expect(readyState.fragment).toMatchObject({ id: "ephemeral-smoke-fragment", date: savedAnswer.date, source: "solo", consumed_at: null });
+  expect(readyState.pet).toMatchObject({ id: "ephemeral-smoke-pet", growth_points: 0 });
+  const feedCtaWasEnabled = await feedButton.isEnabled();
+  expect(feedCtaWasEnabled).toBe(true);
   await expect(page.locator("#garden-view")).toHaveCSS("opacity", "1");
   await feedButton.evaluate((button) => button.scrollIntoView({ block: "center", inline: "nearest" }));
   await expect(feedButton).toBeInViewport();
@@ -106,8 +122,13 @@ test("first-use Solo flow works in an isolated browser context", async ({ page, 
   await page.screenshot({ path: testInfo.outputPath("02-actionable-feed-cta.png") });
 
   await feedButton.click();
-  await expect(page.locator("#pet-record-content .pet-record-fields dd").nth(3)).toContainText("1개", { timeout: 10_000 });
   await expect(feedButton).toBeHidden({ timeout: 10_000 });
+  const consumedState = await page.evaluate(() => window.__soloSmokeState());
+  expect(consumedState.fragment.consumed_at).toBeTruthy();
+  expect(consumedState.pet.growth_points).toBe(readyState.pet.growth_points + 1);
+  const growthText = await page.locator("#pet-record-content .pet-record-fields dd").nth(3).innerText();
+  const growthPointsInUi = Number(growthText.match(/\d+/)?.[0]);
+  expect(growthPointsInUi).toBe(consumedState.pet.growth_points);
   await page.screenshot({ path: testInfo.outputPath("03-growth-success.png"), fullPage: true });
 
   const after = await page.evaluate(() => ({ width: window.innerWidth, documentWidth: document.documentElement.scrollWidth }));
@@ -118,10 +139,14 @@ test("first-use Solo flow works in an isolated browser context", async ({ page, 
     viewport: after.width,
     documentWidthBeforeConsume: before.documentWidth,
     documentWidthAfterConsume: after.documentWidth,
-    feedCtaWasEnabled: true,
+    answerSaved: savedAnswer.answer === submittedAnswer,
+    fragmentReady: readyState.fragment.consumed_at === null,
+    feedCtaWasEnabled,
     feedCtaViewportY: ctaRect?.y ?? null,
     feedCtaViewportBottom: ctaRect ? ctaRect.y + ctaRect.height : null,
-    growthPointsAfterConsume: 1,
+    growthPointsBeforeConsume: readyState.pet.growth_points,
+    growthPointsAfterConsume: growthPointsInUi,
+    growthIncrement: consumedState.pet.growth_points - readyState.pet.growth_points,
     mockModuleRequests: mockRequests,
     externalRequestsInterceptedBeforeNetwork: externalRequests.length,
   };
