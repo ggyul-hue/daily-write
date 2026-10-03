@@ -118,6 +118,7 @@ function makeConsumeHarness({ initialConsumedAt = null, mode = "success" } = {})
   let event = { ...fragment, consumed_at: initialConsumedAt, growth_result: initialConsumedAt ? { growth_points: points } : null };
   let consumeCalls = 0;
   let growthWrites = 0;
+  let guideState = { status: "active" };
   const button = { disabled: false, textContent: "주기", classList: { add() {}, remove() {} } };
   const archive = { classList: { contains: () => true } };
   const context = {
@@ -128,6 +129,7 @@ function makeConsumeHarness({ initialConsumedAt = null, mode = "success" } = {})
     feedInteraction: "idle",
     fragmentCtaError: "",
     fragmentState: { pending: [], claimed: [{ ...event }] },
+    setFirstUseGuideHintState(action) { if (action === "complete" && guideState.status === "active") guideState = { status: "completed" }; },
     petLoadStatus: "ready",
     ensureActivePet: async () => ({ id: "pet-live", species: "hamster", variant: "mochi", growth_points: points }),
     updateFragmentDebug() {},
@@ -163,7 +165,7 @@ function makeConsumeHarness({ initialConsumedAt = null, mode = "success" } = {})
   context.activePet = null;
   context.runtimePetState = { growthPoints: 8 };
   runInNewContext(`${extractFunction("consumeTodayFragment", "dailyQuestionSet")}\nglobalThis.runConsume = consumeTodayFragment;`, context);
-  return { context, button, get points() { return points; }, get event() { return event; }, get consumeCalls() { return consumeCalls; }, get growthWrites() { return growthWrites; } };
+  return { context, button, get points() { return points; }, get event() { return event; }, get consumeCalls() { return consumeCalls; }, get growthWrites() { return growthWrites; }, get guideState() { return guideState; } };
 }
 
 // Exercise the actual application consume handler against a fake, idempotent RPC boundary.
@@ -172,6 +174,7 @@ await liveSuccess.context.runConsume();
 assert.equal(liveSuccess.points, 9);
 assert.equal(liveSuccess.growthWrites, 1);
 assert.ok(liveSuccess.context.fragmentState.claimed[0].consumed_at);
+assert.deepEqual(liveSuccess.guideState, { status: "completed" });
 
 const liveResponseLoss = makeConsumeHarness({ mode: "response-loss" });
 await liveResponseLoss.context.runConsume();
@@ -190,6 +193,7 @@ await liveFailure.context.runConsume();
 assert.equal(liveFailure.context.feedInteraction, "retry");
 assert.equal(liveFailure.context.fragmentState.claimed[0].consumed_at, null);
 assert.equal(liveFailure.points, 8);
+assert.deepEqual(liveFailure.guideState, { status: "active" });
 
 // Run the real local queue writer and claim retry loop with stubbed persistence/backend.
 const queueContext = {

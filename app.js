@@ -7,6 +7,7 @@ import { growthProfile, speciesLabel } from "./pet-profile-ui.js";
 import { isCompletedMonth, selectMonthlyMemories, monthlySummary } from "./monthly-memory.js";
 import { createAdoptionDraft, nextAdoptionDraft } from "./onboarding.js";
 import { deriveSoloFlowState, resolveConsumeOutcome } from "./solo-flow-recovery.js";
+import { completeFirstUseGuide, normalizeFirstUseGuideState, shouldAutoShowFirstUseGuide, skipFirstUseGuide, startFirstUseGuide } from "./solo-first-use-guide.js";
 
 const query = new URLSearchParams(location.search);
 const isFragmentDebug = query.get("debug") === "fragment4b";
@@ -35,7 +36,9 @@ const ANIMAL_KEY = isQaMode ? `${storagePrefix}.animal-profile-v1` : "daily-writ
 const PREFERENCES_KEY = isQaMode ? `${storagePrefix}.preferences-v1` : "daily-write-preferences-v1";
 const FRAGMENT_STATE_KEY = isQaMode ? `${storagePrefix}.fragment-state-v1` : "daily-write-fragment-state-v1";
 const ADOPTION_DRAFT_KEY = isQaMode ? `${storagePrefix}.adoption-draft-v1` : "daily-write-adoption-draft-v1";
+const FIRST_USE_GUIDE_KEY = isQaMode ? `${storagePrefix}.first-use-guide-v1` : "daily-write-first-use-guide-v1";
 const readJson = (key) => { try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; } };
+let firstUseGuideState = normalizeFirstUseGuideState(readJson(FIRST_USE_GUIDE_KEY));
 const storedAnimalProfile = readJson(ANIMAL_KEY);
 const storedPreferences = readJson(PREFERENCES_KEY);
 const storedFragmentStateForOnboarding = readJson(FRAGMENT_STATE_KEY);
@@ -164,6 +167,23 @@ let normalAppBootstrapped = false;
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function saveFragmentState() { localStorage.setItem(FRAGMENT_STATE_KEY, JSON.stringify(fragmentState)); }
+function saveFirstUseGuideState(nextState) {
+  firstUseGuideState = normalizeFirstUseGuideState(nextState);
+  if (firstUseGuideState) localStorage.setItem(FIRST_USE_GUIDE_KEY, JSON.stringify(firstUseGuideState));
+}
+function setFirstUseGuideHintState(action) {
+  if (action === "start") saveFirstUseGuideState(startFirstUseGuide(firstUseGuideState));
+  if (action === "skip") saveFirstUseGuideState(skipFirstUseGuide(firstUseGuideState));
+  if (action === "complete") saveFirstUseGuideState(completeFirstUseGuide(firstUseGuideState));
+}
+function showFirstUseGuide() {
+  const guide = $("#first-use-guide");
+  guide.classList.remove("is-hidden");
+  const isEligible = shouldAutoShowFirstUseGuide(firstUseGuideState);
+  $("#first-use-guide-start").textContent = isEligible ? "질문 고르기" : "질문 보러 가기";
+  $("#first-use-guide-skip").textContent = isEligible ? "건너뛰기" : "닫기";
+}
+function closeFirstUseGuide() { $("#first-use-guide").classList.add("is-hidden"); }
 function newAdoptionSeed() {
   const values = new Uint32Array(2);
   crypto.getRandomValues(values);
@@ -253,6 +273,7 @@ function beginNormalApp() {
   renderToday();
   void startFragmentLifecycle();
   showView("garden");
+  if (shouldAutoShowFirstUseGuide(firstUseGuideState)) showFirstUseGuide();
 }
 function formatDate(day) { return new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "short" }).format(new Date(`${day}T12:00:00`)); }
 function syncToday() {
@@ -492,9 +513,9 @@ function renderFragmentCta() {
   button.classList.remove("is-hidden");
   if (stateName === "FRAGMENT_PENDING" || stateName === "ANSWER_SAVED") {
     $("#fragment-message").textContent = pending
-      ? "오늘의 조각을 준비하고 있어요. 연결되면 이어서 준비할게요."
+      ? "답변은 저장됐어요. 조각은 준비가 끝나면 이어서 만날게요."
       : "오늘의 기록은 저장됐어요. 조각 상태를 확인하고 있어요.";
-    detail.textContent = "기록은 정원에 간직되어 있어요.";
+    detail.textContent = "";
     button.classList.add("is-hidden");
     button.disabled = true;
     updateFragmentDebug({ ctaState: pending ? "fragment-pending" : "answer-saved", ctaLabel: "" });
@@ -531,6 +552,9 @@ function renderFragmentCta() {
     button.textContent = fragmentCtaError ? "다시 주기" : `${animalName()}에게 주기`;
     button.disabled = !canUseFragmentBackend || !fragment?.id || !hasActivePet || Boolean(activePetPromise) || petLoadStatus === "loading";
   }
+  detail.textContent = !button.disabled && stateName !== "PET_LOAD_ERROR"
+    ? "조각을 건네면 오늘의 기록이 아이의 성장으로 이어져요."
+    : `${animalName()}에게 줄 수 있어요.`;
   updateFragmentDebug({
     ctaState: button.disabled ? (!fragment?.id ? "disabled:no-fragment-id" : !hasActivePet ? "disabled:no-active-pet" : "disabled:qa") : "enabled",
     ctaLabel: button.textContent,
@@ -697,6 +721,7 @@ async function consumeTodayFragment() {
     petLoadStatus = "error";
     runtimePetState = createRuntimePetState(identity);
   }
+  setFirstUseGuideHintState("complete");
   updateFragmentDebug({
     consumeRpcResult: outcome.recoveredFromResponseLoss ? "recovered-from-server-event" : "success",
     consumeRpcStatus: "committed",
@@ -1186,6 +1211,7 @@ function closePreferences() { $("#preferences-sheet").classList.add("is-hidden")
 function renderToday() {
   syncToday();
   const answer = todayAnswer(); const container = $("#question-cards"); $("#daily-status").textContent = answer ? `오늘은 “${answerText(answer)}”을 남겼어요.` : "아래 세 장 중 하나만 골라주세요."; $("#today-complete").classList.toggle("is-hidden", !answer); container.replaceChildren();
+  $("#first-use-question-hint").textContent = answer ? "하루에 하나만 남겨도 충분해요. 매일 이어 쓸 필요는 없어요." : "세 질문 중 마음 가는 하나를 골라요. 짧게 답해도 괜찮아요.";
   if (answer) {
     const editable = canEditDailyAnswer(answer.date);
     $("#today-complete").textContent = `${animalSubjectName()} 오늘의 이야기를 품고 있어요.`;
@@ -1213,6 +1239,7 @@ function openAnswer(question) {
   if (todayAnswer()) { renderToday(); return; }
   editingAnswerDate = null;
   selectedQuestion = question; $("#answer-question").textContent = question.text; $("#answer-form button[type=submit]").textContent = `${animalName()}에게 들려주기`; const field = $("#answer-field"); field.replaceChildren();
+  $("#answer-guide-hint").textContent = "짧게 적어도 괜찮아요. 답변은 이 브라우저에 저장되며 다른 기기와 자동 동기화되지 않아요.";
   if (question.type === "choice") { const choices = document.createElement("div"); choices.className = "choice-list"; choices.innerHTML = question.options.map((option, index) => `<label><input required type="radio" name="answer" value="${option}" ${index === 0 ? "checked" : ""}/><span>${option}</span></label>`).join(""); field.append(choices); }
   else { const input = document.createElement("textarea"); input.name = "answer"; input.required = true; input.rows = 4; input.placeholder = "짧게 적어도 괜찮아요"; field.append(input); setupAnswerCounter(input); input.focus(); }
   $("#answer-sheet").classList.remove("is-hidden");
@@ -1224,6 +1251,7 @@ function openEditAnswer(answer) {
   editingAnswerDate = answer.date;
   selectedQuestion = questions.find((question) => question.id === answer.questionId) || { id: answer.questionId, text: answer.question, type: "text" };
   $("#answer-question").textContent = answer.question;
+  $("#answer-guide-hint").textContent = "답변은 이 브라우저에 저장되며 다른 기기와 자동 동기화되지 않아요.";
   $("#answer-form button[type=submit]").textContent = "수정 저장";
   const field = $("#answer-field"); field.replaceChildren();
   const input = document.createElement("textarea"); input.name = "answer"; input.required = true; input.rows = 4; input.placeholder = "짧게 적어도 괜찮아요"; input.value = answerText(answer); field.append(input); setupAnswerCounter(input);
@@ -1767,12 +1795,24 @@ $("#sheet-backdrop").addEventListener("click", closeSheet); $("#close-sheet").ad
 $("#preferences-button").addEventListener("click", () => { renderPreferences(); $("#preferences-sheet").classList.remove("is-hidden"); });
 $("#preferences-backdrop").addEventListener("click", closePreferences); $("#close-preferences").addEventListener("click", closePreferences);
 $("#save-preferences").addEventListener("click", () => { const selected = (id) => [...document.querySelectorAll(`#${id} input:checked`)].map((input) => input.value); preferences = { disliked_species: $("#no-dislike").checked ? [] : selected("disliked-options"), liked_species: selected("liked-options").slice(0, 3) }; localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); closePreferences(); });
+$("#first-use-guide-reopen").addEventListener("click", showFirstUseGuide);
+$("#first-use-guide-start").addEventListener("click", () => {
+  setFirstUseGuideHintState("start");
+  closeFirstUseGuide();
+  renderToday();
+  showView("today");
+});
+$("#first-use-guide-skip").addEventListener("click", () => {
+  setFirstUseGuideHintState("skip");
+  closeFirstUseGuide();
+});
 $("#adoption-refresh").addEventListener("click", () => { adoptionDraft = nextAdoptionDraft(animalManifest, currentAdoptionDraft()); localStorage.setItem(ADOPTION_DRAFT_KEY, JSON.stringify(adoptionDraft)); selectedAdoption = null; renderAdoption(); });
 $("#adoption-name").addEventListener("input", (event) => { adoptionNameDraft = event.currentTarget.value; renderAdoption(); });
 $("#adoption-confirm").addEventListener("click", () => {
   const displayName = normalizePetName(adoptionNameDraft);
   if (!selectedAdoption || !displayName) { renderAdoption(); return; }
   const animal = saveActiveAnimalProfile(selectedAdoption.species, selectedAdoption.variant, displayName);
+  if (isNewUser) saveFirstUseGuideState({ status: "eligible" });
   adoptionNameDraft = "";
   localStorage.removeItem(ADOPTION_DRAFT_KEY);
   showAdoptionComplete(animal);

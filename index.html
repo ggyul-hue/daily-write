@@ -30,7 +30,8 @@
         </section>
       </section>
       <section id="garden-view" class="view garden-view is-hidden" aria-labelledby="page-date">
-        <header class="topbar"><p id="page-date" class="date"></p><div class="top-actions"><button id="preferences-button" class="preferences-button" type="button" aria-label="동물 취향 설정">⚙</button><button id="archive-button" class="archive-button" type="button" aria-label="지난 조각 열기"><span aria-hidden="true">◷</span>지난 조각</button></div></header>
+        <header class="topbar"><p id="page-date" class="date"></p><div class="top-actions"><button id="first-use-guide-reopen" class="guide-reopen" type="button">사용 방법</button><button id="preferences-button" class="preferences-button" type="button" aria-label="동물 취향 설정">⚙</button><button id="archive-button" class="archive-button" type="button" aria-label="지난 조각 열기"><span aria-hidden="true">◷</span>지난 조각</button></div></header>
+        <section id="first-use-guide" class="first-use-guide is-hidden" aria-labelledby="first-use-guide-title"><div><p class="eyebrow">ONE LITTLE ANSWER</p><h2 id="first-use-guide-title">하루 하나, 가볍게 남겨요</h2><p>오늘 질문 세 개 중 하나를 골라 짧게 답해요. 매일 이어 쓸 필요 없이, 쉬었다가 돌아와도 괜찮아요.</p></div><div class="first-use-guide-actions"><button id="first-use-guide-start" class="submit-button" type="button">질문 고르기</button><button id="first-use-guide-skip" class="guide-skip" type="button">건너뛰기</button></div></section>
         <section class="garden" aria-label="햄스터 정원">
           <img class="garden-backdrop" src="assets/garden/garden-doodle-v3.png" alt="" aria-hidden="true" />
           <img id="garden-reward-potted-flower" class="garden-reward garden-reward-potted-flower" src="assets/garden/rewards/potted-flower.png" alt="" aria-hidden="true" hidden />
@@ -60,13 +61,13 @@
       </section>
 
       <section id="today-view" class="view today-view is-hidden" aria-labelledby="today-title">
-        <header class="section-heading"><p class="eyebrow">ONE LITTLE ANSWER</p><h1 id="today-title">오늘 하나만 골라볼까요?</h1><p id="daily-status" class="daily-status"></p></header>
+        <header class="section-heading"><p class="eyebrow">ONE LITTLE ANSWER</p><h1 id="today-title">오늘 하나만 골라볼까요?</h1><p id="daily-status" class="daily-status"></p><p id="first-use-question-hint" class="guide-inline-hint"></p></header>
         <div id="question-cards" class="question-cards"></div><p id="today-complete" class="today-complete is-hidden"></p><button id="today-edit-answer" class="edit-answer-button is-hidden" type="button">수정</button><p id="today-record-lock" class="record-lock is-hidden">먹인 조각은 수정할 수 없어요.</p>
       </section>
 
       <section id="answer-sheet" class="answer-sheet is-hidden" aria-labelledby="answer-question" aria-modal="true" role="dialog">
         <button id="sheet-backdrop" class="sheet-backdrop" type="button" aria-label="답변 창 닫기"></button>
-        <section class="sheet-panel"><button id="close-sheet" class="sheet-handle" type="button" aria-label="답변 창 닫기"><span></span></button><p class="eyebrow">ONE LITTLE ANSWER</p><h1 id="answer-question"></h1><form id="answer-form"><div id="answer-field"></div><button class="submit-button" type="submit">모찌에게 들려주기</button></form></section>
+        <section class="sheet-panel"><button id="close-sheet" class="sheet-handle" type="button" aria-label="답변 창 닫기"><span></span></button><p class="eyebrow">ONE LITTLE ANSWER</p><h1 id="answer-question"></h1><form id="answer-form"><div id="answer-field"></div><p id="answer-guide-hint" class="guide-inline-hint"></p><button class="submit-button" type="submit">모찌에게 들려주기</button></form></section>
       </section>
 
       <section id="archive-view" class="view is-hidden" aria-labelledby="archive-title">
